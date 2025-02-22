@@ -907,6 +907,20 @@ html.transition *:after {
 }
 
 // Extra Markdown style (post Customization)
+@font-face {
+  font-family: 'Comic Mono';
+  src: url('/assets/fonts/ComicMono.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Comic Mono';
+  src: url('/assets/fonts/ComicMono-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
 .post {
   .post-meta {
     color: var(--global-text-color-light);
@@ -928,6 +942,13 @@ html.transition *:after {
         color: var(--global-theme-color);
       }
     }
+  }
+
+  .post-header{
+    font-family: 'Comic Mono', monospace;
+  }
+  .clearfix{
+    padding-bottom: 3rem;
   }
 }
 
