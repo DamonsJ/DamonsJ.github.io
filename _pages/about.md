@@ -2,7 +2,7 @@
 layout: about
 title: About
 permalink: /
-subtitle: <a href='https://www.imdb.com/title/tt0097165/'>Carpe diem</a>, my friends, after all you only live once. Seize The Day!
+subtitle: <a href='https://en.wikipedia.org/wiki/Carpe_diem'>Carpe diem</a>, my friends, after all you only live once. Seize The Day!
 
 profile:
   align: right
