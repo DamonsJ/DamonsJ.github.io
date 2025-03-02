@@ -1,9 +1,9 @@
 ---
 layout: default
-permalink: /blog/
-title: blog
+permalink: /vision/
+title: Vision
 nav: true
-nav_order: 1
+nav_order: 3
 pagination:
   enabled: true
   collection: posts
@@ -18,22 +18,22 @@ pagination:
 
 <div class="post">
 
-{% assign blog_name_size = site.blog_name | size %}
-{% assign blog_description_size = site.blog_description | size %}
+{% assign blog_name_size = site.vision_blog_name | size %}
+{% assign blog_description_size = site.vision_blog_description | size %}
 
 {% if blog_name_size > 0 or blog_description_size > 0 %}
 
   <div class="header-bar">
-    <h1>{{ site.blog_name }}</h1>
-    <h2>{{ site.blog_description }}</h2>
+    <h1>{{ site.vision_blog_name }}</h1>
+    <h2>{{ site.vision_blog_description }}</h2>
   </div>
   {% endif %}
 
-{% if site.display_tags and site.display_tags.size > 0 or site.display_categories and site.display_categories.size > 0 %}
+{% if site.vision_tags and site.vision_tags.size > 0 or site.display_categories and site.display_categories.size > 0 %}
 
   <div class="tag-category-list">
     <ul class="p-0 m-0">
-      {% for tag in site.display_tags %}
+      {% for tag in site.vision_tags %}
         <li>
           <i class="fa-solid fa-hashtag fa-sm"></i> <a href="{{ tag | slugify | prepend: '/blog/tag/' | relative_url }}">{{ tag }}</a>
         </li>
@@ -41,7 +41,7 @@ pagination:
           <p>&bull;</p>
         {% endunless %}
       {% endfor %}
-      {% if site.display_categories.size > 0 and site.display_tags.size > 0 %}
+      {% if site.display_categories.size > 0 and site.vision_tags.size > 0 %}
         <p>&bull;</p>
       {% endif %}
       {% for category in site.display_categories %}

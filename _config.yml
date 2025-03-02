@@ -90,6 +90,10 @@ blog_name: al-folio # blog_name will be displayed in your blog page
 blog_description: a simple whitespace theme for academics
 permalink: /blog/:year/:title/
 lsi: false # produce an index for related posts
+programming_blog_name: Programming Language
+programming_blog_description: write something about programming language
+vision_blog_name: Computer Vision & Computer Graphics
+vision_blog_description: write something about Computer Vision & Computer Graphics
 
 # Pagination
 pagination:
@@ -257,7 +261,8 @@ jekyll-archives:
 
 display_tags: ["formatting", "images", "links", "math", "code", "blockquotes"] # these tags will be displayed on the front page of your blog
 display_categories: ["external-services"] # these categories will be displayed on the front page of your blog
-
+programming_tags: ["c++", "rust", "python"]
+vision_tags: ["computer graphic", "opengl"]
 # -----------------------------------------------------------------------------
 # Jekyll Scholar
 # -----------------------------------------------------------------------------
