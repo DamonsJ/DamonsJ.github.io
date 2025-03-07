@@ -92,8 +92,6 @@ permalink: /blog/:year/:title/
 lsi: false # produce an index for related posts
 programming_blog_name: Programming Language
 programming_blog_description: write something about programming language
-vision_blog_name: Computer Vision & Computer Graphics
-vision_blog_description: write something about Computer Vision & Computer Graphics
 
 # Pagination
 pagination:
@@ -155,6 +153,19 @@ collections:
     output: true
   projects:
     output: true
+  vision:
+    output: true
+  reading:
+    output: true
+  computer:
+    output: true
+  life:
+    output: true
+  AI:
+    output: true
+  math:
+    output: true
+    permalink: /math/:path/
 
 # -----------------------------------------------------------------------------
 # Jekyll settings
@@ -258,11 +269,16 @@ jekyll-archives:
       categories: "/blog/:type/:name/"
   books:
     enabled: [year, tags, categories] # enables year, tag and category archives (remove if you need to disable one of them).
+  vision:
+    enabled: [year, tags, categories]
+  math:
+    enabled: [year, tags, categories]
 
 display_tags: ["formatting", "images", "links", "math", "code", "blockquotes"] # these tags will be displayed on the front page of your blog
 display_categories: ["external-services"] # these categories will be displayed on the front page of your blog
 programming_tags: ["c++", "rust", "python"]
-vision_tags: ["computer graphic", "opengl"]
+vision_tags: ["graphic", "opengl"]
+math_tags: ["gemo", "fractial"]
 # -----------------------------------------------------------------------------
 # Jekyll Scholar
 # -----------------------------------------------------------------------------

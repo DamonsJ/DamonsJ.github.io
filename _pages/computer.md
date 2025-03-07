@@ -1,14 +1,14 @@
 ---
 layout: default
-title: Vision
-permalink: /vision/
+title: Computer
+permalink: /computer/
 nav: true
-nav_order: 4
-blog_name: Vision
-description: Write something about Vision
+nav_order: 5
+blog_name: Computer
+description: Write something about Computer
 pagination:
   enabled: false
-  collection: vision
+  collection: computer
   permalink: /page/:num/
   per_page: 5
   sort_field: date

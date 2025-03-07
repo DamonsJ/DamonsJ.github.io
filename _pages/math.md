@@ -1,14 +1,14 @@
 ---
-layout: default
-title: Vision
-permalink: /vision/
+layout: math
+title: Math
+permalink: /math/
 nav: true
-nav_order: 4
-blog_name: Vision
-description: Write something about Vision
+nav_order: 2
+blog_name: Math Staff
+description: Write something about Math
 pagination:
   enabled: false
-  collection: vision
+  collection: math
   permalink: /page/:num/
   per_page: 5
   sort_field: date

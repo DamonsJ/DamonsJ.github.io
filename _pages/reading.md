@@ -1,14 +1,14 @@
 ---
 layout: default
-title: Vision
-permalink: /vision/
+title: Reading
+permalink: /reading/
 nav: true
-nav_order: 4
-blog_name: Vision
-description: Write something about Vision
+nav_order: 7
+blog_name: Reading Staff
+description: Write something about Reading
 pagination:
   enabled: false
-  collection: vision
+  collection: reading
   permalink: /page/:num/
   per_page: 5
   sort_field: date

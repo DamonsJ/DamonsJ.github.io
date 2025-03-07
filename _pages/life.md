@@ -1,14 +1,14 @@
 ---
 layout: default
-title: Vision
-permalink: /vision/
+title: Life
+permalink: /life/
 nav: true
-nav_order: 4
-blog_name: Vision
-description: Write something about Vision
+nav_order: 8
+blog_name: life Staff
+description: Write something about life
 pagination:
   enabled: false
-  collection: vision
+  collection: life
   permalink: /page/:num/
   per_page: 5
   sort_field: date

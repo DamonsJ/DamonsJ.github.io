@@ -1,14 +1,14 @@
 ---
 layout: default
-title: Vision
-permalink: /vision/
+title: AI
+permalink: /AI/
 nav: true
-nav_order: 4
-blog_name: Vision
-description: Write something about Vision
+nav_order: 6
+blog_name: Reading AI
+description: Write something about AI
 pagination:
   enabled: false
-  collection: vision
+  collection: AI
   permalink: /page/:num/
   per_page: 5
   sort_field: date
