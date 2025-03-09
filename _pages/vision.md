@@ -17,6 +17,7 @@ collection: vision
   </div>
 
 {% if site.vision_tags and site.vision_tags.size > 0 %}
+
   <div class="tag-category-list">
     <ul class="p-0 m-0">
       {% for tag in site.vision_tags %}

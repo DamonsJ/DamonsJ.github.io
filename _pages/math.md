@@ -17,6 +17,7 @@ collection: math
   </div>
 
 {% if site.math_tags and site.math_tags.size > 0 %}
+
   <div class="tag-category-list">
     <ul class="p-0 m-0">
       {% for tag in site.math_tags %}

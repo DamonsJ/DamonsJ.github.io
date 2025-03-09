@@ -10,6 +10,7 @@ categories: math
 这篇文章是我从[YC](https://news.ycombinator.com/)上的帖子中看到的，相当于一个转载，感兴趣请参考[原始博客](https://eli.thegreenplace.net/2025/making-any-integer-with-four-2s/).
 
 有这样一个数学迷题：
+
 > 给定4个数字 2 和某个目标自然数，使用任何数学运算用这些 2 生成目标数字，不使用其他数字.
 
 一些简单的例子如下:
