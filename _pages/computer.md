@@ -4,8 +4,8 @@ title: Computer
 permalink: /computer/
 nav: true
 nav_order: 5
-blog_name: Computer
-description: Write something about Computer
+blog_name: Adelma
+description: 我想：“到了生命的某一个时刻，在你认识的人之中，已去世的会比活着的多。这时你的心就会拒绝接受更多的面孔和更多的表情，你遇见的每一张新面子都是旧的容貌，它们各自寻得合适的面具。” 我想：“也许阿德尔玛是你垂死时抵达的城市，每个人都可以在这里跟故人重逢。这就标志着我也是死人。” 我又想：“这意味着彼世并不快乐。”
 pagination:
   enabled: false
   collection: computer
@@ -21,14 +21,15 @@ pagination:
 <div class="post">
   <div class="header-bar">
     <h1>{{ page.blog_name }}</h1>
-    <h2>{{ page.description }}</h2>
+    <p align="left">{{ page.description }}</p>
+    <p align="right"> ——《看不见的城市·城市与死亡之二》</p>
   </div>
 
-{% if site.math_tags and site.math_tags.size > 0 %}
+{% if site.computer_tags and site.computer_tags.size > 0 %}
 
   <div class="tag-category-list">
     <ul class="p-0 m-0">
-      {% for tag in site.math_tags %}
+      {% for tag in site.computer_tags %}
         <li>
           <i class="fa-solid fa-hashtag fa-sm"></i> <a href="{{ tag | slugify | prepend: '/math/tag/' | relative_url }}">{{ tag }}</a>
         </li>

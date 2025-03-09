@@ -4,8 +4,8 @@ title: Reading
 permalink: /reading/
 nav: true
 nav_order: 7
-blog_name: Reading Staff
-description: Write something about Reading
+blog_name: Hypatia
+description: ”符号形成一种语言，但那不是你们自以为了解的语言。” 我明白了，我必须从引导我追寻事物直至此地的形象中解脱出来：只有那时，我才能理解伊帕奇亚的语言。当我的灵魂只需要音乐的营养与刺激时，我晓得应该到墓地去：音乐家们都躲在墓穴中，笛子的颤音和竖琴的和弦在坟头间彼此呼应。当然，总有一天，我在伊帕奇亚的唯一愿望将是起身离去。我知道，不该走向海港码头，而必须爬上城堡最高的尖塔，去等候一条路经那里的船只。但是能否有船驶过呢？没有一种语言是绝对不骗人的。
 pagination:
   enabled: false
   collection: reading
@@ -21,14 +21,15 @@ pagination:
 <div class="post">
   <div class="header-bar">
     <h1>{{ page.blog_name }}</h1>
-    <h2>{{ page.description }}</h2>
+    <p align="left">{{ page.description }}</p>
+    <p align="right"> ——《看不见的城市·城市与符号之四》</p>
   </div>
 
-{% if site.math_tags and site.math_tags.size > 0 %}
+{% if site.reading_tags and site.reading_tags.size > 0 %}
 
   <div class="tag-category-list">
     <ul class="p-0 m-0">
-      {% for tag in site.math_tags %}
+      {% for tag in site.reading_tags %}
         <li>
           <i class="fa-solid fa-hashtag fa-sm"></i> <a href="{{ tag | slugify | prepend: '/math/tag/' | relative_url }}">{{ tag }}</a>
         </li>

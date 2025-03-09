@@ -4,8 +4,8 @@ title: AI
 permalink: /AI/
 nav: true
 nav_order: 6
-blog_name: Reading AI
-description: Write something about AI
+blog_name: Baucis
+description: 关于宝琪的居民，有三种假设：他们憎恨地球；他们敬畏地球，乃至尽量避免与地面的任何接触；他们喜欢自己出生之前的地球，以至利用各种望远镜不知疲倦地观察着每一片树叶，每一块石子，每一只蚂蚁，着迷地冥思自己杳然的存在。
 pagination:
   enabled: false
   collection: AI
@@ -21,14 +21,15 @@ pagination:
 <div class="post">
   <div class="header-bar">
     <h1>{{ page.blog_name }}</h1>
-    <h2>{{ page.description }}</h2>
+    <p align="left">{{ page.description }}</p>
+    <p align="right"> ——《看不见的城市·城市与眼睛之三》</p>
   </div>
 
-{% if site.math_tags and site.math_tags.size > 0 %}
+{% if site.AI_tags and site.AI_tags.size > 0 %}
 
   <div class="tag-category-list">
     <ul class="p-0 m-0">
-      {% for tag in site.math_tags %}
+      {% for tag in site.AI_tags %}
         <li>
           <i class="fa-solid fa-hashtag fa-sm"></i> <a href="{{ tag | slugify | prepend: '/math/tag/' | relative_url }}">{{ tag }}</a>
         </li>

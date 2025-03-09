@@ -4,8 +4,8 @@ title: Life
 permalink: /life/
 nav: true
 nav_order: 8
-blog_name: life Staff
-description: Write something about life
+blog_name: Isidora
+description: 在他盼望着城市时，心里就会想到所有这一切。因此，伊西多拉便是他梦中的城市，但只有一点不同。在梦中的城市里，他正值青春，而到达伊西多拉城时，他已年老。广场上有一堵墙，老人们倚坐在那里看着过往的年轻人；他和这些老人并坐在一起。当初的欲望已是记忆。
 pagination:
   enabled: false
   collection: life
@@ -21,14 +21,15 @@ pagination:
 <div class="post">
   <div class="header-bar">
     <h1>{{ page.blog_name }}</h1>
-    <h2>{{ page.description }}</h2>
+    <p align="left">{{ page.description }}</p>
+    <p align="right"> ——《看不见的城市·城市与记忆之二》</p>
   </div>
 
-{% if site.math_tags and site.math_tags.size > 0 %}
+{% if site.life_tags and site.life_tags.size > 0 %}
 
   <div class="tag-category-list">
     <ul class="p-0 m-0">
-      {% for tag in site.math_tags %}
+      {% for tag in site.life_tags %}
         <li>
           <i class="fa-solid fa-hashtag fa-sm"></i> <a href="{{ tag | slugify | prepend: '/math/tag/' | relative_url }}">{{ tag }}</a>
         </li>

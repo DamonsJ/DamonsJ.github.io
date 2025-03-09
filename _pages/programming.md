@@ -4,8 +4,8 @@ permalink: /programming/
 title: Programming
 nav: true
 nav_order: 3
-blog_name: programming
-description: write something about programming
+blog_name: Zaira
+description: 城市就像一块海绵，吸汲着这些不断涌流的记忆的潮水，并且随之膨胀着。对今日扎伊拉的描述，还应该包含扎伊拉的整个过去。然而，城市不会泄露自己的过去，只会把它像手纹一样藏起来，它被写在街巷的角落、窗格的护栏、楼梯的扶手、避雷的天线和旗杆上，每一道印记都是抓挠、锯锉、刻凿、猛击留下的痕迹
 pagination:
   enabled: false
   collection: posts
@@ -23,7 +23,7 @@ pagination:
   <div class="header-bar">
     <h1>{{ page.blog_name }}</h1>
     <p align="left">{{ page.description }}</p>
-    <p align="right"> ——《看不见的城市·城市与眼睛之一》</p>
+    <p align="right"> ——《看不见的城市·城市与记忆之三》</p>
   </div>
 
 {% if site.programming_tags and site.programming_tags.size > 0 or site.display_categories and site.display_categories.size > 0 %}
@@ -52,51 +52,6 @@ pagination:
     </ul>
   </div>
   {% endif %}
-
-{% assign featured_posts = site.posts | where: "featured", "true" %}
-{% if featured_posts.size > 0 %}
-<br>
-
-<div class="container featured-posts">
-{% assign is_even = featured_posts.size | modulo: 2 %}
-<div class="row row-cols-{% if featured_posts.size <= 2 or is_even == 0 %}2{% else %}3{% endif %}">
-{% for post in featured_posts %}
-<div class="col mb-4">
-<a href="{{ post.url | relative_url }}">
-<div class="card hoverable">
-<div class="row g-0">
-<div class="col-md-12">
-<div class="card-body">
-<div class="float-right">
-<i class="fa-solid fa-thumbtack fa-xs"></i>
-</div>
-<h3 class="card-title text-lowercase">{{ post.title }}</h3>
-<p class="card-text">{{ post.description }}</p>
-
-                    {% if post.external_source == blank %}
-                      {% assign read_time = post.content | number_of_words | divided_by: 180 | plus: 1 %}
-                    {% else %}
-                      {% assign read_time = post.feed_content | strip_html | number_of_words | divided_by: 180 | plus: 1 %}
-                    {% endif %}
-                    {% assign year = post.date | date: "%Y" %}
-
-                    <p class="post-meta">
-                      {{ read_time }} min read &nbsp; &middot; &nbsp;
-                      <a href="{{ year | prepend: '/blog/' | prepend: site.baseurl}}">
-                        <i class="fa-solid fa-calendar fa-sm"></i> {{ year }} </a>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-      {% endfor %}
-      </div>
-    </div>
-    <hr>
-
-{% endif %}
 
   <ul class="post-list">
 

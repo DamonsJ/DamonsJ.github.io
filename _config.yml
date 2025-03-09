@@ -122,13 +122,13 @@ disqus_shortname: al-folio # put your disqus shortname
 # External sources.
 # If you have blog posts published on medium.com or other external sources,
 # you can display them in your blog by adding a link to the RSS feed.
-external_sources:
-  - name: medium.com
-    rss_url: https://medium.com/@al-folio/feed
-  - name: Google Blog
-    posts:
-      - url: https://blog.google/technology/ai/google-gemini-update-flash-ai-assistant-io-2024/
-        published_date: 2024-05-14
+# external_sources:
+#   - name: medium.com
+#     rss_url: https://medium.com/@al-folio/feed
+#   - name: Google Blog
+#     posts:
+#       - url: https://blog.google/technology/ai/google-gemini-update-flash-ai-assistant-io-2024/
+#         published_date: 2024-05-14
 
 # -----------------------------------------------------------------------------
 # Newsletter
@@ -282,9 +282,13 @@ jekyll-archives:
 
 # display_tags: ["formatting", "images", "links", "math", "code", "blockquotes"] # these tags will be displayed on the front page of your blog
 # display_categories: ["转载"] # these categories will be displayed on the front page of your blog
-programming_tags: ["c++", "rust", "python"]
-vision_tags: ["graphic", "opengl"]
+programming_tags: ["c++", "rust", "python", "转载"]
+vision_tags: ["graphic", "opengl", "转载"]
 math_tags: ["微分几何", "线性代数", "概率论", "几何代数", "杂项", "转载"]
+computer_tags: ["操作系统", "计算机网络", "计算机组成原理", "数据结构", "算法", "转载"]
+AI_tags: ["机器学习", "深度学习", "强化学习", "转载"]
+reading_tags: ["小说", "杂文", "转载"]
+life_tags: ["生活", "转载"]
 # -----------------------------------------------------------------------------
 # Jekyll Scholar
 # -----------------------------------------------------------------------------
