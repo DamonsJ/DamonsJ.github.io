@@ -44,7 +44,7 @@ pagination:
     {% if page.pagination.enabled %}
       {% assign postlist = paginator.posts %}
     {% else %}
-      {% assign postlist = site.math %}
+      {% assign postlist = site.computer %}
     {% endif %}
 
     {% for post in postlist %}

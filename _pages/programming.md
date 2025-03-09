@@ -4,6 +4,8 @@ permalink: /programming/
 title: Programming
 nav: true
 nav_order: 3
+blog_name: programming
+description: write something about programming
 pagination:
   enabled: false
   collection: posts
@@ -18,16 +20,11 @@ pagination:
 
 <div class="post">
 
-{% assign blog_name_size = site.programming_blog_name | size %}
-{% assign blog_description_size = site.programming_blog_description | size %}
-
-{% if blog_name_size > 0 or blog_description_size > 0 %}
-
   <div class="header-bar">
-    <h1>{{ site.programming_blog_name }}</h1>
-    <h2>{{ site.programming_blog_description }}</h2>
+    <h1>{{ page.blog_name }}</h1>
+    <p align="left">{{ page.description }}</p>
+    <p align="right"> ——《看不见的城市·城市与眼睛之一》</p>
   </div>
-  {% endif %}
 
 {% if site.programming_tags and site.programming_tags.size > 0 or site.display_categories and site.display_categories.size > 0 %}
 

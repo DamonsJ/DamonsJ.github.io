@@ -5,7 +5,6 @@ date: 2024-01-26 17:57:00
 description: test1
 tags: graphic opengl
 categories: vision
-map: true
 ---
 
 This is an example post with some [geojson](https://geojson.org/) code. The support is provided thanks to [Leaflet](https://leafletjs.com/). To create your own visualization, go to [geojson.io](https://geojson.io/).
