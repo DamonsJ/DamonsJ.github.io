@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Tufte-style Jekyll blog"
-date: 2020-04-13 09:46:04
+date: 2025-03-15 09:46:04
 categories: programming
 giscus_comments: false
 related_posts: false
