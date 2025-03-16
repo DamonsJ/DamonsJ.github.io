@@ -58,7 +58,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/life/";
           },
-        },{id: "post-tufte-style-jekyll-blog",
+        },{id: "post-c-中的-mutable关键字",
+      
+        title: "c++中的 mutable关键字",
+      
+      description: "简单解释一下c++中的 mutable关键字。",
+      section: "Posts",
+      handler: () => {
+        
+          window.location.href = "/programming/2025/03/15/mutable-keyword.html";
+        
+      },
+    },{id: "post-tufte-style-jekyll-blog",
       
         title: "Tufte-style Jekyll blog",
       
