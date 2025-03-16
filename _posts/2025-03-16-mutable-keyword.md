@@ -9,7 +9,6 @@ giscus_comments: false
 related_posts: false
 ---
 
-
 mutable 是用来修饰一个 const 示例的部分可变的数据成员的。如果要说得更清晰一点，就是说 mutable 的出现，将 C++ 中的 const 的概念{% sidenote 'One' 'See [cppreference cv](https://en.cppreference.com/w/cpp/language/cv)' %} 分成了两种：
 
 - 二进制层面的 const，也就是「绝对的」常量，在任何情况下都不可修改(除非用 const_cast)
@@ -56,6 +55,7 @@ class Queue {
 };
 
 ```
+
 假设这是一个线程安全的队列，empty函数是const的函数 不能修改内部成员，如果有锁，也就不能修改锁的状态，这样也就无法实现线程安全了。mutable可以实现这种情况。
 
 ```c++
