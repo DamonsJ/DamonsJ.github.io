@@ -58,7 +58,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/life/";
           },
-        },{id: "post-c-中的-move-和-forward",
+        },{id: "post-tufte-style-jekyll-blog",
+      
+        title: "Tufte-style Jekyll blog",
+      
+      description: "",
+      section: "Posts",
+      handler: () => {
+        
+          window.location.href = "/programming/2025/03/15/tufte-style-jekyll-blog.html";
+        
+      },
+    },{id: "post-c-中的-move-和-forward",
       
         title: "c++中的 move 和 forward",
       
@@ -67,17 +78,6 @@ ninja.data = [{
       handler: () => {
         
           window.location.href = "/programming/2025/03/08/move-forward.html";
-        
-      },
-    },{id: "post-tufte-style-jekyll-blog",
-      
-        title: "Tufte-style Jekyll blog",
-      
-      description: "",
-      section: "Posts",
-      handler: () => {
-        
-          window.location.href = "/programming/2020/04/13/tufte-style-jekyll-blog.html";
         
       },
     },{id: "AI-a-post-with-test1",
@@ -175,51 +175,6 @@ ninja.data = [{
           description: "2222222",
           section: "Computer",handler: () => {
               window.location.href = "/computer/2024-12-04-photo-gallery.html";
-            },},{id: "life-a-post-with-test1",
-          title: 'a post with test1',
-          description: "test1",
-          section: "Life",handler: () => {
-              window.location.href = "/life/2024-01-26-geojson-map.html";
-            },},{id: "life-a-post-with-vega-lite",
-          title: 'a post with vega lite',
-          description: "this is what 4444",
-          section: "Life",handler: () => {
-              window.location.href = "/life/2024-01-27-vega-lite.html";
-            },},{id: "life-a-post-with-advanced-image-components",
-          title: 'a post with advanced image components',
-          description: "test2",
-          section: "Life",handler: () => {
-              window.location.href = "/life/2024-01-27-advanced-images.html";
-            },},{id: "life-a-post-with-code-diff",
-          title: 'a post with code diff',
-          description: "this is how you can display code diffs333",
-          section: "Life",handler: () => {
-              window.location.href = "/life/2024-01-27-code-diff.html";
-            },},{id: "life-a-post-with-pseudo-code",
-          title: 'a post with pseudo code',
-          description: "5666code could look like",
-          section: "Life",handler: () => {
-              window.location.href = "/life/2024-04-15-pseudocode.html";
-            },},{id: "life-a-post-that-can-be-cited",
-          title: 'a post that can be cited',
-          description: "9999this is what a post that can be cited looks like",
-          section: "Life",handler: () => {
-              window.location.href = "/life/2024-04-28-post-citation.html";
-            },},{id: "life-a-post-with-typograms",
-          title: 'a post with typograms',
-          description: "this is what included typograms code could look like",
-          section: "Life",handler: () => {
-              window.location.href = "/life/2024-04-29-typograms.html";
-            },},{id: "life-a-post-with-tabs",
-          title: 'a post with tabs',
-          description: "this is what included tabs in a post could look like",
-          section: "Life",handler: () => {
-              window.location.href = "/life/2024-05-01-tabs.html";
-            },},{id: "life-222243433",
-          title: '222243433',
-          description: "2222222",
-          section: "Life",handler: () => {
-              window.location.href = "/life/2024-12-04-photo-gallery.html";
             },},{id: "math-如何通过4个2构造任意整数",
           title: '如何通过4个2构造任意整数',
           description: "介绍一种方法，通过4个2构造任意整数",
