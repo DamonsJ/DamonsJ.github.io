@@ -1,6 +1,6 @@
 ---
 layout: post
-title: c++中的move 和 forward
+title: c++中的 move 和 forward
 date: 2025-03-08 17:10:00
 description: 介绍c++中的move和forward的区别及各自的实现方式。
 tags: c++
