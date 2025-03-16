@@ -58,15 +58,26 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/life/";
           },
-        },{id: "post-c-中的move-和-forward",
+        },{id: "post-c-中的-move-和-forward",
       
-        title: "c++中的move 和 forward",
+        title: "c++中的 move 和 forward",
       
       description: "介绍c++中的move和forward的区别及各自的实现方式。",
       section: "Posts",
       handler: () => {
         
           window.location.href = "/programming/2025/03/08/move-forward.html";
+        
+      },
+    },{id: "post-tufte-style-jekyll-blog",
+      
+        title: "Tufte-style Jekyll blog",
+      
+      description: "",
+      section: "Posts",
+      handler: () => {
+        
+          window.location.href = "/programming/2020/04/13/tufte-style-jekyll-blog.html";
         
       },
     },{id: "AI-a-post-with-test1",
