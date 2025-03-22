@@ -22,7 +22,7 @@ The achieved occupancy for each SM. The values reported are the average across a
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/AI/1-theoretical-roccupancy.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/AI/occupancy/1-theoretical-roccupancy.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -32,7 +32,7 @@ The achieved occupancy for each SM. The values reported are the average across a
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/AI/2-t4-deviceinfo.jpg" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/AI/occupancy/2-t4-deviceinfo.jpg" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -50,7 +50,7 @@ The achieved occupancy for each SM. The values reported are the average across a
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/AI/3-kernel.jpg" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/AI/occupancy/3-kernel.jpg" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
