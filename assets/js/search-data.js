@@ -77,51 +77,11 @@ ninja.data = [{
           window.location.href = "/programming/2025/03/08/move-forward.html";
         
       },
-    },{id: "AI-a-post-with-test1",
-          title: 'a post with test1',
-          description: "test1",
+    },{id: "AI-关于sm-occupancy的一些解释说明",
+          title: '关于SM Occupancy的一些解释说明',
+          description: "解释SM Occupancy的计算和意义",
           section: "Ai",handler: () => {
-              window.location.href = "/AI/2024-01-26-geojson-map.html";
-            },},{id: "AI-a-post-with-vega-lite",
-          title: 'a post with vega lite',
-          description: "this is what 4444",
-          section: "Ai",handler: () => {
-              window.location.href = "/AI/2024-01-27-vega-lite.html";
-            },},{id: "AI-a-post-with-advanced-image-components",
-          title: 'a post with advanced image components',
-          description: "test2",
-          section: "Ai",handler: () => {
-              window.location.href = "/AI/2024-01-27-advanced-images.html";
-            },},{id: "AI-a-post-with-code-diff",
-          title: 'a post with code diff',
-          description: "this is how you can display code diffs333",
-          section: "Ai",handler: () => {
-              window.location.href = "/AI/2024-01-27-code-diff.html";
-            },},{id: "AI-a-post-with-pseudo-code",
-          title: 'a post with pseudo code',
-          description: "5666code could look like",
-          section: "Ai",handler: () => {
-              window.location.href = "/AI/2024-04-15-pseudocode.html";
-            },},{id: "AI-a-post-that-can-be-cited",
-          title: 'a post that can be cited',
-          description: "9999this is what a post that can be cited looks like",
-          section: "Ai",handler: () => {
-              window.location.href = "/AI/2024-04-28-post-citation.html";
-            },},{id: "AI-a-post-with-typograms",
-          title: 'a post with typograms',
-          description: "this is what included typograms code could look like",
-          section: "Ai",handler: () => {
-              window.location.href = "/AI/2024-04-29-typograms.html";
-            },},{id: "AI-a-post-with-tabs",
-          title: 'a post with tabs',
-          description: "this is what included tabs in a post could look like",
-          section: "Ai",handler: () => {
-              window.location.href = "/AI/2024-05-01-tabs.html";
-            },},{id: "AI-222243433",
-          title: '222243433',
-          description: "2222222",
-          section: "Ai",handler: () => {
-              window.location.href = "/AI/2024-12-04-photo-gallery.html";
+              window.location.href = "/AI/2025-03-22-something-about-sm-occupancy.html";
             },},{id: "math-如何通过4个2构造任意整数",
           title: '如何通过4个2构造任意整数',
           description: "介绍一种方法，通过4个2构造任意整数",
