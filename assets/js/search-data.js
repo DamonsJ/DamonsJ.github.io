@@ -77,7 +77,12 @@ ninja.data = [{
           window.location.href = "/programming/2025/03/08/move-forward.html";
         
       },
-    },{id: "AI-关于sm-occupancy的一些解释说明",
+    },{id: "AI-bytetransformer源码解读",
+          title: 'ByteTransformer源码解读',
+          description: "记录学习ByteTransformer过程中的代码释疑",
+          section: "Ai",handler: () => {
+              window.location.href = "/AI/2023-09-14-bytetransformer.html";
+            },},{id: "AI-关于sm-occupancy的一些解释说明",
           title: '关于SM Occupancy的一些解释说明',
           description: "解释SM Occupancy的计算和意义",
           section: "Ai",handler: () => {
