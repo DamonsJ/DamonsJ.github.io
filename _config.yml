@@ -274,7 +274,7 @@ jekyll-archives:
 
 # display_tags: ["formatting", "images", "links", "math", "code", "blockquotes"] # these tags will be displayed on the front page of your blog
 # display_categories: ["转载"] # these categories will be displayed on the front page of your blog
-programming_tags: ["c++", "rust", "python", "opengl","算法","转载"]
+programming_tags: ["c++", "rust", "python", "opengl", "算法", "转载"]
 math_tags: ["微分几何", "线性代数", "概率论", "几何代数", "图形", "图像", "杂项", "转载"]
 AI_tags: ["AIGC", "LLM", "GPU", "转载"]
 life_tags: ["life", "feeling", "转载"]
