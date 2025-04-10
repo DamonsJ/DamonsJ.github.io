@@ -52,7 +52,7 @@ ninja.data = [{
       section: "Posts",
       handler: () => {
         
-          window.location.href = "/programming/2025/03/15/mutable-keyword.html";
+          window.location.href = "/programming/2025/03/16/mutable-keyword.html";
         
       },
     },{id: "post-tufte-style-jekyll-blog",
@@ -74,7 +74,7 @@ ninja.data = [{
       section: "Posts",
       handler: () => {
         
-          window.location.href = "/programming/2025/03/08/move-forward.html";
+          window.location.href = "/programming/2025/03/09/move-forward.html";
         
       },
     },{id: "AI-bytetransformer源码解读",
@@ -87,6 +87,11 @@ ninja.data = [{
           description: "解释SM Occupancy的计算和意义",
           section: "Ai",handler: () => {
               window.location.href = "/AI/2025-03-22-something-about-sm-occupancy.html";
+            },},{id: "AI-attention系列整理part1-基础",
+          title: 'Attention系列整理Part1-基础',
+          description: "整理Attention的基础知识，推导计算量",
+          section: "Ai",handler: () => {
+              window.location.href = "/AI/2025-04-02-rethinking-attention-1.html";
             },},{id: "math-如何通过4个2构造任意整数",
           title: '如何通过4个2构造任意整数',
           description: "介绍一种方法，通过4个2构造任意整数",
