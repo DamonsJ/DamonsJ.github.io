@@ -49,7 +49,7 @@ pagination:
       {% assign postlist = site.life %}
     {% endif %}
 
-    {% for post in postlist %}
+    {% for post in postlist reversed %}
 
     {% if post.external_source == blank %}
       {% assign read_time = post.content | number_of_words | divided_by: 180 | plus: 1 %}
