@@ -142,6 +142,11 @@ ninja.data = [{
           description: "another project with an image 🎉",
           section: "Projects",handler: () => {
               window.location.href = "/projects/9_project.html";
+            },},{id: "reading-看不见的城市",
+          title: '看不见的城市',
+          description: "",
+          section: "Reading",handler: () => {
+              window.location.href = "/reading/invisible-cites.html";
             },},{id: "reading-the-godfather",
           title: 'The Godfather',
           description: "",
