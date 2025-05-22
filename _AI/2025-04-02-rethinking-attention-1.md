@@ -311,6 +311,17 @@ A[B,S_q,\red{D}] \cdot W_{O}[\red{D}, D] & 6B{S_q}DD & 2B{S_q}DD & DD \\[10pt]
 \end{array}
 $$
 
+如果$${S_q}$$和$${S_k}$$相等，记为$${S}$$那么
+
+$$
+\begin{array}{ccc}
+\textrm{operation} & \textrm{train FLOPs} & \textrm{inference FLOPs} &\textrm{params} \\
+\hline \\
+& 24BS{D^2}& 8BS{D^2} & 4DD \\
+\hline
+\end{array}
+$$
+
 对于$$Q$$和$$K$$矩阵乘，就像之前说的$$Q$$和$$K$$的矩阵运算在$$B$$和$$N$$维度循环，在$$S_k$$或者$$S_q$$及$$H$$维度相乘。
 
 $$
@@ -327,13 +338,36 @@ S[\blue{B}, \blue{N}, \red{S_q}, \red{S_k}] \cdot V[\blue{B}, \blue{N}, \red{S_k
 \end{array}
 $$
 
+如果$${S_q}$$和$${S_k}$$相等，记为$${S}$$那么：
+
+$$
+\begin{array}{cc}
+\textrm{operation} & \textrm{train FLOPs} & \textrm{inference FLOPs}\\
+\hline \\[3pt]
+& 12B{S^2}D & 4B{S^2}D \\
+\hline
+\end{array}
+$$
+
 总体来说，MHA的计算量如下：
 
 $$
 \begin{array}{ccc}
 \textrm{ } & \textrm{train FLOPs} & \textrm{inference FLOPs} &\textrm{params} \\
 \hline \\
-MHA & 12BD({S_q}+{S_k})D + 12B{S_q}{S_k}D & 4BD({S_q}+{S_k})D + 4B{S_q}{S_k}D & 4DD \\[10pt]
+ & 12BD({S_q}+{S_k})D + 12B{S_q}{S_k}D & 4BD({S_q}+{S_k})D + 4B{S_q}{S_k}D & 4DD \\[10pt]
+\hline \\
+&
+\end{array}
+$$
+
+如果$${S_q}$$和$${S_k}$$相等，记为$${S}$$那么：
+
+$$
+\begin{array}{ccc}
+\textrm{ } & \textrm{train FLOPs} & \textrm{inference FLOPs} &\textrm{params} \\
+\hline \\
+ & 24B{S}{D^2} + 12B{S^2}D & 8BS{D^2} + 4B{S^2}D & 4DD \\[10pt]
 \hline \\
 &
 \end{array}
