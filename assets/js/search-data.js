@@ -92,6 +92,11 @@ ninja.data = [{
           description: "整理Attention的基础知识，推导计算量",
           section: "Ai",handler: () => {
               window.location.href = "/AI/2025-04-02-rethinking-attention-1.html";
+            },},{id: "AI-attention系列整理part2-flashattention",
+          title: 'Attention系列整理Part2-FlashAttention',
+          description: "整理FlashAttention系列以及其计算原理",
+          section: "Ai",handler: () => {
+              window.location.href = "/AI/2025-04-26-rethinking-attention-2.html";
             },},{id: "math-如何通过4个2构造任意整数",
           title: '如何通过4个2构造任意整数',
           description: "介绍一种方法，通过4个2构造任意整数",
