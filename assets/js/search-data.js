@@ -97,6 +97,11 @@ ninja.data = [{
           description: "整理FlashAttention系列以及其计算原理",
           section: "Ai",handler: () => {
               window.location.href = "/AI/2025-04-26-rethinking-attention-2.html";
+            },},{id: "AI-旋转位置编码",
+          title: '旋转位置编码',
+          description: "整理旋转位置编码相关的内容，介绍其来源及具体的算法",
+          section: "Ai",handler: () => {
+              window.location.href = "/AI/2025-05-30-rope.html";
             },},{id: "math-如何通过4个2构造任意整数",
           title: '如何通过4个2构造任意整数',
           description: "介绍一种方法，通过4个2构造任意整数",
