@@ -6,7 +6,7 @@ subtitle: <a href='https://en.wikipedia.org/wiki/Carpe_diem'>Carpe diem</a>, my 
 
 profile:
   align: right
-  image: prof_pic.jpg
+  image: damons_family.png
   image_circular: false # crops the image to make it circular
   more_info: >
     <p>📷 Victoria Harbour, HK</p>
