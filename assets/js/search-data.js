@@ -102,6 +102,11 @@ ninja.data = [{
           description: "整理旋转位置编码相关的内容，介绍其来源及具体的算法",
           section: "Ai",handler: () => {
               window.location.href = "/AI/2025-05-30-rope.html";
+            },},{id: "AI-生成式扩散模型ddpm及其推导",
+          title: '生成式扩散模型DDPM及其推导',
+          description: "把学习扩散模型DDPM的过程记录一下",
+          section: "Ai",handler: () => {
+              window.location.href = "/AI/2025-06-18-DDPM.html";
             },},{id: "math-如何通过4个2构造任意整数",
           title: '如何通过4个2构造任意整数',
           description: "介绍一种方法，通过4个2构造任意整数",
@@ -157,6 +162,11 @@ ninja.data = [{
           description: "",
           section: "Reading",handler: () => {
               window.location.href = "/reading/invisible-cites.html";
+            },},{id: "reading-帕洛马尔",
+          title: '帕洛马尔',
+          description: "",
+          section: "Reading",handler: () => {
+              window.location.href = "/reading/palomar.html";
             },},{id: "reading-the-godfather",
           title: 'The Godfather',
           description: "",
