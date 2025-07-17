@@ -107,6 +107,11 @@ ninja.data = [{
           description: "把学习扩散模型DDPM的过程记录一下",
           section: "Ai",handler: () => {
               window.location.href = "/AI/2025-06-18-DDPM.html";
+            },},{id: "AI-生成式扩散模型采样方法ddim及其推导",
+          title: '生成式扩散模型采样方法DDIM及其推导',
+          description: "记录学习DDIM采样方法的过程",
+          section: "Ai",handler: () => {
+              window.location.href = "/AI/2025-07-16-DDIM.html";
             },},{id: "math-如何通过4个2构造任意整数",
           title: '如何通过4个2构造任意整数',
           description: "介绍一种方法，通过4个2构造任意整数",
