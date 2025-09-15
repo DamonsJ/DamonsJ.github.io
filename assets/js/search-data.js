@@ -55,17 +55,6 @@ ninja.data = [{
           window.location.href = "/programming/2025/03/16/mutable-keyword.html";
         
       },
-    },{id: "post-tufte-style-jekyll-blog",
-      
-        title: "Tufte-style Jekyll blog",
-      
-      description: "",
-      section: "Posts",
-      handler: () => {
-        
-          window.location.href = "/programming/2025/03/15/tufte-style-jekyll-blog.html";
-        
-      },
     },{id: "post-c-中的-move-和-forward",
       
         title: "c++中的 move 和 forward",
