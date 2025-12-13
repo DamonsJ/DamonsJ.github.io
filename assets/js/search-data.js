@@ -101,6 +101,11 @@ ninja.data = [{
           description: "记录学习DDIM采样方法的过程",
           section: "Ai",handler: () => {
               window.location.href = "/AI/2025-07-16-DDIM.html";
+            },},{id: "AI-对cute中的thread-value-layout的理解",
+          title: '对CUTE中的Thread-Value Layout的理解',
+          description: "记录一下学习cute过程中的对Thread-Value Layout的理解",
+          section: "Ai",handler: () => {
+              window.location.href = "/AI/2025-12-10-CUTE-Thread-Value-Layout.html";
             },},{id: "math-如何通过4个2构造任意整数",
           title: '如何通过4个2构造任意整数',
           description: "介绍一种方法，通过4个2构造任意整数",
