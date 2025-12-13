@@ -10,7 +10,6 @@ toc:
   beginning: true
 ---
 
-
 ## 问题由来
 
 最近在研究 [flash-attention2](https://github.com/Dao-AILab/flash-attention)的源码，算法层面的流程基本已经理解了{%sidenote 'One' '参考[Attention记录](https://valdrada.site/AI/2025-04-26-rethinking-attention-2.html)'%}，但实际代码里是怎么把这些计算落实到硬件上的，这部分一直没有完全想清楚。所以我开始沿着源码，把底层实现细节再看一遍。
@@ -184,11 +183,9 @@ print_latex(TiledMMA<Args...> const& mma,
    所谓 TN/NT 只是描述 MMA 指令如何**遍历和加载**数据，而不是改变逻辑 tensor 的 shape。B 的逻辑坐标 `(n,k)` 永远固定不变，真正的“转置”通过 layout（thread/value mapping）以及寄存器访问顺序实现。
 
 3. **执行层面**  
-   最终执行 MMA 时会调用 PTX 指令，例如：
-    ```
-    mma.sync.aligned.m16n8k16.row.col.f16
-    ```
-逻辑 tensor `(N,K)` 被映射到寄存器组，每个线程负责不同的 N slice，沿 K 连续访问。虽然逻辑上是 `(N,K)`，但在物理执行和绘图上，B 看起来像是 “K×N”，这是为了和 A 的 M×K 对齐，方便可视化和寄存器映射理解。
+    最终执行 MMA 时会调用 PTX 指令，例如：
+   `    mma.sync.aligned.m16n8k16.row.col.f16`
+   逻辑 tensor `(N,K)` 被映射到寄存器组，每个线程负责不同的 N slice，沿 K 连续访问。虽然逻辑上是 `(N,K)`，但在物理执行和绘图上，B 看起来像是 “K×N”，这是为了和 A 的 M×K 对齐，方便可视化和寄存器映射理解。
 
 ## 最后
 
@@ -201,7 +198,7 @@ print_latex(TiledMMA<Args...> const& mma,
       using ARegisters = uint32_t[4];
       using BRegisters = uint32_t[2];
       using CRegisters = uint32_t[2];
-    
+
       CUTE_HOST_DEVICE static void
       fma(uint32_t      & d0, uint32_t      & d1,
           uint32_t const& a0, uint32_t const& a1, uint32_t const& a2, uint32_t const& a3,
