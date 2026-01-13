@@ -106,6 +106,11 @@ ninja.data = [{
           description: "记录一下学习cute过程中的对Thread-Value Layout的理解",
           section: "Ai",handler: () => {
               window.location.href = "/AI/2025-12-10-CUTE-Thread-Value-Layout.html";
+            },},{id: "AI-解析flashattention2源码",
+          title: '解析FlashAttention2源码',
+          description: "记录一下学习FlashAttention2源码过程中对一些概念的理解",
+          section: "Ai",handler: () => {
+              window.location.href = "/AI/2026-01-05-Understanding-FlashAttention2-SourceCode.html";
             },},{id: "math-如何通过4个2构造任意整数",
           title: '如何通过4个2构造任意整数',
           description: "介绍一种方法，通过4个2构造任意整数",

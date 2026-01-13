@@ -1,0 +1,671 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title> 解析FlashAttention2源码 | Invisible Cities </title> <meta name="author" content="Damons "> <meta name="description" content="记录一下学习FlashAttention2源码过程中对一些概念的理解"> <meta name="keywords" content="jekyll, al-folio, damons, valdrada, joney"> <link rel="stylesheet" href="/assets/css/bootstrap.min.css?a4b3f509e79c54a512b890d73235ef04"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.22.4/dist/bootstrap-table.min.css" integrity="sha256-uRX+PiRTR4ysKFRCykT8HLuRCub26LgXJZym3Yeom1c=" crossorigin="anonymous"> <link defer rel="stylesheet" href="/assets/css/academicons.min.css?f0b7046b84e425c55f3463ac249818f5"> <link defer rel="stylesheet" href="/assets/css/scholar-icons.css?62b2ac103a88034e6882a5be5f3e2772"> <link defer rel="stylesheet" href="/assets/css/tufte-note.css?be1857984da0c527af372bfeb4deea9c"> <link defer rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons&amp;display=swap"> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?591dab5a4e56573bf4ef7fd332894c99" media="" id="highlight_theme_light"> <link rel="shortcut icon" href="/assets/img//icon/damons.ico?2d9b67e87d277ec91f5abe5b48e8eef8"> <link rel="stylesheet" href="/assets/css/main.css?d41d8cd98f00b204e9800998ecf8427e"> <link rel="canonical" href="https://damonsj.github.io/AI/2026-01-05-Understanding-FlashAttention2-SourceCode.html"> <script src="/assets/js/theme.js?9a0c749ec5240d9cda97bc72359a72c0"></script> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?5847e5ed4a4568527aa6cfab446049ca" media="none" id="highlight_theme_dark"> <script>
+    initTheme();
+  </script> </head> <body class="fixed-top-nav "> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"> Invisible Cities </a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">About </a> </li> <li class="nav-item "> <a class="nav-link" href="/math/">Math </a> </li> <li class="nav-item "> <a class="nav-link" href="/programming/">Programming </a> </li> <li class="nav-item active"> <a class="nav-link" href="/AI/">AI <span class="sr-only">(current)</span> </a> </li> <li class="nav-item "> <a class="nav-link" href="/reading/">Reading </a> </li> <li class="nav-item "> <a class="nav-link" href="/life/">Life </a> </li> <li class="nav-item"> <button id="search-toggle" title="Search" onclick="openSearchModal()"> <span class="nav-link">ctrl k <i class="ti ti-search"></i></span> </button> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="ti ti-sun-moon" id="light-toggle-system"></i> <i class="ti ti-moon-filled" id="light-toggle-dark"></i> <i class="ti ti-sun-filled" id="light-toggle-light"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="container mt-5" role="main"> <div class="post"> <header class="post-header"> <h1 class="post-title">解析FlashAttention2源码</h1> <p class="post-meta"> Created on January 06, 2026 </p> <p class="post-tags"> <i class="fa-solid fa-calendar fa-sm"></i> 2026   ·   <i class="fa-solid fa-hashtag fa-sm"></i> cute   <i class="fa-solid fa-hashtag fa-sm"></i> cuda   <i class="fa-solid fa-hashtag fa-sm"></i> fa2   ·   <i class="fa-solid fa-tag fa-sm"></i> AI </p> </header> <article class="post-content"> <div id="table-of-contents"> <ul id="toc" class="section-nav"> <li class="toc-entry toc-h2"><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88">为什么？</a></li> <li class="toc-entry toc-h2"> <a href="#flash-attention2-%E6%BA%90%E7%A0%81">Flash Attention2 源码</a> <ul> <li class="toc-entry toc-h3"><a href="#%E5%9F%BA%E6%9C%AC%E6%A8%A1%E7%89%88%E5%8F%82%E6%95%B0%E5%8F%8A%E8%AF%B4%E6%98%8E">基本模版参数及说明</a></li> <li class="toc-entry toc-h3"> <a href="#%E6%98%BE%E5%AD%98%E6%90%AC%E8%BF%90">显存搬运</a> <ul> <li class="toc-entry toc-h4"> <a href="#%E6%98%BE%E5%AD%98%E8%A7%86%E5%9B%BE">显存视图</a> <ul> <li class="toc-entry toc-h5"><a href="#1-smemlayoutatomq">1. SmemLayoutAtomQ</a></li> <li class="toc-entry toc-h5"><a href="#2-tile_to_shape">2. tile_to_shape</a></li> </ul> </li> <li class="toc-entry toc-h4"> <a href="#%E6%98%BE%E5%AD%98%E6%90%AC%E8%BF%90-1">显存搬运</a> <ul> <li class="toc-entry toc-h5"><a href="#1-%E7%A1%AE%E5%AE%9A%E6%AF%8F%E6%AC%A1%E5%8A%A0%E8%BD%BD%E7%9A%84%E6%95%B0%E6%8D%AE%E9%87%8F">1. 确定每次加载的数据量</a></li> <li class="toc-entry toc-h5"><a href="#2-%E8%AE%A1%E7%AE%97%E6%AF%8F%E8%A1%8C%E9%9C%80%E8%A6%81%E7%9A%84%E7%BA%BF%E7%A8%8B%E6%95%B0">2. 计算每行需要的线程数</a></li> <li class="toc-entry toc-h5"><a href="#3-%E5%AE%9A%E4%B9%89%E7%BA%BF%E7%A8%8B%E5%88%B0%E6%95%B0%E6%8D%AE%E7%9A%84%E6%98%A0%E5%B0%84%E5%B8%83%E5%B1%80">3. 定义线程到数据的映射布局</a></li> <li class="toc-entry toc-h5"><a href="#4-%E9%80%89%E6%8B%A9%E6%8B%B7%E8%B4%9D%E6%8C%87%E4%BB%A4">4. 选择拷贝指令</a></li> <li class="toc-entry toc-h5"><a href="#5-%E7%BB%84%E5%90%88">5. 组合</a></li> </ul> </li> </ul> </li> <li class="toc-entry toc-h3"> <a href="#mma">MMA</a> <ul> <li class="toc-entry toc-h4"> <a href="#tiledmma">TiledMMA</a> <ul> <li class="toc-entry toc-h5"><a href="#1-%E6%9C%80%E5%B0%8F%E8%AE%A1%E7%AE%97%E5%8D%95%E5%85%83mma-atom">1. 最小计算单元：MMA Atom</a></li> <li class="toc-entry toc-h5"><a href="#2-%E7%BA%BF%E7%A8%8B%E5%9D%97%E5%B8%83%E5%B1%80tiledmma-%E7%9A%84%E5%AE%9A%E4%B9%89">2. 线程块布局：TiledMMA 的定义</a></li> <li class="toc-entry toc-h5"><a href="#3-%E6%98%A0%E5%B0%84%E9%80%BB%E8%BE%91%E5%A6%82%E4%BD%95%E4%BB%8E-16x8x16-%E5%8F%98%E6%88%90-64x16x16">3. 映射逻辑：如何从 16x8x16 变成 64x16x16？</a></li> </ul> </li> <li class="toc-entry toc-h4"><a href="#%E5%AF%84%E5%AD%98%E5%99%A8%E8%A7%86%E5%9B%BE">寄存器视图</a></li> <li class="toc-entry toc-h4"><a href="#v%E7%9A%84%E7%9B%B8%E5%85%B3%E8%A7%A3%E9%87%8A">V的相关解释</a></li> </ul> </li> </ul> </li> </ul> </div> <hr> <div id="markdown-content"> <h2 id="为什么">为什么？</h2> <p>随着优化工作的深入，需要对底层的具体执行代码要有深入的理解。之前算法层面的流程基本已经理解了<label for="One" class="margin-toggle sidenote-number"></label><input type="checkbox" id="One" class="margin-toggle"><span class="sidenote">参考<a href="https://valdrada.site/AI/2025-04-26-rethinking-attention-2.html" rel="external nofollow noopener" target="_blank">Attention记录</a> </span>，但实际代码执行和算法理解上也不是一个层面的知识。所以决定沿着源码，把底层实现细节再看一遍，同时也是熟悉一下CUTE和Cutlass的一些知识，为以后的算子层面的优化做铺垫。</p> <h2 id="flash-attention2-源码">Flash Attention2 源码</h2> <p>为了方便，我们以headdim=128，sm80为例子来阅读源码，具体的代码路径参考<a href="https://github.com/Dao-AILab/flash-attention/blob/main/csrc/flash_attn/src/flash_bwd_hdim128_bf16_sm80.cu" rel="external nofollow noopener" target="_blank">flash_bwd_hdim128_bf16_sm80.cu</a>, 仅为参考所以不考虑attention中的特殊的参数，也就是设置causal=False，dropout=False, window 不设置，Has_alibi = False, Is_local = False, 也就是Full Attention的情况。</p> <p>实际上FA2的源码虽然看上去很多，但是核心的执行部分在<a href="https://github.com/Dao-AILab/flash-attention/blob/main/csrc/flash_attn/src/flash_fwd_kernel.h" rel="external nofollow noopener" target="_blank">flash_fwd_kernel.h</a>中，也就是其中的<code class="language-plaintext highlighter-rouge">compute_attn_1rowblock</code>函数。</p> <p>根据<a href="https://valdrada.site/AI/2025-04-26-rethinking-attention-2.html" rel="external nofollow noopener" target="_blank">Attention记录</a>中的算法流程，我主要记录显存搬运，MMA以及softmax三个大的部分的详细内容，代码基本上是按照算法流程进行的。</p> <h3 id="基本模版参数及说明">基本模版参数及说明</h3> <p>根据以上假设，有以下模版参数, 这些参数的设置位于<a href="https://github.com/Dao-AILab/flash-attention/blob/main/csrc/flash_attn/src/kernel_traits.h" rel="external nofollow noopener" target="_blank">kernel_traits.h</a>中</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ElementAccum    = float
+Element         = bfloat16
+kHeadDim_       = 128  
+kBlockM_        = 128  
+kBlockN_        = 32
+kNWarps_        =  4
+kNThreads       = kNWarps * 32 = 128
+Share_Q_K_smem  = false
+Is_Q_in_regs_   = false
+Has_cp_async    = true
+kBlockKSmem     = 64
+kBlockKGmem     = 128
+kSwizzle        =  3
+
+kGmemElemsPerLoad         = sizeof(uint128) / sizeof(Element)= 16/2 = 8
+kGmemThreadsPerRow        = kBlockKSmem / kGmemElemsPerLoad = 8
+Shape&lt;kBlockM, kHeadDim&gt;  = (128, 128)
+sizeof(Element)           = 2 bytes（half）
+kSmemQSize                = 128 × 128 × 2 = 32768 bytes = 32 KB
+
+Shape&lt;kBlockN, kHeadDim&gt;  = (32,128)
+kSmemK                    = 32 × 128 × 2 = 8192 bytes
+kSmemV                    = 8192 bytes
+kSmemKVSize               = kSmemK + kSmemV = 16384 bytes = 16 KB
+
+kSmemSize                 = kSmemQSize + kSmemKVSize
+                          = 32768 + 16384
+                          = 49152 bytes = 48 KB
+
+</code></pre></div></div> <p>这里可以看到<code class="language-plaintext highlighter-rouge">kBlockM_ = 128</code> 也就是<code class="language-plaintext highlighter-rouge">Q</code>在M方向上按照<code class="language-plaintext highlighter-rouge">kBlockM_ = 128</code>进行分块，在<a href="https://github.com/Dao-AILab/flash-attention/blob/main/csrc/flash_attn/src/flash_fwd_launch_template.h" rel="external nofollow noopener" target="_blank">flash_fwd_launch_template.h</a>中可以看到，在启动kernel的时候设置的grid为：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const int num_m_block = (params.seqlen_q + Kernel_traits::kBlockM - 1) / Kernel_traits::kBlockM;
+dim3 grid(num_m_block, params.b, params.h);
+</code></pre></div></div> <p>也就是对于shape为<code class="language-plaintext highlighter-rouge">b x h x s x d</code>的<code class="language-plaintext highlighter-rouge">Q</code>矩阵，一个block只计算部分seqlen长度，在上述的基本参数下， 1个block计算<code class="language-plaintext highlighter-rouge">kBlockM_ = 128</code> 这么长的seqlen，因为<code class="language-plaintext highlighter-rouge">kHeadDim_ = 128</code>，所以Q矩阵的大小就是<code class="language-plaintext highlighter-rouge">128x128</code>, 因为<code class="language-plaintext highlighter-rouge">kBlockN_ = 32</code>，所以K矩阵的大小是<code class="language-plaintext highlighter-rouge">32x128</code>， 也就是一个block计算的attention 分块的大小是 <code class="language-plaintext highlighter-rouge">Q: 128x128 K: 32x128</code> ,总共启动了<code class="language-plaintext highlighter-rouge">num_m_block x params.b x params.h</code>这么多个block进行全部的attention运算。</p> <h3 id="显存搬运">显存搬运</h3> <h4 id="显存视图">显存视图</h4> <p>因为我们只考虑full attention这种用况，函数 <code class="language-plaintext highlighter-rouge">compute_attn_1rowblock</code>的前半部分的代码基本上是处理一些特殊情况，因此直接来到：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const index_t row_offset_p = ((bidb * params.h + bidh) * params.seqlen_q_rounded
+    + m_block * kBlockM) * params.seqlen_k_rounded + (n_block_max - 1) * kBlockN;
+
+Tensor mQ = make_tensor(make_gmem_ptr(reinterpret_cast&lt;Element*&gt;(params.q_ptr)
+                                      + binfo.q_offset(params.q_batch_stride, params.q_row_stride, bidb)),
+                        make_shape(binfo.actual_seqlen_q, params.h, params.d),
+                        make_stride(params.q_row_stride, params.q_head_stride, _1{}));
+Tensor gQ = local_tile(mQ(_, bidh, _), Shape&lt;Int&lt;kBlockM&gt;, Int&lt;kHeadDim&gt;&gt;{},
+                        make_coord(m_block, 0));  // (kBlockM, kHeadDim)
+Tensor mK = make_tensor(make_gmem_ptr(reinterpret_cast&lt;Element*&gt;(params.k_ptr)
+                                      + binfo.k_offset(params.k_batch_stride, params.k_row_stride, bidb)),
+                        make_shape(binfo.actual_seqlen_k, params.h_k, params.d),
+                        make_stride(params.k_row_stride, params.k_head_stride, _1{}));
+Tensor gK = local_tile(mK(_, bidh / params.h_h_k_ratio, _), Shape&lt;Int&lt;kBlockN&gt;, Int&lt;kHeadDim&gt;&gt;{},
+                        make_coord(_, 0));  // (kBlockN, kHeadDim, nblocksN)
+Tensor mV = make_tensor(make_gmem_ptr(reinterpret_cast&lt;Element*&gt;(params.v_ptr)
+                                      + binfo.k_offset(params.v_batch_stride, params.v_row_stride, bidb)),
+                        make_shape(binfo.actual_seqlen_k, params.h_k, params.d),
+                        make_stride(params.v_row_stride, params.v_head_stride, _1{}));
+Tensor gV = local_tile(mV(_, bidh / params.h_h_k_ratio, _), Shape&lt;Int&lt;kBlockN&gt;, Int&lt;kHeadDim&gt;&gt;{},
+                        make_coord(_, 0));  // (kBlockN, kHeadDim, nblocksN)
+Tensor gP = make_tensor(make_gmem_ptr(reinterpret_cast&lt;Element *&gt;(params.p_ptr) + row_offset_p),
+                        Shape&lt;Int&lt;kBlockM&gt;, Int&lt;kBlockN&gt;&gt;{},
+                        make_stride(params.seqlen_k_rounded, _1{}));
+
+Tensor sQ = make_tensor(make_smem_ptr(reinterpret_cast&lt;Element *&gt;(smem_)),
+                        typename Kernel_traits::SmemLayoutQ{});
+// Careful we're using the same smem for sQ and sK | sV if Share_Q_K_smem;
+Tensor sK = make_tensor(sQ.data() + (Kernel_traits::Share_Q_K_smem ? 0 : size(sQ)),
+                        typename Kernel_traits::SmemLayoutKV{});
+Tensor sV = make_tensor(sK.data() + size(sK), typename Kernel_traits::SmemLayoutKV{});
+Tensor sVt = make_tensor(sV.data(), typename Kernel_traits::SmemLayoutVtransposed{});
+Tensor sVtNoSwizzle = make_tensor(sV.data().get(), typename Kernel_traits::SmemLayoutVtransposedNoSwizzle{});
+
+typename Kernel_traits::GmemTiledCopyQKV gmem_tiled_copy_QKV;
+auto gmem_thr_copy_QKV = gmem_tiled_copy_QKV.get_thread_slice(tidx);
+
+Tensor tQgQ = gmem_thr_copy_QKV.partition_S(gQ);
+Tensor tQsQ = gmem_thr_copy_QKV.partition_D(sQ);
+Tensor tKgK = gmem_thr_copy_QKV.partition_S(gK);  // (KCPY, KCPY_N, KCPY_K, nblocksN)
+Tensor tKsK = gmem_thr_copy_QKV.partition_D(sK);
+Tensor tVgV = gmem_thr_copy_QKV.partition_S(gV);  // (VCPY, VCPY_N, VCPY_K, nblocksN)
+Tensor tVsV = gmem_thr_copy_QKV.partition_D(sV);
+</code></pre></div></div> <p>这部分负责global memory到shared memory的显存搬运，但是这个地方的操作只是对内存进行视图划分并没有进行真正的global memory到shared memory的显存搬运。</p> <p>张量<code class="language-plaintext highlighter-rouge">mQ</code>表示的是<code class="language-plaintext highlighter-rouge">Q</code>的分块显存张量，<code class="language-plaintext highlighter-rouge">gQ</code>表示的是当前分块的global memory的划分，也就是当前block内操作的<code class="language-plaintext highlighter-rouge">gQ</code>显存，总的<code class="language-plaintext highlighter-rouge">Q</code>的shape是<code class="language-plaintext highlighter-rouge">b x h x s x d</code>，<code class="language-plaintext highlighter-rouge">gQ</code>是第<code class="language-plaintext highlighter-rouge">bidb</code>个batch，第<code class="language-plaintext highlighter-rouge">bidh</code>个head和第<code class="language-plaintext highlighter-rouge">m_block</code>个Q的划分，大小就是<code class="language-plaintext highlighter-rouge">kBlockM x kHeadDim = 128 x 128</code>， 也就是说<code class="language-plaintext highlighter-rouge">gQ</code>表示了当前处理的Q的分块的global memory张量，同时<code class="language-plaintext highlighter-rouge">gK</code>和 <code class="language-plaintext highlighter-rouge">gV</code>分别表示的是K和V的分块的global memory张量，K和V的张量shape是<code class="language-plaintext highlighter-rouge">kBlockN x kHeadDim = 32 x 128</code>。</p> <p>然后是规定了QKV的shared memory的layout</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Tensor sQ = make_tensor(make_smem_ptr(reinterpret_cast&lt;Element *&gt;(smem_)),
+                            typename Kernel_traits::SmemLayoutQ{});
+// Careful we're using the same smem for sQ and sK | sV if Share_Q_K_smem;
+Tensor sK = make_tensor(sQ.data() + (Kernel_traits::Share_Q_K_smem ? 0 : size(sQ)),
+                        typename Kernel_traits::SmemLayoutKV{});
+Tensor sV = make_tensor(sK.data() + size(sK), typename Kernel_traits::SmemLayoutKV{});
+Tensor sVt = make_tensor(sV.data(), typename Kernel_traits::SmemLayoutVtransposed{});
+Tensor sVtNoSwizzle = make_tensor(sV.data().get(), typename Kernel_traits::SmemLayoutVtransposedNoSwizzle{});
+</code></pre></div></div> <p>主要看一下这里的Q的shared memory的layout，<code class="language-plaintext highlighter-rouge">sQ</code>表示的是一个tensor，指针是shared memory的地址，layout是<code class="language-plaintext highlighter-rouge">SmemLayoutQ</code>。<code class="language-plaintext highlighter-rouge">SmemLayoutQ</code>的定义如下：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>using SmemLayoutAtomQ = decltype(
+        composition(Swizzle&lt;kSwizzle, 3, 3&gt;{},
+                    // This has to be kBlockKSmem, using kHeadDim gives wrong results for d=128
+                    Layout&lt;Shape&lt;_8, Int&lt;kBlockKSmem&gt;&gt;,
+                           Stride&lt;Int&lt;kBlockKSmem&gt;, _1&gt;&gt;{}));
+// SmemLayoutAtomQ是一个原子布局，意思是对于Q的共享内存，使用SmemLayoutAtomQ作为原子布局，然后tile_to_shape将原子布局转换为形状布局。
+// 为的是将计算和访存并行
+using SmemLayoutQ = decltype(tile_to_shape(
+        SmemLayoutAtomQ{},
+        Shape&lt;Int&lt;kBlockM&gt;, Int&lt;kHeadDim&gt;&gt;{}));
+</code></pre></div></div> <p>这里主要是两个点，一个是<code class="language-plaintext highlighter-rouge">SmemLayoutAtomQ</code>这个原子布局（包括swizzle），一个是如何将这个布局铺成最终的shape。</p> <h5 id="1-smemlayoutatomq">1. SmemLayoutAtomQ</h5> <p>它其实是swizzle和一个layout的复合layout</p> <p>首先看看layout：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Layout&lt;Shape&lt;_8, Int&lt;kBlockKSmem&gt; &gt;,Stride&lt;Int&lt;kBlockKSmem&gt;, _1&gt; &gt;{}
+即：
+Layout&lt;Shape&lt;_8, Int&lt;64&gt;&gt;,Stride&lt;Int&lt;64&gt;, _1&gt;&gt;{}
+</code></pre></div></div> <p>它表示的是<code class="language-plaintext highlighter-rouge">8x64</code>的矩阵，stride是<code class="language-plaintext highlighter-rouge">64x1</code>，也就是行主序的一个矩阵。</p> <p>在看看swizzle。 swizzle的定义如下：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>template &lt;uint32_t S0, uint32_t F0, auto S1&gt;
+CUTE_HOST_DEVICE constexpr
+auto
+shiftr(MixedBits&lt;S0,F0&gt; const&amp; m, C&lt;S1&gt; s)
+{
+  if constexpr (S1 &gt;= 0) {
+    return m &gt;&gt; s;
+  } else {
+    return m &lt;&lt; -s;
+  }
+}
+
+template &lt;int BBits, int MBase, int SShift = BBits&gt;
+struct Swizzle
+{
+  static constexpr int num_bits = BBits;
+  static constexpr int num_base = MBase;
+  static constexpr int num_shft = SShift;
+
+  static_assert(num_base &gt;= 0,             "MBase must be positive.");
+  static_assert(num_bits &gt;= 0,             "BBits must be positive.");
+  static_assert(abs(num_shft) &gt;= num_bits, "abs(SShift) must be more than BBits.");
+
+  // using 'int' type here to avoid unintentially casting to unsigned... unsure.
+  using bit_msk = cute::constant&lt;int, (1 &lt;&lt; num_bits) - 1&gt;;
+  using yyy_msk = cute::constant&lt;int, bit_msk{} &lt;&lt; (num_base + max(0,num_shft))&gt;;
+  using zzz_msk = cute::constant&lt;int, bit_msk{} &lt;&lt; (num_base - min(0,num_shft))&gt;;
+  using msk_sft = cute::constant&lt;int, num_shft&gt;;
+
+  static constexpr uint32_t swizzle_code = uint32_t(yyy_msk::value | zzz_msk::value);
+
+  template &lt;class Offset&gt;
+  CUTE_HOST_DEVICE constexpr static
+  auto
+  apply(Offset const&amp; offset)
+  {
+    return offset ^ shiftr(offset &amp; yyy_msk{}, msk_sft{});   // ZZZ ^= YYY
+  }
+
+  template &lt;class Offset&gt;
+  CUTE_HOST_DEVICE constexpr
+  auto
+  operator()(Offset const&amp; offset) const
+  {
+    return apply(offset);
+  }
+
+  template &lt;int B, int M, int S&gt;
+  CUTE_HOST_DEVICE constexpr
+  auto
+  operator==(Swizzle&lt;B,M,S&gt; const&amp;) const
+  {
+    return B == BBits &amp;&amp; M == MBase &amp;&amp; S == SShift;
+  }
+};
+</code></pre></div></div> <p>对于<code class="language-plaintext highlighter-rouge">Swizzle&lt;3,3,3&gt;</code>,展开如下:</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uint32_t apply(uint32_t offset) {
+  constexpr uint32_t bit_mask = (1u &lt;&lt; 3) - 1u;          // 0b111
+  constexpr uint32_t yyy_mask = bit_mask &lt;&lt; (3 + 3);     // 0b111000000 (选择 offset 的第 6~8 位)
+  constexpr int      shift    = 3;                       // 把 Y 区块右移 3 位
+  uint32_t y_part = offset &amp; yyy_mask;                   // 提取 Y 区域
+  uint32_t shifted_y = y_part &gt;&gt; shift;                  // 等价于 shiftr(..., C&lt;3&gt;{})
+  return offset ^ shifted_y;                             // 把移位后的 Y 区与原 offset 做异或
+}
+
+swizzled_offset = (i &lt;&lt; 6) + ((j &gt;&gt; 3) ^ i) &lt;&lt; 3 + (j &amp; 0b111)。
+直观理解：把每行 64 个元素按 8 个元素一组共有 8 组（j_hi = j &gt;&gt; 3），Swizzle 会把组号变成 j_hi ^ i。
+同一行内部元素顺序（每组的 8 个 j_lo = j &amp; 0b111）保持不变。
+示例（行号 i、列号 j、原地址、Swizzle 后地址）：
+i=0: 组号不变，(0,0) → 0, (0,15) → 15。
+i=1: 组号按 ^1 互换：(1,0..7) → 72..79（原先是 64..71），(1,8..15) → 64..71。
+i=2: 组号按 ^2：(2,0..7) → 144..151（对应第 18 列块），(2,16..23) → 128..135。
+i=7: 组号按 ^7，即把 j_hi 与 111b 异或，实现更复杂的块置换。
+</code></pre></div></div> <p>那么：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>composition(Swizzle&lt;kSwizzle, 3, 3&gt;{},Layout&lt;Shape&lt;_8, Int&lt;kBlockKSmem&gt;&gt;,Stride&lt;Int&lt;kBlockKSmem&gt;, _1&gt;&gt;{}));
+</code></pre></div></div> <p>也就是把</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Layout&lt;Shape&lt;_8, Int&lt;kBlockKSmem&gt;&gt;,Stride&lt;Int&lt;kBlockKSmem&gt;, _1&gt;&gt;{} 
+</code></pre></div></div> <p>计算之后的offset按照上边的Swizzle计算方式重新计算offset，矩阵行列只是根据这个offset计算的逻辑坐标，Swizzle实际操作的是offset。</p> <p>用图来展示一下这个变化如下：</p> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/AI/understanding-fa2/before-swizzle-480.webp 480w,/assets/img/AI/understanding-fa2/before-swizzle-800.webp 800w,/assets/img/AI/understanding-fa2/before-swizzle-1400.webp 1400w," type="image/webp" sizes="95vw"></source> <img src="/assets/img/AI/understanding-fa2/before-swizzle.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <div class="caption"> Fig. 1. 原始矩阵视图. </div> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/AI/understanding-fa2/after-swizzle-480.webp 480w,/assets/img/AI/understanding-fa2/after-swizzle-800.webp 800w,/assets/img/AI/understanding-fa2/after-swizzle-1400.webp 1400w," type="image/webp" sizes="95vw"></source> <img src="/assets/img/AI/understanding-fa2/after-swizzle.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <div class="caption"> Fig. 2. swizzle变化之后的矩阵视图 </div> <p>为什么需要swizzle？</p> <p>GPU的smem 被分为固定数量的 bank（Ampere起通常是32 个），每个 bank 服务固定“地址模”的请求，每个bank是4byte 也就是2个float16。 在一次指令内，如果多个线程访问映射到同一个 bank 的不同地址，就发生冲突（串行化），吞吐骤降。 FlashAttention 的常见访问模式： Q/K/V tile 在 K 维（head_dim）方向连续布局； 行内线程做 128-bit（16B）向量化搬运（fp16/bf16 时每次 8 个元素），天然倾向“同列段”的相邻访问； 不经处理时，行主序布局会让线程访问周期性地落到相同 bank，产生多路冲突。</p> <p>以上述的矩阵作为说明例子，</p> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/AI/understanding-fa2/before-bank-480.webp 480w,/assets/img/AI/understanding-fa2/before-bank-800.webp 800w,/assets/img/AI/understanding-fa2/before-bank-1400.webp 1400w," type="image/webp" sizes="95vw"></source> <img src="/assets/img/AI/understanding-fa2/before-bank.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <div class="caption"> Fig. 3. 原始矩阵bank视图. </div> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/AI/understanding-fa2/after-bank-480.webp 480w,/assets/img/AI/understanding-fa2/after-bank-800.webp 800w,/assets/img/AI/understanding-fa2/after-bank-1400.webp 1400w," type="image/webp" sizes="95vw"></source> <img src="/assets/img/AI/understanding-fa2/after-bank.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <div class="caption"> Fig. 4. swizzle变化之后的bank矩阵视图 </div> <h5 id="2-tile_to_shape">2. tile_to_shape</h5> <p><code class="language-plaintext highlighter-rouge">sQ</code>的大小 <code class="language-plaintext highlighter-rouge">128x128</code>，<code class="language-plaintext highlighter-rouge">SmemLayoutAtomQ</code>的shape是<code class="language-plaintext highlighter-rouge">8x64</code>，怎么才能用原子布局构造<code class="language-plaintext highlighter-rouge">128x128</code>的布局？ 那其实就是多次重复，如何重复？ 就是这个tile_to_shape的操作了，它将原子布局在矩阵维度上重复，以便构成整个<code class="language-plaintext highlighter-rouge">sQ</code>。 <code class="language-plaintext highlighter-rouge">sQ</code>的大小是<code class="language-plaintext highlighter-rouge">128x128</code>，那么直观上理解应该需要<code class="language-plaintext highlighter-rouge">128/8 x 128/64</code>次也就是<code class="language-plaintext highlighter-rouge">16x2</code>次拷贝。</p> <p>写如下程序来打印一下<code class="language-plaintext highlighter-rouge">sQ</code>的相关信息</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#include &lt;cassert&gt;
+#include &lt;fstream&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+#include &lt;cute/layout.hpp&gt;
+#include &lt;cute/swizzle.hpp&gt;
+#include &lt;cute/tensor.hpp&gt;
+#include "cute/tensor.hpp"
+#include &lt;thrust/host_vector.h&gt;
+
+using namespace cute;
+int main(int argc, const char** argv)
+{
+    using Element = cutlass::half_t;
+    auto const size_a{128 * 128};
+    auto h_Q = thrust::host_vector&lt;Element&gt;(size_a);
+    auto s_Q = thrust::host_vector&lt;Element&gt;(size_a);
+
+    auto const smem_shape_A{cute::make_shape(128, 128)};
+    auto const smem_stride_A{cute::make_stride(cute::Int&lt;1&gt;{}, 128)}; 
+    auto const smem_layout_A{cute::make_layout(smem_shape_A, smem_stride_A)}; 
+
+    
+    using SmemLayoutAtomQ = decltype(composition(Swizzle&lt;3, 3, 3&gt;{}, Layout&lt;Shape&lt;_8, Int&lt;64&gt;&gt;, Stride&lt;Int&lt;64&gt;, _1&gt;&gt;{}));
+    using SmemLayoutQ = decltype(tile_to_shape(SmemLayoutAtomQ{}, Shape&lt;Int&lt;128&gt;, Int&lt;128&gt;&gt;{}));
+
+    Tensor gQ = cute::make_tensor(h_Q.data(), smem_layout_A); 
+    Tensor sQ = cute::make_tensor(s_Q.data(), SmemLayoutQ{});
+    std::cout&lt;&lt;"gQ layout " &lt;&lt; std::endl;
+    cute::print(gQ.layout());
+    std::cout&lt;&lt;std::endl;
+    std::cout&lt;&lt;"sQ layout " &lt;&lt; std::endl;
+    cute::print(sQ.layout());
+    std::cout&lt;&lt;std::endl;
+
+    // cute::print_latex(sQ.layout());
+
+    return 0;
+}
+</code></pre></div></div> <p>得到如下结果：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gQ layout
+(128,128):(_1,128)
+sQ layout
+Sw&lt;3,3,3&gt; o _0 o ((_8,_16),(_64,_2)):((_64,_512),(_1,_8192))
+</code></pre></div></div> <p>这里我们假设了<code class="language-plaintext highlighter-rouge">gQ</code>的输入是<code class="language-plaintext highlighter-rouge">128x128</code>的列主序矩阵，得到的<code class="language-plaintext highlighter-rouge">sQ</code>的layout是</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Sw&lt;3,3,3&gt; o _0 o ((_8,_16),(_64,_2)):((_64,_512),(_1,_8192))
+</code></pre></div></div> <p>和上面类似，这表示一个复合layout，<code class="language-plaintext highlighter-rouge">Sw&lt;3,3,3&gt;</code>就是之前的swizzle，</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>((_8,_16),(_64,_2)):((_64,_512),(_1,_8192))
+</code></pre></div></div> <p>表示的tile_to_shape之后的layout， 这个layout的意思是说：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>这是 CUTE 打印的 sQ 的“分解后布局”：(形状):(步长)。可按分块理解 M×K=(128×128) 被拆成 (8×16) 和 (64×2)。
+形状 ((8,_16), (_64,_2)):
+M 维被分解成 M0=8、M1=16 → 8×16=128 行
+K 维被分解成 K0=64、K1=2 → 64×2=128 列
+步长 ((64, 512), (1, 8192)) 表示每个子维增 1 时地址前进的元素数：
+M0 步长 64：在同一“8×64 面板”里行内移动，行步长=64（即 kBlockKSmem）
+M1 步长 512：跨面板行块移动，= 64×8
+K0 步长 1：列内连续存放
+K1 步长 8192：跨面板列块移动，= 128×64（整张 128 行 × 每面板列宽 64）
+把逻辑坐标 (m,k) 映射到物理偏移的方法（以元素为单位）：
+m0 = m % 8, m1 = m / 8
+k0 = k % 64, k1 = k / 64
+offset = 64xm0 + 512xm1 + 1xk0 + 8192xk1
+含义总结：
+最内层列（K0）连续，保证向量化/ldmatrix 取数；
+行内步长=64 对应 kBlockKSmem；
+(8×64) 原子面板按 (16×2) 平铺成 128×128；
+
+(8×64) 原子面板按 (16×2) 平铺成 128×128,为什么是((_8,_16),(_64,_2))
+而不是((_16,_2),(_8,_64))
+原因在于 CUTE 的约定：tile_to_shape 会把“内层原子面板维度”放在前、“外层平铺次数”放在后。对 sQ：
+原子面板 SmemLayoutAtomQ 的形状是 (8, 64) → 内层 M0=8、K0=64
+平铺到总形状 (128,128) 时，外层平铺次数是 M1=128/8=16、K1=128/64=2
+因此打印为 ((8,_16), (_64,_2))，即 (M0,M1), (K0,K1)
+如果写成 ((16,_2), (_8,_64)) 就把“内层/外层”弄反了：会改变步长含义，
+破坏 K0 连续（stride=1）和 M0 的行步长=64（=kBlockKSmem）的设计，
+从而影响向量化和 bank 冲突优化。
+
+</code></pre></div></div> <p>还可以将<code class="language-plaintext highlighter-rouge">sQ</code>的latex打印出来，得到矩阵视图如下：</p> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/AI/understanding-fa2/sQNoSwizzle-480.webp 480w,/assets/img/AI/understanding-fa2/sQNoSwizzle-800.webp 800w,/assets/img/AI/understanding-fa2/sQNoSwizzle-1400.webp 1400w," type="image/webp" sizes="95vw"></source> <img src="/assets/img/AI/understanding-fa2/sQNoSwizzle.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <div class="caption"> Fig. 5. 原始矩阵sQ视图. </div> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/AI/understanding-fa2/sQ-480.webp 480w,/assets/img/AI/understanding-fa2/sQ-800.webp 800w,/assets/img/AI/understanding-fa2/sQ-1400.webp 1400w," type="image/webp" sizes="95vw"></source> <img src="/assets/img/AI/understanding-fa2/sQ.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <div class="caption"> Fig. 6. swizzle变化之后的sQ矩阵视图 </div> <p>对于<code class="language-plaintext highlighter-rouge">K</code>和<code class="language-plaintext highlighter-rouge">V</code>的视图来说是同样的道理，就不一一解释了。</p> <h4 id="显存搬运-1">显存搬运</h4> <p>我们知道CUDA中的矩阵乘是在MMA中计算的，这个指令读取的都是寄存器的数据，也就是CUDA的显存搬运的路径是：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>global memory -&gt; shared memory -&gt; register
+</code></pre></div></div> <p>其中 <code class="language-plaintext highlighter-rouge">shared memory -&gt; register</code>在下一节中继续补充，先看<code class="language-plaintext highlighter-rouge">global memory -&gt; shared memory</code>部分。</p> <p>继续看代码，来到了如下的部分： <label for="Two" class="margin-toggle sidenote-number"></label><input type="checkbox" id="Two" class="margin-toggle"><span class="sidenote">先忽略TileMMA的部分，下一小结讲。 </span></p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>typename Kernel_traits::GmemTiledCopyQKV gmem_tiled_copy_QKV;
+auto gmem_thr_copy_QKV = gmem_tiled_copy_QKV.get_thread_slice(tidx);
+
+Tensor tQgQ = gmem_thr_copy_QKV.partition_S(gQ);
+Tensor tQsQ = gmem_thr_copy_QKV.partition_D(sQ);
+Tensor tKgK = gmem_thr_copy_QKV.partition_S(gK);  // (KCPY, KCPY_N, KCPY_K, nblocksN)
+Tensor tKsK = gmem_thr_copy_QKV.partition_D(sK);
+Tensor tVgV = gmem_thr_copy_QKV.partition_S(gV);  // (VCPY, VCPY_N, VCPY_K, nblocksN)
+Tensor tVsV = gmem_thr_copy_QKV.partition_D(sV);
+
+Tensor cQ = make_identity_tensor(make_shape(size&lt;0&gt;(sQ), size&lt;1&gt;(sQ)));    // (BLK_M,BLK_K) -&gt; (blk_m,blk_k)
+Tensor cKV = make_identity_tensor(make_shape(size&lt;0&gt;(sK), size&lt;1&gt;(sK)));    // (BLK_N,BLK_K) -&gt; (blk_n,blk_k)
+
+
+// Repeat the partitioning with identity layouts
+Tensor tQcQ = gmem_thr_copy_QKV.partition_S(cQ);       // (ACPY,ACPY_M,ACPY_K) -&gt; (blk_m,blk_k)
+Tensor tKVcKV = gmem_thr_copy_QKV.partition_S(cKV);   // (BCPY,BCPY_N,BCPY_K) -&gt; (blk_n,blk_k)
+
+// Allocate predicate tensors for k
+Tensor tQpQ = make_tensor&lt;bool&gt;(make_shape(size&lt;2&gt;(tQsQ)));
+Tensor tKVpKV = make_tensor&lt;bool&gt;(make_shape(size&lt;2&gt;(tKsK)));
+
+
+// Prologue
+
+// We don't need to clear the sQ smem tiles since we'll only write out the valid outputs
+FLASH_NAMESPACE::copy&lt;Is_even_MN, Is_even_K&gt;(gmem_tiled_copy_QKV, tQgQ, tQsQ, tQcQ, tQpQ,
+                                   binfo.actual_seqlen_q - m_block * kBlockM);
+if (Kernel_traits::Is_Q_in_regs) { cute::cp_async_fence(); }
+</code></pre></div></div> <p>其中</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>typename Kernel_traits::GmemTiledCopyQKV gmem_tiled_copy_QKV;
+</code></pre></div></div> <p>的定义如下：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>static constexpr int kGmemElemsPerLoad = sizeof(cute::uint128_t) / sizeof(Element);
+// kGmemElemsPerLoad         = sizeof(uint128) / sizeof(Element)= 16/2 = 8
+static constexpr int kGmemThreadsPerRow = kBlockKSmem / kGmemElemsPerLoad;
+// kGmemThreadsPerRow = 64 / 8 = 8
+static_assert(kNThreads % kGmemThreadsPerRow == 0, "kNThreads must be a multiple of kGmemThreadsPerRow");
+// 这是 全局内存加载 Q/K/V 时的线程到元素映射布局，也就是 每个线程应该从 global memory 中加载哪些元素。
+using GmemLayoutAtom = Layout&lt;Shape &lt;Int&lt;kNThreads / kGmemThreadsPerRow&gt;,Int&lt;kGmemThreadsPerRow&gt;&gt;,Stride&lt;Int&lt;kGmemThreadsPerRow&gt;, _1&gt;&gt;;
+// GmemLayoutAtom = Layout&lt;Shape&lt;16,8&gt;,Stride&lt;8,1&gt;&gt;
+// We use CACHEGLOBAL instead of CACHEALWAYS for both Q and K/V, since we won't be reading
+// from the same address by the same threadblock. This is slightly faster.
+using Gmem_copy_struct = std::conditional_t&lt;
+    Has_cp_async, // true
+    SM80_CP_ASYNC_CACHEGLOBAL&lt;cute::uint128_t&gt;,
+    AutoVectorizingCopyWithAssumedAlignment&lt;128&gt;
+&gt;;
+// make_tiled_copy 会生成一个 tiled copy object，描述如何把 global memory tile 拷贝到 shared memory tile（或者相反）
+using GmemTiledCopyQKV = decltype(
+    make_tiled_copy(Copy_Atom&lt;Gmem_copy_struct, Element&gt;{},
+                    GmemLayoutAtom{},
+                    Layout&lt;Shape&lt;_1, _8&gt;&gt;{}));  // Val layout, 8 vals per read
+</code></pre></div></div> <h5 id="1-确定每次加载的数据量">1. 确定每次加载的数据量</h5> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>static constexpr int kGmemElemsPerLoad = sizeof(cute::uint128_t) / sizeof(Element);
+// 结果: 16 bytes / 2 bytes = 8 个元素
+</code></pre></div></div> <p>使用 128-bit(16字节)的加载指令,这是 GPU 全局内存访问的最优粒度,对于 half/bfloat16 类型(2字节),一次可加载 8 个元素.</p> <h5 id="2-计算每行需要的线程数">2. 计算每行需要的线程数</h5> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>static constexpr int kGmemThreadsPerRow = kBlockKSmem / kGmemElemsPerLoad;
+// 结果: 64 / 8 = 8 个线程
+</code></pre></div></div> <p>kBlockKSmem 是共享内存中 K 维度的大小(也就是64),每行需要 8 个线程协作,每个线程负责加载 8 个连续元素，8个线程 × 8个元素, 完整覆盖64维的一行数据。</p> <h5 id="3-定义线程到数据的映射布局">3. 定义线程到数据的映射布局</h5> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>using GmemLayoutAtom = Layout
+    Shape&lt;Int&lt;kNThreads / kGmemThreadsPerRow&gt;, Int&lt;kGmemThreadsPerRow&gt;&gt;,
+    Stride&lt;Int&lt;kGmemThreadsPerRow&gt;, _1&gt;
+&gt;;
+// 实例化: Layout&lt;Shape&lt;16, 8&gt;, Stride&lt;8, 1&gt;&gt;
+</code></pre></div></div> <p><code class="language-plaintext highlighter-rouge">Shape&lt;16, 8&gt;</code>: 16行×8列的线程网格,16行表示同时处理16行数据,8列对应每行的8个线程,<code class="language-plaintext highlighter-rouge">Stride&lt;8, 1&gt;</code>: 内存访问步长,行方向步长为8(跳过同行的其他线程),列方向步长为1(连续访问)</p> <h5 id="4-选择拷贝指令">4. 选择拷贝指令</h5> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>using Gmem_copy_struct = std::conditional_t
+    Has_cp_async,
+    SM80_CP_ASYNC_CACHEGLOBAL&lt;cute::uint128_t&gt;,
+    AutoVectorizingCopyWithAssumedAlignment&lt;128&gt;
+&gt;;
+</code></pre></div></div> <p>优先使用 cp.async 异步拷贝指令(Ampere架构及以上). <label for="Three" class="margin-toggle sidenote-number"></label><input type="checkbox" id="Three" class="margin-toggle"><span class="sidenote">这里选择 CACHEGLOBAL 而不是 CACHEALWAYS，原因是： Q / K / V 数据 不会被同一个 thread block 重复读取, 没有必要污染 L1 cache, 使用 CACHEGLOBAL 可以减少 cache 管理开销，提升整体带宽利用率 </span></p> <h5 id="5-组合">5. 组合</h5> <p>make_tiled_copy：把一切“组合”起来，创建了Tiled Copy对象</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>using GmemTiledCopyQKV = decltype(
+    make_tiled_copy(
+        Copy_Atom&lt;Gmem_copy_struct, Element&gt;{},
+        GmemLayoutAtom{},
+        Layout&lt;Shape&lt;_1, _8&gt;&gt;{}  // 值布局: 每次读取8个值
+    )
+);
+</code></pre></div></div> <p>make_tiled_copy 将三件事组合成一个可执行的拷贝策略对象：</p> <ul> <li>拷贝指令（cp.async + 128-bit）</li> <li>线程布局,定义多个线程如何协作（GmemLayoutAtom）</li> <li>值布局,每个线程每次读取8个连续值</li> </ul> <p>也就是说tile copy中的thread layout，把一个线程块的拷贝线程组织成二维网格，确保同一行的相邻线程访问相邻地址，从而实现 128-bit 向量化/cp.async 合并访问。thread layout 只定义“线程如何排布”，拷贝多少数据，由 CopyAtom 决定。一个拷贝指令读取128-bit也就是8个值，thread layout的shape是<code class="language-plaintext highlighter-rouge">16x8</code>，因为设置中总共threads的数量就是128，也就是4个warps， 128个线程布局成了二维网格，也就是<code class="language-plaintext highlighter-rouge">16x8</code>， 那么这128个线程总共读取的数据就是<code class="language-plaintext highlighter-rouge">16x8x8 = 16x64</code>个数据， 总共数据大小是<code class="language-plaintext highlighter-rouge">128x128</code>，需要<code class="language-plaintext highlighter-rouge">128/16 x 128/64 = 8x2</code>次才能读取完成。</p> <p><code class="language-plaintext highlighter-rouge">gmem_thr_copy_QKV</code>实际上是一个thread-value的layout<label for="Four" class="margin-toggle sidenote-number"></label><input type="checkbox" id="Four" class="margin-toggle"><span class="sidenote">参考<a href="https://valdrada.site/AI/2025-12-10-CUTE-Thread-Value-Layout.html" rel="external nofollow noopener" target="_blank">CUTE中的Thread-Value Layout</a> </span></p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>auto gmem_thr_copy_QKV = gmem_tiled_copy_QKV.get_thread_slice(tidx);
+Tensor tQgQ = gmem_thr_copy_QKV.partition_S(gQ);
+Tensor tQsQ = gmem_thr_copy_QKV.partition_D(sQ);
+</code></pre></div></div> <ul> <li>get_thread_slice(tidx): 为当前线程(线程ID为tidx)提取其专属的拷贝切片,之后每个线程获得一个”视图”,明确知道自己负责处理哪些数据</li> <li>partition_S: 分区源(Source)张量,即global memory中的数据</li> <li>partition_D: 分区目标(Destination)张量,即shared memory中的位置</li> </ul> <p>也就是说，对于每个线程都可以获取到这个线程我要读取哪几个（8个）元素，除了这个信息，还要知道，为了完成全部的加载需要重复几次，也就是上面提到的<code class="language-plaintext highlighter-rouge">8x2</code>次。 为了直观的感受，写程序打印部分信息如下：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#include &lt;cassert&gt;
+#include &lt;fstream&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+
+#include &lt;cute/layout.hpp&gt;
+#include &lt;cute/swizzle.hpp&gt;
+#include &lt;cute/tensor.hpp&gt;
+#include "cute/tensor.hpp"
+#include &lt;thrust/host_vector.h&gt;
+
+using namespace cute;
+int main(int argc, const char** argv)
+{
+constexpr bool Has_cp_async = true;
+using Element = cutlass::half_t;
+auto const size_a{128 * 128};
+auto h_Q = thrust::host_vector&lt;Element&gt;(size_a);
+auto s_Q = thrust::host_vector&lt;Element&gt;(size_a);
+
+auto const smem_shape_A{cute::make_shape(128, 128)};
+auto const smem_stride_A{cute::make_stride(cute::Int&lt;1&gt;{}, 128)}; 
+auto const smem_layout_A{cute::make_layout(smem_shape_A, smem_stride_A)}; 
+
+using GmemLayoutAtom = Layout&lt;Shape &lt;_16, _8&gt;, Stride&lt;_8, _1&gt;&gt;;
+    
+using Gmem_copy_struct = std::conditional_t&lt;
+    Has_cp_async,
+    SM80_CP_ASYNC_CACHEGLOBAL&lt;cute::uint128_t&gt;,
+    AutoVectorizingCopyWithAssumedAlignment&lt;128&gt;
+&gt;;
+// make_tiled_copy 会生成一个 tiled copy object，描述如何把 global memory tile 拷贝到 shared memory tile（或者相反）
+using GmemTiledCopyQKV = decltype(
+    make_tiled_copy(Copy_Atom&lt;Gmem_copy_struct, Element&gt;{},
+                    GmemLayoutAtom{},
+                    Layout&lt;Shape&lt;_1, _8&gt;&gt;{})); 
+
+using SmemLayoutAtomQ = decltype(composition(Swizzle&lt;3, 3, 3&gt;{}, Layout&lt;Shape&lt;_8, Int&lt;64&gt;&gt;, Stride&lt;Int&lt;64&gt;, _1&gt;&gt;{}));
+using SmemLayoutQ = decltype(tile_to_shape(SmemLayoutAtomQ{}, Shape&lt;Int&lt;128&gt;, Int&lt;128&gt;&gt;{}));
+
+Tensor gQ = cute::make_tensor(h_Q.data(), smem_layout_A); 
+Tensor sQ = cute::make_tensor(s_Q.data(), SmemLayoutQ{});
+std::cout&lt;&lt;"gQ layout " &lt;&lt; std::endl;
+cute::print(gQ.layout());
+std::cout&lt;&lt;std::endl;
+std::cout&lt;&lt;"sQ layout " &lt;&lt; std::endl;
+cute::print(sQ.layout());
+std::cout&lt;&lt;std::endl;
+
+// cute::print_latex(sQ.layout());
+
+
+GmemTiledCopyQKV gmem_tiled_copy_QKV;
+cute::print_latex(gmem_tiled_copy_QKV);
+
+auto gmem_thr_copy_QKV = gmem_tiled_copy_QKV.get_thread_slice(10);
+
+Tensor tQgQ = gmem_thr_copy_QKV.partition_S(gQ);
+Tensor tQsQ = gmem_thr_copy_QKV.partition_D(sQ);
+
+
+// 打印 tQgQ 张量信息
+std::cout &lt;&lt; "tQgQ 张量信息：" &lt;&lt; std::endl;
+std::cout &lt;&lt; "======================" &lt;&lt; std::endl;
+
+// 1. 打印形状
+std::cout &lt;&lt; "形状 (Shape): " &lt;&lt; tQgQ.layout() &lt;&lt; std::endl;
+
+// 2. 打印步幅
+std::cout &lt;&lt; "步幅 (Stride): " &lt;&lt; tQgQ.layout().stride() &lt;&lt; std::endl;
+
+// 3. 打印张量大小
+std::cout &lt;&lt; "元素数量 (Size): " &lt;&lt; tQgQ.size() &lt;&lt; std::endl;
+
+// 4. 打印布局模式
+std::cout &lt;&lt; "布局 (Layout): " &lt;&lt; std::endl;
+std::cout &lt;&lt; "  " &lt;&lt; tQgQ.layout() &lt;&lt; std::endl;
+
+// 5. 打印张量维度信息
+std::cout &lt;&lt; "维度数 (Rank): " &lt;&lt; rank(tQgQ) &lt;&lt; std::endl;
+std::cout &lt;&lt; "  维度 " &lt;&lt; 0 &lt;&lt; ": 大小 = " &lt;&lt; size&lt;0&gt;(tQgQ) &lt;&lt; std::endl;
+std::cout &lt;&lt; "  维度 " &lt;&lt; 1 &lt;&lt; ": 大小 = " &lt;&lt; size&lt;1&gt;(tQgQ) &lt;&lt; std::endl;
+std::cout &lt;&lt; "  维度 " &lt;&lt; 2 &lt;&lt; ": 大小 = " &lt;&lt; size&lt;2&gt;(tQgQ) &lt;&lt; std::endl;
+// 6. 打印张量类型信息
+std::cout &lt;&lt; "数据类型: " &lt;&lt; typeid(decltype(tQgQ)::value_type).name() &lt;&lt; std::endl;
+cute::print_tensor(tQgQ);
+
+// 打印 tQgQ 张量信息
+std::cout &lt;&lt; "tQsQ 张量信息：" &lt;&lt; std::endl;
+std::cout &lt;&lt; "======================" &lt;&lt; std::endl;
+
+// 1. 打印形状
+std::cout &lt;&lt; "形状 (Shape): " &lt;&lt; tQsQ.layout() &lt;&lt; std::endl;
+
+// 2. 打印步幅
+std::cout &lt;&lt; "步幅 (Stride): " &lt;&lt; tQsQ.layout().stride() &lt;&lt; std::endl;
+
+// 3. 打印张量大小
+std::cout &lt;&lt; "元素数量 (Size): " &lt;&lt; tQsQ.size() &lt;&lt; std::endl;
+
+// 4. 打印布局模式
+std::cout &lt;&lt; "布局 (Layout): " &lt;&lt; std::endl;
+std::cout &lt;&lt; "  " &lt;&lt; tQsQ.layout() &lt;&lt; std::endl;
+
+// 5. 打印张量维度信息
+std::cout &lt;&lt; "维度数 (Rank): " &lt;&lt; rank(tQsQ) &lt;&lt; std::endl;
+
+std::cout &lt;&lt; "  维度 " &lt;&lt; 0 &lt;&lt; ": 大小 = " &lt;&lt; size&lt;0&gt;(tQsQ) &lt;&lt; std::endl;
+std::cout &lt;&lt; "  维度 " &lt;&lt; 1 &lt;&lt; ": 大小 = " &lt;&lt; size&lt;1&gt;(tQsQ) &lt;&lt; std::endl;
+std::cout &lt;&lt; "  维度 " &lt;&lt; 2 &lt;&lt; ": 大小 = " &lt;&lt; size&lt;2&gt;(tQsQ) &lt;&lt; std::endl;
+cute::print_tensor(tQsQ);
+
+
+// 8. 可选：使用 cute 的 print 函数
+std::cout &lt;&lt; "使用 cute::print_tensor() 输出:" &lt;&lt; std::endl;
+cute::print(tQgQ.layout());
+std::cout&lt;&lt;std::endl;
+cute::print(tQsQ);
+std::cout&lt;&lt;std::endl;
+auto ppp = tQgQ(_,0,1);
+cute::print(ppp);
+std::cout&lt;&lt;std::endl;
+return 0;
+}
+
+</code></pre></div></div> <p>得到的结果为：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tQgQ 张量信息：
+======================
+形状 (Shape): ((_8,_1),8,2):((128,_0),_16,8192)
+步幅 (Stride): ((128,_0),_16,8192)
+元素数量 (Size): 128
+布局 (Layout):
+  ((_8,_1),8,2):((128,_0),_16,8192)
+维度数 (Rank): _3
+  维度 0: 大小 = _8
+  维度 1: 大小 = 8
+  维度 2: 大小 = 2
+数据类型: N7cutlass6half_tE
+tQsQ 张量信息：
+======================
+形状 (Shape): ((_8,_1),_8,_2):((_1,_0),_1024,_8192)
+步幅 (Stride): ((_1,_0),_1024,_8192)
+元素数量 (Size): _128
+布局 (Layout):
+  ((_8,_1),_8,_2):((_1,_0),_1024,_8192)
+维度数 (Rank): _3
+  维度 0: 大小 = _8
+  维度 1: 大小 = _8
+  维度 2: 大小 = _2
+</code></pre></div></div> <p>得到这些视图之后，真正的拷贝发生在：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FLASH_NAMESPACE::copy&lt;Is_even_MN, Is_even_K&gt;(gmem_tiled_copy_QKV, tQgQ, tQsQ, tQcQ, tQpQ,
+                                   binfo.actual_seqlen_q - m_block * kBlockM);
+
+函数定义为：
+
+template &lt;bool Is_even_MN=true, bool Is_even_K=true, bool Clear_OOB_MN=false, bool Clear_OOB_K=true,
+          typename TiledCopy, typename Engine0, typename Layout0, typename Engine1, typename Layout1,
+          typename Engine2, typename Layout2, typename Engine3, typename Layout3&gt;
+__forceinline__ __device__ void copy(TiledCopy tiled_copy, Tensor&lt;Engine0, Layout0&gt; const &amp;S,
+                            Tensor&lt;Engine1, Layout1&gt; &amp;D, Tensor&lt;Engine2, Layout2&gt; const &amp;identity_MN,
+                            Tensor&lt;Engine3, Layout3&gt; const &amp;predicate_K, const int max_MN=0) {
+    CUTE_STATIC_ASSERT_V(rank(S) == Int&lt;3&gt;{});
+    CUTE_STATIC_ASSERT_V(rank(D) == Int&lt;3&gt;{});
+    CUTE_STATIC_ASSERT_V(size&lt;0&gt;(S) == size&lt;0&gt;(D));                     // MMA
+    CUTE_STATIC_ASSERT_V(size&lt;1&gt;(S) == size&lt;1&gt;(D));                     // MMA_M
+    CUTE_STATIC_ASSERT_V(size&lt;2&gt;(S) == size&lt;2&gt;(D));                     // MMA_K
+    // There's no case where !Clear_OOB_K &amp;&amp; Clear_OOB_MN
+    static_assert(!(Clear_OOB_MN &amp;&amp; !Clear_OOB_K));
+    #pragma unroll
+    for (int m = 0; m &lt; size&lt;1&gt;(S); ++m) {
+        if (Is_even_MN || get&lt;0&gt;(identity_MN(0, m, 0)) &lt; max_MN) {
+            #pragma unroll
+            for (int k = 0; k &lt; size&lt;2&gt;(S); ++k) {
+                if (Is_even_K || predicate_K(k)) {
+                    cute::copy(tiled_copy, S(_, m, k), D(_, m, k));
+                } else if (Clear_OOB_K) {
+                    cute::clear(D(_, m, k));
+                }
+            }
+        } else if (Clear_OOB_MN) {
+            cute::clear(D(_, m, _));
+        }
+    }
+</code></pre></div></div> <p>可以看到，在<code class="language-plaintext highlighter-rouge">size&lt;1&gt;(S)</code> 和 <code class="language-plaintext highlighter-rouge">size&lt;2&gt;(S)</code> 这个维度对拷贝进行了循环操作，也就是上面说的，循环了<code class="language-plaintext highlighter-rouge">8x2</code>次，来完成整个的<code class="language-plaintext highlighter-rouge">128x128</code>的矩阵从global memory到shared memory的拷贝工作。</p> <p>这里面还有一些没有提到的是<code class="language-plaintext highlighter-rouge">cQ</code>的这个张量，这个的目的是构建 Identity Tensor <label for="Five" class="margin-toggle sidenote-number"></label><input type="checkbox" id="Five" class="margin-toggle"><span class="sidenote">Identity Tensor是一种特殊的坐标张量,其值就是自身的索引，例如: cQ(i, j) = (i, j),表示位置 (i, j) 的坐标就是 (i, j) </span> 来判断当前线程是否越界(超出实际序列长度)以及是否需要执行拷贝操作(通过谓词控制)，这对应着这<code class="language-plaintext highlighter-rouge">copy</code>函数中的<code class="language-plaintext highlighter-rouge">predictate_K</code>及其他的判断操作。</p> <p>对于<code class="language-plaintext highlighter-rouge">K</code> 和 <code class="language-plaintext highlighter-rouge">V</code>也是同样的理解，不再一一解释。</p> <h3 id="mma">MMA</h3> <p>继续看代码，来到了TileMMA部分，这个地方可以参考<a href="https://leimao.github.io/blog/CuTe-Tiled-MMA/" rel="external nofollow noopener" target="_blank">博客</a>来更深入的理解</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>typename Kernel_traits::TiledMma tiled_mma;
+auto thr_mma = tiled_mma.get_thread_slice(tidx);
+Tensor tSrQ  = thr_mma.partition_fragment_A(sQ);                           // (MMA,MMA_M,MMA_K)
+Tensor tSrK  = thr_mma.partition_fragment_B(sK);                           // (MMA,MMA_N,MMA_K)
+Tensor tOrVt  = thr_mma.partition_fragment_B(sVtNoSwizzle);                // (MMA, MMA_K,MMA_N)
+
+Tensor tSgS  = thr_mma.partition_C(gP);
+
+Tensor acc_o = partition_fragment_C(tiled_mma, Shape&lt;Int&lt;kBlockM&gt;, Int&lt;kHeadDim&gt;&gt;{});  // MMA, MMA_M, MMA_K
+
+//
+// Copy Atom retiling
+//
+
+auto smem_tiled_copy_Q = make_tiled_copy_A(typename Kernel_traits::SmemCopyAtom{}, tiled_mma);
+auto smem_thr_copy_Q = smem_tiled_copy_Q.get_thread_slice(tidx);
+// if (cute::thread0()) {smem_thr_copy_Q.print_all();}
+Tensor tSsQ = smem_thr_copy_Q.partition_S(sQ);
+// if (cute::thread0()) {print(tSsQ.layout()); printf("\n");}
+
+auto smem_tiled_copy_K = make_tiled_copy_B(typename Kernel_traits::SmemCopyAtom{}, tiled_mma);
+auto smem_thr_copy_K = smem_tiled_copy_K.get_thread_slice(tidx);
+Tensor tSsK = smem_thr_copy_K.partition_S(sK);
+
+auto smem_tiled_copy_V = make_tiled_copy_B(typename Kernel_traits::SmemCopyAtomTransposed{}, tiled_mma);
+auto smem_thr_copy_V = smem_tiled_copy_V.get_thread_slice(tidx);
+Tensor tOsVt = smem_thr_copy_V.partition_S(sVt);
+</code></pre></div></div> <h4 id="tiledmma">TiledMMA</h4> <p>这里查看TiledMMa的定义如下：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+#if defined(__CUDA_ARCH__) &amp;&amp;  __CUDA_ARCH__ &gt;= 800
+    using MMA_Atom_Arch = std::conditional_t&lt;
+        std::is_same_v&lt;elem_type, cutlass::half_t&gt;,
+        MMA_Atom&lt;SM80_16x8x16_F32F16F16F32_TN&gt;,
+        MMA_Atom&lt;SM80_16x8x16_F32BF16BF16F32_TN&gt;
+    &gt;;
+#else
+    using MMA_Atom_Arch = MMA_Atom&lt;SM75_16x8x8_F32F16F16F32_TN&gt;;
+#endif
+
+using TiledMma = TiledMMA&lt;
+        typename Base::MMA_Atom_Arch,
+        Layout&lt;Shape&lt;Int&lt;kNWarps&gt;,_1,_1&gt;&gt;,  // 4x1x1 or 8x1x1 thread group
+        Tile&lt;Int&lt;16 * kNWarps&gt;, _16, _16&gt;&gt;;
+
+</code></pre></div></div> <h5 id="1-最小计算单元mma-atom">1. 最小计算单元：MMA Atom</h5> <p>其中 <code class="language-plaintext highlighter-rouge">MMA_Atom_Arch</code>是定义了一个原子的矩阵乘法运算，如果元素是<code class="language-plaintext highlighter-rouge">float16</code>类型则会选择<code class="language-plaintext highlighter-rouge">MMA_Atom&lt;SM80_16x8x16_F32F16F16F32_TN&gt;</code>， 查看这个原子矩阵乘法的定义为：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// MMA 16x8x16 TN
+struct SM80_16x8x16_F32F16F16F32_TN
+{
+  using DRegisters = float[4];
+  using ARegisters = uint32_t[4];
+  using BRegisters = uint32_t[2];
+  using CRegisters = float[4];
+
+  CUTE_HOST_DEVICE static void
+  fma(float         &amp; d0, float         &amp; d1, float         &amp; d2, float         &amp; d3,
+      uint32_t const&amp; a0, uint32_t const&amp; a1, uint32_t const&amp; a2, uint32_t const&amp; a3,
+      uint32_t const&amp; b0, uint32_t const&amp; b1,
+      float const   &amp; c0, float const   &amp; c1, float const   &amp; c2, float const   &amp; c3)
+  {
+#if defined(CUTE_ARCH_MMA_SM80_ENABLED)
+    asm volatile(
+      "mma.sync.aligned.m16n8k16.row.col.f32.f16.f16.f32 "
+      "{\%0,  \%1,  \%2,  \%3},"
+      "{\%4,  \%5,  \%6,  \%7},"
+      "{\%8,  \%9},"
+      "{\%10, \%11, \%12, \%13};\n"
+      : "=f"(d0), "=f"(d1), "=f"(d2), "=f"(d3)
+      :  "r"(a0),  "r"(a1),  "r"(a2),  "r"(a3),
+         "r"(b0),  "r"(b1),
+         "f"(c0),  "f"(c1),  "f"(c2),  "f"(c3));
+#else
+    CUTE_INVALID_CONTROL_PATH("Attempting to use SM80_16x8x16_F32F16F16F32_TN without CUTE_ARCH_MMA_SM80_ENABLED");
+#endif
+  }
+};
+
+</code></pre></div></div> <p>这个原子操作实际上是对PTX <label for="Six" class="margin-toggle sidenote-number"></label><input type="checkbox" id="Six" class="margin-toggle"><span class="sidenote">参考PTX<a href="https://docs.nvidia.com/cuda/parallel-thread-execution/" rel="external nofollow noopener" target="_blank">官方文档</a> </span>指令的一个封装，意思是说计算一个<code class="language-plaintext highlighter-rouge">m16n8k16</code> 也就是<code class="language-plaintext highlighter-rouge">16x16 和 16x8</code>的矩阵乘法，<code class="language-plaintext highlighter-rouge">f32.f16.f16.f32</code>分别表示<code class="language-plaintext highlighter-rouge">D=A*B + C</code>对应的数据类型，也就是D是<code class="language-plaintext highlighter-rouge">f32</code>，A和B分别是<code class="language-plaintext highlighter-rouge">f16</code>， C累加是<code class="language-plaintext highlighter-rouge">f32</code>, <code class="language-plaintext highlighter-rouge">.row</code> 表示A是行主序，<code class="language-plaintext highlighter-rouge">.col</code>表示B是列主序<label for="Seven" class="margin-toggle sidenote-number"></label><input type="checkbox" id="Seven" class="margin-toggle"><span class="sidenote">参考<a href="https://valdrada.site/AI/2025-12-10-CUTE-Thread-Value-Layout.html" rel="external nofollow noopener" target="_blank">CUTE中的Thread-Value Layout</a> </span> 。</p> <p>需要注意的是这个PTX是<strong>warp</strong>级别的指令，也就是在warp中完成这个矩阵的乘法，它操作的是<strong>寄存器</strong>数据，<strong>不是shared memory</strong>，所以为了执行这个指令，需要将shared memory数据搬运到寄存器中，然后在执行这个指令。</p> <h5 id="2-线程块布局tiledmma-的定义">2. 线程块布局：TiledMMA 的定义</h5> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>using TiledMma = TiledMMA&lt;
+    typename Base::MMA_Atom_Arch,          // 基础 Atom: 16x8x16
+    Layout&lt;Shape&lt;Int&lt;4&gt;,_1,_1&gt;&gt;,           // Warp 布局 (Thread Block Layout)
+    Tile&lt;Int&lt;16 * 4&gt;, _16, _16&gt;&gt;;          // 逻辑 Tile 形状
+</code></pre></div></div> <ul> <li> <p>Atom (16x8x16)：表示单次硬件指令的“颗粒度”。</p> </li> <li> <p>Warp Layout (kNWarps x 1 x 1)：这决定了 Warp 是如何排列的。这里 <code class="language-plaintext highlighter-rouge">Shape&lt;kNWarps, _1, _1&gt;</code> 表示所有 Warp 都在 M 方向（行方向）纵向排列。如果有 4 个 Warp，它们会堆叠成一个更“高”的矩阵块。</p> </li> <li> <p>Target Tile (64x16x16)： 这是该 TiledMMA 期望完成的总任务量（其中 kNWarps = 4）。</p> </li> </ul> <h5 id="3-映射逻辑如何从-16x8x16-变成-64x16x16">3. 映射逻辑：如何从 16x8x16 变成 64x16x16？</h5> <ul> <li> <p>M 方向： 空间并行计算：$16 \text{ (Atom M)} \times 4 \text{ (Warps)} = 64$。4 个 Warp 在 M 方向并行，每个 Warp 负责自己那 16 行，互不干扰。这对应了 <code class="language-plaintext highlighter-rouge">Layout&lt;Shape&lt;Int&lt;kNWarps&gt;,_1,_1&gt;&gt;</code>。</p> </li> <li> <p>N 方向：时间序列（重复累加）计算：$8 \text{ (Atom N)} \rightarrow 16 \text{ (Tile N)}$。由于我们在 Layout 的 N 方向定义的是 _1（即 N 方向没有并行的 Warp），但 Tile 的 N 方向是 16。结果：同一个 Warp 需要在 N 方向执行两次运算。CuTe 会自动生成代码，让每个 Warp 先算前 8 列，再算后 8 列，最终合成 16 列的结果。</p> </li> <li> <p>K 方向：内积循环计算：$16 \text{ (Atom K)} \rightarrow 16 \text{ (Tile K)}$。这里 K 方向匹配，意味着在一个内层循环迭代中，刚好消耗掉 $16$ 宽度的 $Q$ 和 $K$。</p> </li> </ul> <p>总体上来说：</p> <p>一个warp 运算一个 <code class="language-plaintext highlighter-rouge">16×8×16</code> 的 MMA tile（NVIDIA Tensor Core 的硬件 tile,也就是atom的定义） 一个block 有 kNWarps 个 warp，可以并行计算一个更大的 tile，block 级别计算的 <code class="language-plaintext highlighter-rouge">tile = (16*kNWarps) × 16 × 16 = 64x16x16</code>，也就是有一个矩阵块是64×16×16。我需要用TiledMma 去计算完成 这个TiledMma计算的时候的Warp的分布是<code class="language-plaintext highlighter-rouge">Layout&lt;Shape&lt;Int&lt;kNWarps&gt;,_1,_1&gt;&gt;</code>，也就是M方向分了4份，N方向1份，K方向1份，但 Atom 只能算 N=8，N=16 是通过两个 MMA Atom 在 N 方向累加完成的，每份都是<code class="language-plaintext highlighter-rouge">16×16×16</code>，意思是1个warp去计算<code class="language-plaintext highlighter-rouge">16×16×16</code> ，在N方向需要两次atom操作 。</p> <p>为了方便线程和值之间的对应，也可以用<code class="language-plaintext highlighter-rouge">cute::print_latex()</code>打印TiledMMA。参考之前我的<a href="https://valdrada.site/AI/2025-12-10-CUTE-Thread-Value-Layout.html" rel="external nofollow noopener" target="_blank">文章</a>查看具体的操作过程，对于这个MMA来说结果如下：</p> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/AI/thread-value-layout/thread-value-p1.svg" sizes="95vw"></source> <img src="/assets/img/AI/thread-value-layout/thread-value-p1.svg" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <div class="caption"> Fig. 7. MMA Atom Thread Value Layout. </div> <h4 id="寄存器视图">寄存器视图</h4> <p>定义好了TiledMMA之后，就可以根据TiledMMA的定义获取当前线程需要的寄存器的视图，也就是：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>auto thr_mma = tiled_mma.get_thread_slice(tidx);
+Tensor tSrQ  = thr_mma.partition_fragment_A(sQ);   // (MMA,MMA_M,MMA_K)
+Tensor tSrK  = thr_mma.partition_fragment_B(sK);   // (MMA,MMA_N,MMA_K)
+Tensor tOrVt  = thr_mma.partition_fragment_B(sVtNoSwizzle); // (MMA, MMA_K,MMA_N)
+Tensor tSgS  = thr_mma.partition_C(gP);
+Tensor acc_o = partition_fragment_C(tiled_mma, Shape&lt;Int&lt;kBlockM&gt;, Int&lt;kHeadDim&gt;&gt;{});  // MMA, MMA_M, MMA_K
+</code></pre></div></div> <p>这里的<code class="language-plaintext highlighter-rouge">partition_fragment_A</code>就是获取矩阵乘中A的寄存器视图，<code class="language-plaintext highlighter-rouge">partition_fragment_B</code>就是获取矩阵乘中B的寄存器视图.</p> <p>获取到寄存器视图之后，就需要把显存从 <code class="language-plaintext highlighter-rouge">shared memory</code> 搬运到 <code class="language-plaintext highlighter-rouge">register</code>， 那么同样的需要当前线程搬运的<code class="language-plaintext highlighter-rouge">shared memory</code>视图：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>auto smem_tiled_copy_Q = make_tiled_copy_A(typename Kernel_traits::SmemCopyAtom{}, tiled_mma);
+auto smem_thr_copy_Q = smem_tiled_copy_Q.get_thread_slice(tidx);
+// if (cute::thread0()) {smem_thr_copy_Q.print_all();}
+Tensor tSsQ = smem_thr_copy_Q.partition_S(sQ);
+// if (cute::thread0()) {print(tSsQ.layout()); printf("\n");}
+
+auto smem_tiled_copy_K = make_tiled_copy_B(typename Kernel_traits::SmemCopyAtom{}, tiled_mma);
+auto smem_thr_copy_K = smem_tiled_copy_K.get_thread_slice(tidx);
+Tensor tSsK = smem_thr_copy_K.partition_S(sK);
+
+auto smem_tiled_copy_V = make_tiled_copy_B(typename Kernel_traits::SmemCopyAtomTransposed{}, tiled_mma);
+auto smem_thr_copy_V = smem_tiled_copy_V.get_thread_slice(tidx);
+Tensor tOsVt = smem_thr_copy_V.partition_S(sVt);
+</code></pre></div></div> <p><code class="language-plaintext highlighter-rouge">make_tiled_copy_A</code>就是为 MMA 的 A 操作数（这里是 Q）生成从共享内存到寄存器的分片拷贝算子，匹配 tiled_mma 的片段几何与对齐要求。同样的对 B 操作数也是这样操作，得到对应的源<code class="language-plaintext highlighter-rouge">shared memory</code>视图。</p> <p>同样的，这里只是划分的各自的视图，真正的拷贝发生在三个地方：</p> <ul> <li>显式把 Q 预加载到寄存器（共享 Q/K 的 smem 时）</li> </ul> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if (Kernel_traits::Share_Q_K_smem) {
+    FLASH_NAMESPACE::cp_async_wait&lt;0&gt;();
+    __syncthreads();
+    Tensor tSrQ_copy_view = smem_thr_copy_Q.retile_D(tSrQ);
+    CUTE_STATIC_ASSERT_V(size&lt;1&gt;(tSsQ) == size&lt;1&gt;(tSrQ_copy_view));            // M
+    cute::copy(smem_tiled_copy_Q, tSsQ, tSrQ_copy_view);
+    __syncthreads();
+}
+</code></pre></div></div> <ul> <li>常规在 GEMM 内按 K-stage 从 smem 加载到寄存器</li> </ul> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FLASH_NAMESPACE::gemm&lt;/*A_in_regs=*/Kernel_traits::Is_Q_in_regs&gt;(
+            acc_s, tSrQ, tSrK, tSsQ, tSsK, tiled_mma, smem_tiled_copy_Q, smem_tiled_copy_K,
+            smem_thr_copy_Q, smem_thr_copy_K
+        );
+
+
+template&lt;bool A_in_regs=false, bool B_in_regs=false, typename Tensor0, typename Tensor1,
+         typename Tensor2, typename Tensor3, typename Tensor4,
+         typename TiledMma, typename TiledCopyA, typename TiledCopyB,
+         typename ThrCopyA, typename ThrCopyB&gt;
+__forceinline__ __device__ void gemm(Tensor0 &amp;acc, Tensor1 &amp;tCrA, Tensor2 &amp;tCrB, Tensor3 const&amp; tCsA,
+                            Tensor4 const&amp; tCsB, TiledMma tiled_mma,
+                            TiledCopyA smem_tiled_copy_A, TiledCopyB smem_tiled_copy_B,
+                            ThrCopyA smem_thr_copy_A, ThrCopyB smem_thr_copy_B) {
+    CUTE_STATIC_ASSERT_V(size&lt;1&gt;(tCrA) == size&lt;1&gt;(acc));                     // MMA_M
+    CUTE_STATIC_ASSERT_V(size&lt;1&gt;(tCrB) == size&lt;2&gt;(acc));                     // MMA_N
+    CUTE_STATIC_ASSERT_V(size&lt;2&gt;(tCrA) == size&lt;2&gt;(tCrB));                     // MMA_K
+    Tensor tCrA_copy_view = smem_thr_copy_A.retile_D(tCrA);
+    CUTE_STATIC_ASSERT_V(size&lt;1&gt;(tCsA) == size&lt;1&gt;(tCrA_copy_view));            // M
+    Tensor tCrB_copy_view = smem_thr_copy_B.retile_D(tCrB);
+    CUTE_STATIC_ASSERT_V(size&lt;1&gt;(tCsB) == size&lt;1&gt;(tCrB_copy_view));            // N
+    //这里发生真正的拷贝
+    if (!A_in_regs) { cute::copy(smem_tiled_copy_A, tCsA(_, _, _0{}), tCrA_copy_view(_, _, _0{})); }
+    if (!B_in_regs) { cute::copy(smem_tiled_copy_B, tCsB(_, _, _0{}), tCrB_copy_view(_, _, _0{})); }
+    #pragma unroll
+    for (int i = 0; i &lt; size&lt;2&gt;(tCrA); ++i) {
+        if (i &lt; size&lt;2&gt;(tCrA) - 1) {
+            if (!A_in_regs) { cute::copy(smem_tiled_copy_A, tCsA(_, _, i + 1), tCrA_copy_view(_, _, i + 1)); }
+            if (!B_in_regs) { cute::copy(smem_tiled_copy_B, tCsB(_, _, i + 1), tCrB_copy_view(_, _, i + 1)); }
+        }
+        cute::gemm(tiled_mma, tCrA(_, _, i), tCrB(_, _, i), acc);
+    }
+}
+
+</code></pre></div></div> <ul> <li>P·V 这步（gemm_rs）只从 smem 取 B（V），A（P）已在寄存器</li> </ul> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FLASH_NAMESPACE::gemm_rs(acc_o, tOrP, tOrVt, tOsVt, tiled_mma, smem_tiled_copy_V, smem_thr_copy_V);
+
+template&lt;typename Tensor0, typename Tensor1, typename Tensor2, typename Tensor3,
+         typename TiledMma, typename TiledCopy, typename ThrCopy&gt;
+__forceinline__ __device__ void gemm_rs(Tensor0 &amp;acc, Tensor1 &amp;tCrA, Tensor2 &amp;tCrB, Tensor3 const&amp; tCsB,
+                               TiledMma tiled_mma, TiledCopy smem_tiled_copy_B,
+                               ThrCopy smem_thr_copy_B) {
+    CUTE_STATIC_ASSERT_V(size&lt;1&gt;(tCrA) == size&lt;1&gt;(acc));                     // MMA_M
+    CUTE_STATIC_ASSERT_V(size&lt;1&gt;(tCrB) == size&lt;2&gt;(acc));                     // MMA_N
+    CUTE_STATIC_ASSERT_V(size&lt;2&gt;(tCrA) == size&lt;2&gt;(tCrB));                     // MMA_K
+    Tensor tCrB_copy_view = smem_thr_copy_B.retile_D(tCrB);
+    CUTE_STATIC_ASSERT_V(size&lt;1&gt;(tCsB) == size&lt;1&gt;(tCrB_copy_view));            // N
+    //这里发生拷贝
+    cute::copy(smem_tiled_copy_B, tCsB(_, _, _0{}), tCrB_copy_view(_, _, _0{}));
+    #pragma unroll
+    for (int i = 0; i &lt; size&lt;2&gt;(tCrA); ++i) {
+        if (i &lt; size&lt;2&gt;(tCrA) - 1) {
+            cute::copy(smem_tiled_copy_B, tCsB(_, _, i + 1), tCrB_copy_view(_, _, i + 1));
+        }
+        cute::gemm(tiled_mma, tCrA(_, _, i), tCrB(_, _, i), acc);
+    }
+}
+</code></pre></div></div> <h4 id="v的相关解释">V的相关解释</h4> <p>代码中有两个<code class="language-plaintext highlighter-rouge">V</code>相关的视图，一个layout是<code class="language-plaintext highlighter-rouge">SmemLayoutVtransposed</code>，一个layout是<code class="language-plaintext highlighter-rouge">SmemLayoutVtransposedNoSwizzle</code>，也就是一个是带Swizzle来防止bank冲突的，一个不带。</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Tensor sVt = make_tensor(sV.data(), typename Kernel_traits::SmemLayoutVtransposed{});
+Tensor sVtNoSwizzle = make_tensor(sV.data().get(), typename Kernel_traits::SmemLayoutVtransposedNoSwizzle{});
+</code></pre></div></div> <p><code class="language-plaintext highlighter-rouge">sVt</code> 用于真实的物理搬运（从内存读写），而 <code class="language-plaintext highlighter-rouge">sVtNoSwizzle</code> 用于逻辑上的计算坐标映射。</p> <ul> <li>什么时候用的<code class="language-plaintext highlighter-rouge">sVt</code>？</li> </ul> <p>执行从共享内存到寄存器的搬运 (Smem to Reg Copy)</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>auto smem_tiled_copy_V = make_tiled_copy_B(typename Kernel_traits::SmemCopyAtomTransposed{}, tiled_mma);
+auto smem_thr_copy_V = smem_tiled_copy_V.get_thread_slice(tidx);
+Tensor tOsVt = smem_thr_copy_V.partition_S(sVt); // 注意这里用的是带 Swizzle 的 sVt
+</code></pre></div></div> <p>当调用 <code class="language-plaintext highlighter-rouge">cute::copy(smem_tiled_copy_V, tOsVt, tOrVt)</code>时，代码会生成 LDSM（Load Shared Memory）或普通的共享内存加载指令。此时，程序必须知道数据在共享内存里的真实物理排布。因为我们在将数据写入共享内存时（Global $\to$ Smem）为了效率使用了 Swizzle，那么在读取时（Smem $\to$ Reg）必须使用同样的 Swizzle 函数来反向定位，才能读到正确的数据，同时享受无 Bank Conflict 的加载。</p> <ul> <li>什么时候用 <code class="language-plaintext highlighter-rouge">sVtNoSwizzle</code>？</li> </ul> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Tensor tOrVt = thr_mma.partition_fragment_B(sVtNoSwizzle);
+</code></pre></div></div> <p><code class="language-plaintext highlighter-rouge">partition_fragment_B</code> 的目的是为了在寄存器中分配空间。寄存器是线程私有的，根本不存在物理 Bank 的概念。 CuTe 需要知道的是：对于一个 $16 \times 8 \times 16$ 的 MMA 指令，当前线程逻辑上应该负责矩阵 $V$ 中的哪些坐标（索引）。 如果在这里传入带 Swizzle 的布局，CuTe 的布局推导系统会把地址混淆函数也代入寄存器的索引计算中，这会导致寄存器布局变得极其复杂且错误。因此，在分配寄存器（Fragment）或建立逻辑映射时，必须使用 NoSwizzle。</p> <ul> <li>为什么 $V$ 需要 Transposed？</li> </ul> <p>在 FlashAttention 的第二个 GEMM（$O = P \times V$）中：$P$ 是 Score 矩阵（在寄存器中），形状为 $(BlockM, BlockN)$。$V$ 存储在共享内存中，形状通常是 $(BlockN, HeadDim)$。对于 TiledMMA 来说，它期望的 $B$ 矩阵（右矩阵）是按列存储或者符合特定的 Tensor Core 读取顺序。FlashAttention-2 为了优化，通常将 $V$ 在共享内存中以 转置布局（Transposed） 组织。这样在第二个 GEMM 计算时，Tensor Core 可以更高效地读取 $V$ 的数据。</p> </div> </article> </div> </div> <footer class="fixed-bottom" role="contentinfo"> <div class="container mt-0"> © Copyright 2026 Damons . Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://github.com/DamonsJ/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. </div> </footer> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script src="/assets/js/bootstrap.bundle.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script> <script defer src="/assets/js/masonry.js?a0db7e5d5c70cc3252b3138b0c91dcaf" type="text/javascript"></script> <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script> <script defer src="/assets/js/zoom.js?85ddb88934d28b74e78031fd54cf8308"></script> <script defer src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.22.4/dist/bootstrap-table.min.js" integrity="sha256-4rppopQE9POKfukn2kEvhJ9Um25Cf6+IDVkARD0xh78=" crossorigin="anonymous"></script> <script src="/assets/js/no_defer.js?2781658a0a2b13ed609542042a859126"></script> <script defer src="/assets/js/common.js?e0514a05c5c95ac1a93a8dfd5249b92e"></script> <script defer src="/assets/js/copy_code.js?12775fdf7f95e901d7119054556e495f" type="text/javascript"></script> <script defer src="/assets/js/jupyter_new_tab.js?d9f17b6adc2311cbabd747f4538bb15f"></script> <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script> <script async src="https://badge.dimensions.ai/badge.js"></script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script> <script src="/assets/js/mathjax-setup.js?a5bb4e6a542c546dd929b24b8b236dfd"></script> <script defer src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6" crossorigin="anonymous"></script> <script defer src="/assets/js/progress-bar.js?2f30e0e6801ea8f5036fa66e1ab0a71a" type="text/javascript"></script> <script src="/assets/js/vanilla-back-to-top.min.js?f40d453793ff4f64e238e420181a1d17"></script> <script>
+    addBackToTop();
+  </script> <script type="module" src="/assets/js/search/ninja-keys.min.js?a3446f084dcaecc5f75aa1757d087dcf"></script> <ninja-keys hidebreadcrumbs noautoloadmdicons placeholder="Type to start searching"></ninja-keys> <script src="/assets/js/search-setup.js?6c304f7b1992d4b60f7a07956e52f04a"></script> <script src="/assets/js/search-data.js"></script> <script src="/assets/js/shortcut-key.js?6f508d74becd347268a7f822bca7309d"></script> </body> </html>
