@@ -1091,3 +1091,326 @@ CuTe 需要知道的是：对于一个 $16 \times 8 \times 16$ 的 MMA 指令，
 - 为什么 $V$ 需要 Transposed？
 
 在 FlashAttention 的第二个 GEMM（$O = P \times V$）中：$P$ 是 Score 矩阵（在寄存器中），形状为 $(BlockM, BlockN)$。$V$ 存储在共享内存中，形状通常是 $(BlockN, HeadDim)$。对于 TiledMMA 来说，它期望的 $B$ 矩阵（右矩阵）是按列存储或者符合特定的 Tensor Core 读取顺序。FlashAttention-2 为了优化，通常将 $V$ 在共享内存中以 转置布局（Transposed） 组织。这样在第二个 GEMM 计算时，Tensor Core 可以更高效地读取 $V$ 的数据。
+
+#### Q和K的拷贝
+
+代码中的这两个地方进行了`Q`和`K`的真正的拷贝
+
+```
+FLASH_NAMESPACE::copy<Is_even_MN, Is_even_K>(gmem_tiled_copy_QKV, tQgQ, tQsQ, tQcQ, tQpQ,
+                                       binfo.actual_seqlen_q - m_block * kBlockM);
+
+FLASH_NAMESPACE::copy<Is_even_MN, Is_even_K>(gmem_tiled_copy_QKV, tKgK(_, _, _, n_block), tKsK, tKVcKV, tKVpKV,
+                                       binfo.actual_seqlen_k - n_block * kBlockN);
+cute::cp_async_fence();
+```
+
+这里需要注意的是[`cute::cp_async_fence()`](https://docs.nvidia.com/cuda/parallel-thread-execution/#:~:text=Data%20Movement%20and%20Conversion%20Instructions%3A%20cp.async.commit_group),这个地方并不会等待拷贝结束。
+在 NVIDIA Ampere (SM80) 及之后的架构中，从 Global Memory 到 Shared Memory 的异步拷贝分为三个必经步骤：
+
+- 发出指令 (cp.async)：
+
+  代码：`cute::copy(gmem_tiled_copy, tQgQ, tQsQ);`
+
+  作用：告诉硬件“请帮我把这块数据搬走”，指令发出后立即返回，线程可以继续干别的。
+
+- 划定边界 (cp_async_fence)：
+
+  代码：`cute::cp_async_fence();`
+
+  作用：将之前所有发出的异步拷贝指令“打包”成一个批次（Batch）并提交给硬件调度器。
+
+  核心理解：它就像是在订单列表下面画了一道横线。硬件只有看到这道横线，才知道刚才那些订单是一组的。
+
+- 真正等待 (`cp_async_wait<N>`)：
+
+  代码：`FLASH_NAMESPACE::cp_async_wait<0>();`
+
+  作用：这才是真正的阻塞操作。它告诉线程：“请在这里停下，直到剩下的异步拷贝批次只剩下 N 个为止。” (Wait<0> 表示等待所有批次完成)。
+
+### softmax
+
+#### 循环计算
+
+在 FlashAttention2 的源码中，将 n_block 的循环拆分为 “Masking 阶段”（第一个循环）和 “Standard 阶段”（第二个循环）,第一个循环处理“边缘/边界”块，主要是一些mask的块和序列长度不能被整除的边界块，第二个循环处理“内部/全量”块。这两个部分相差不多，主要是边界和特殊情况的处理，为了方便我们只看第二个部分，也就是全量计算的块。
+
+```
+for (; n_block >= n_block_min; --n_block) {
+    Tensor acc_s = partition_fragment_C(tiled_mma, Shape<Int<kBlockM>, Int<kBlockN>>{});  // (MMA=4, MMA_M, MMA_N)
+    clear(acc_s);
+    FLASH_NAMESPACE::cp_async_wait<0>();
+    __syncthreads();
+    FLASH_NAMESPACE::copy</*Is_even_MN=*/true, Is_even_K>(gmem_tiled_copy_QKV, tVgV(_, _, _, n_block), tVsV, tKVcKV, tKVpKV);
+    cute::cp_async_fence();
+
+    FLASH_NAMESPACE::gemm</*A_in_regs=*/Kernel_traits::Is_Q_in_regs>(
+        acc_s, tSrQ, tSrK, tSsQ, tSsK, tiled_mma, smem_tiled_copy_Q, smem_tiled_copy_K,
+        smem_thr_copy_Q, smem_thr_copy_K
+    );
+    if constexpr (Is_softcap){
+        FLASH_NAMESPACE::apply_softcap(acc_s, params.softcap);
+    }
+
+    FLASH_NAMESPACE::cp_async_wait<0>();
+    __syncthreads();
+    if (n_block > n_block_min) {
+        FLASH_NAMESPACE::copy</*Is_even_MN=*/true, Is_even_K>(gmem_tiled_copy_QKV, tKgK(_, _, _, n_block - 1), tKsK, tKVcKV, tKVpKV);
+        // This cp_async_fence needs to be in the if block, otherwise the synchronization
+        // isn't right and we get race conditions.
+        cute::cp_async_fence();
+    }
+
+    mask.template apply_mask</*Causal_mask=*/false>(
+        acc_s, n_block * kBlockN, m_block * kBlockM + (tidx / 32) * 16 + (tidx % 32) / 4, kNWarps * 16
+    );
+
+    softmax.template softmax_rescale_o</*Is_first=*/false, /*Check_inf=*/Is_local>(acc_s, acc_o, params.scale_softmax_log2);
+
+    Tensor rP = FLASH_NAMESPACE::convert_type<Element>(acc_s);
+    int block_row_idx = m_block * (kBlockM / 16) + tidx / 32;
+    int block_col_idx = n_block * (kBlockN / 32);
+    if (Return_softmax) {
+        Tensor rP_drop = make_fragment_like(rP);
+        cute::copy(rP, rP_drop);
+        dropout.template apply_dropout</*encode_dropout_in_sign_bit=*/true>(
+            rP_drop, block_row_idx, block_col_idx, kNWarps
+        );
+        cute::copy(rP_drop, tSgS);
+        tSgS.data() = tSgS.data() + (-kBlockN);
+    }
+    if (Is_dropout) {
+        dropout.apply_dropout(rP, block_row_idx, block_col_idx, kNWarps);
+    }
+
+    // Reshape rP from (MMA=4, MMA_M, MMA_N) to ((4, 2), MMA_M, MMA_N / 2)
+    // if using m16n8k16 or (4, MMA_M, MMA_N) if using m16n8k8.
+    Tensor tOrP = make_tensor(rP.data(), FLASH_NAMESPACE::convert_layout_acc_Aregs<typename Kernel_traits::TiledMma>(rP.layout()));
+    FLASH_NAMESPACE::gemm_rs(acc_o, tOrP, tOrVt, tOsVt, tiled_mma, smem_tiled_copy_V, smem_thr_copy_V);
+}
+```
+
+这些代码对应着算法中的这些部分：
+
+$$
+\begin{array}{ll} \hline
+& &\text { Algorithm } 1 \text { FlashAttention-2 forward pass }\\ \hline
+
+&6: &\quad \text { for } 1 \leq j \leq T_c \text { do }\\
+&7: &\qquad \text { Load } \mathbf{K}_j, \mathbf{V}_j \text { from HBM to on-chip SRAM. }\\
+&8: &\qquad \text { On chip, compute } \mathbf{S}_i^{(j)}=\mathbf{Q}_i \mathbf{K}_j^T \in \mathbb{R}^{B_r \times B_c} \text {. }\\
+&9: &\qquad \text { On chip, compute } m_i^{(j)}=\max \left(m_i^{(j-1)}, \operatorname{rowmax}\left(\mathbf{S}_i^{(j)}\right)\right) \in \mathbb{R}^{B_r}, \tilde{\mathbf{P}}_i^{(j)}=\exp \left(\mathbf{S}_i^{(j)}-m_i^{(j)}\right) \in \mathbb{R}^{B_r \times B_c} \\
+& &\qquad \text { (pointwise), } \ell_i^{(j)}=e^{m_i^{j-1}-m_i^{(j)}} \ell_i^{(j-1)}+\operatorname{rowsum}\left(\tilde{\mathbf{P}}_i^{(j)}\right) \in \mathbb{R}^{B_r} \text {. }\\
+&10: &\qquad \text { On chip, compute } \mathbf{O}_i^{(j)}=\operatorname{diag}\left(e^{m_i^{(j-1)}-m_i^{(j)}}\right) \mathbf{O}_i^{(j-1)}+\tilde{\mathbf{P}}_i^{(j)} \mathbf{V}_j \text {. }\\
+&11: &\quad  \text { end for }\\
+\hline
+\end{array}
+$$
+
+对应关系如下：
+
+| 算法步骤 (Algorithm 2)                                   | 源码中的代码段 (FlashAttention-2)                   | 功能说明                                                                                         |
+| :------------------------------------------------------- | :-------------------------------------------------- | :----------------------------------------------------------------------------------------------- |
+| **Line 6:** `for 1 <= j <= Tc`                           | `for (; n_block >= n_block_min; --n_block)`         | **分块迭代**：遍历 $K, V$ 的 Tile。源码采用从后往前的反向遍历以优化寄存器使用。                  |
+| **Line 8:** $S_i^{(j)} = Q_i K_j^T$                      | `FLASH_NAMESPACE::gemm(acc_s, tSrQ, tSrK, ...)`     | **第一步 GEMM**：计算当前 Block 的注意力原始分数，结果存入寄存器 `acc_s`。                       |
+| **Line 9:** 更新 $m_i^{(j)}, \ell_i^{(j)}$               | `softmax.template softmax_rescale_o(...)`           | **核心逻辑**：执行 Online Softmax。更新最大值 $m$ 和累加和 $\ell$，并对旧的 $O$ 进行指数重缩放。 |
+| **Line 10:** $O_i^{(j)} = \dots + \tilde{P}_i^{(j)} V_j$ | `FLASH_NAMESPACE::gemm_rs(acc_o, tOrP, tOrVt, ...)` | **第二步 GEMM**：将当前块计算出的概率 $P$ 与 $V$ 相乘，累加到已缩放的 $O$ (`acc_o`) 上。         |
+
+这里需要注意的是先加载`V`，然后计算`Q、K`，然后在加载下一个`K`，这是流水线的并行，将拷贝和计算并行。
+
+#### softmax计算过程
+
+下面的函数完成了softmax的计算并完成了对输出矩阵`O`的累加。
+
+```
+template<bool Is_first, bool Check_inf=false, typename Tensor0, typename Tensor1>
+__forceinline__ __device__ void softmax_rescale_o(Tensor0 &acc_s, Tensor1 &acc_o, float softmax_scale_log2) {
+    // Reshape acc_s from (MMA=4, MMA_M, MMA_N) to (nrow=(2, MMA_M), ncol=(2, MMA_N))
+    Tensor scores = make_tensor(acc_s.data(), FLASH_NAMESPACE::convert_layout_acc_rowcol(acc_s.layout()));
+    static_assert(decltype(size<0>(scores))::value == kNRows);
+    if (Is_first) {
+        FLASH_NAMESPACE::template reduce_max</*zero_init=*/true>(scores, row_max);
+        FLASH_NAMESPACE::scale_apply_exp2(scores, row_max, softmax_scale_log2);
+        FLASH_NAMESPACE::reduce_sum</*zero_init=*/true>(scores, row_sum);
+    } else {
+        Tensor scores_max_prev = make_fragment_like(row_max);
+        cute::copy(row_max, scores_max_prev);
+        FLASH_NAMESPACE::template reduce_max</*zero_init=*/false>(scores, row_max);
+        // Reshape acc_o from (MMA=4, MMA_M, MMA_K) to (nrow=(2, MMA_M), ncol=(2, MMA_K))
+        Tensor acc_o_rowcol = make_tensor(acc_o.data(), FLASH_NAMESPACE::convert_layout_acc_rowcol(acc_o.layout()));
+        static_assert(decltype(size<0>(acc_o_rowcol))::value == kNRows);
+        #pragma unroll
+        for (int mi = 0; mi < size(row_max); ++mi) {
+            float scores_max_cur = !Check_inf
+                ? row_max(mi)
+                : (row_max(mi) == -INFINITY ? 0.0f : row_max(mi));
+            float scores_scale = exp2f((scores_max_prev(mi) - scores_max_cur) * softmax_scale_log2);
+            row_sum(mi) *= scores_scale;
+            #pragma unroll
+            for (int ni = 0; ni < size<1>(acc_o_rowcol); ++ni) { acc_o_rowcol(mi, ni) *= scores_scale; }
+        }
+        FLASH_NAMESPACE::scale_apply_exp2(scores, row_max, softmax_scale_log2);
+        // We don't do the reduce across threads here since we don't need to use the row_sum.
+        // We do that reduce at the end when we need to normalize the softmax.
+        FLASH_NAMESPACE::reduce_sum</*zero_init=*/false>(scores, row_sum);
+    }
+};
+```
+
+这里实际上是[online softmax](https://valdrada.site/AI/2025-04-26-rethinking-attention-2.html)的计算过程，流程解释如下：
+
+- 寄存器布局重排 (Data Re-layout)
+
+  `acc_s` 是 Tensor Core 算出来的寄存器片段，其布局（Layout）是为矩阵乘法优化的。为了方便按“行”计算 Max 和 Sum，这里将其重映射为逻辑上的`(row, col)`布局。
+
+- Online Softmax 动态更新流程
+
+  1. 缓存旧的`row_max`
+
+  ```
+      Tensor scores_max_prev = make_fragment_like(row_max);
+      cute::copy(row_max, scores_max_prev);
+  ```
+
+  2. 更新全局最大值 计算当前块的行最大值，并与旧最大值比较，更新得到全域最大值
+
+  ```
+      reduce_max(scores, row_max);
+  ```
+
+  3. 核心重缩放 (Rescale) 这是 Online Softmax 的灵魂。如果出现了更大的 $max$，之前累加在 row*sum 和 acc_o 中的结果（它们是基于 $m*{old}$ 计算的）就需要通过缩放因子进行修正：
+
+  ```
+      // 计算缩放因子：exp(m_old - m_new)
+      scores_scale = exp2((scores_max_prev - row_max) * softmax_scale_log2);
+      row_sum *= scores_scale; // 修正旧的分母
+      acc_o *= scores_scale;   // 修正旧的分子累加和 (Output)
+  ```
+
+  4. 处理当前块并累加 计算当前块的指数项，并累加到分母中。
+
+  ```
+      scale_apply_exp2(scores, row_max, softmax_scale_log2); // 对当前分块计算 exp(S - m_new)
+      reduce_sum(scores, row_sum); // 将当前块的 sum 加进总分母 row_sum
+  ```
+
+- 硬件优化：
+
+  为什么使用 $2^x$ 而非 $e^x$？在源码中，所有的指数运算都指向了 exp2（即 $2^x$），这是基于硬件性能的深度考量：
+
+  换底公式的数学支撑：利用对数恒等式 $e = 2^{\log_2 e}$，我们可以推导出：$$e^{x \cdot \text{scale}} = (2^{\log_2 e})^{x \cdot \text{scale}} = 2^{x \cdot (\text{scale} \cdot \log_2 e)}$$
+
+  硬件指令加速：NVIDIA GPU 的 SFU (Special Function Unit) 对 $2^x$ 指令（如 MUFU.EX2）有原生硬件支持，执行效率远高于通用的 $e^x$。
+
+  预计算优化：FlashAttention 在 Host 端预先计算好 $softmax\\_scale\\_log2 = softmax\\_scale \cdot \log_2 e$，并将其传入 Kernel。这样在 Kernel 内部只需一次乘法和一次 exp2 即可完成等效于自然指数的运算，极大提升了指令吞吐。
+
+- 最终的计算
+
+  之前的步骤只更新了online softmax中的分子部分，没有除上分母。分母部分的计算融合在了函数：
+
+  ```
+  template<bool Is_dropout=false, bool Split=false, typename Tensor0>
+  __forceinline__ __device__ TensorT normalize_softmax_lse(Tensor0 &acc_o, float softmax_scale, float rp_dropout=1.0) {
+      SumOp<float> sum_op;
+      quad_allreduce_(row_sum, row_sum, sum_op);
+      TensorT lse = make_fragment_like(row_sum);
+      Tensor acc_o_rowcol = make_tensor(acc_o.data(), FLASH_NAMESPACE::convert_layout_acc_rowcol(acc_o.layout()));
+      static_assert(decltype(size<0>(acc_o_rowcol))::value == kNRows);
+      #pragma unroll
+      for (int mi = 0; mi < size<0>(acc_o_rowcol); ++mi) {
+          float sum = row_sum(mi);
+          float inv_sum = (sum == 0.f || sum != sum) ? 1.f : 1.f / sum;
+          lse(mi) = (sum == 0.f || sum != sum) ? (Split ? -INFINITY : INFINITY) : row_max(mi) * softmax_scale + __logf(sum);
+          float scale = !Is_dropout ? inv_sum : inv_sum * rp_dropout;
+          #pragma unroll
+          for (int ni = 0; ni < size<1>(acc_o_rowcol); ++ni) { acc_o_rowcol(mi, ni) *= scale; }
+      }
+      return lse;
+  };
+  ```
+
+### 最终回写
+
+整个计算流程基本上结束了，现在需要把`O`矩阵写回全局内存。
+
+- 数据转换
+
+  主循环中的计算为了保证精度使用的是 FP32。但在写回显存之前，需要将其转换为模型定义的精度（如 FP16 或 BF16），以节省带宽和空间。
+
+  ```
+  // Convert acc_o from fp32 to fp16/bf16
+  Tensor rO = FLASH_NAMESPACE::convert_type<Element>(acc_o);
+  Tensor sO = make_tensor(sQ.data(), typename Kernel_traits::SmemLayoutO{});
+  ```
+
+- 寄存器到共享显存（R2S）：布局重组
+
+  为了实现高效的合并写回（Coalesced Write），通常不直接从寄存器写到全局显存，而是先写到共享显存（Smem）做中转。
+
+  ```
+  Tensor sO = make_tensor(sQ.data(), typename Kernel_traits::SmemLayoutO{});
+  // ... 布局重排 (Retile & Partition)
+  cute::copy(smem_tiled_copy_O, taccOrO, taccOsO);
+  ```
+
+  注意 sO 使用了 sQ.data()。因为计算结束了，$Q$ 已经没用了，所以直接复用 $Q$ 的共享显存空间来存 $O$，完全不占额外空间。通过 `smem_tiled_copy_O `将寄存器中碎片的布局重新排列成 Smem 中连续的布局。
+
+- 共享显存到寄存器（S2R）：向量化对齐
+
+  ```
+  Tensor mO = make_tensor(make_gmem_ptr(reinterpret_cast<Element*>(params.o_ptr)
+                                        + binfo.q_offset(params.o_batch_stride, params.o_row_stride, bidb)),
+                          make_shape(binfo.actual_seqlen_q, params.h, params.d),
+                          make_stride(params.o_row_stride, params.o_head_stride, _1{}));
+  Tensor gO = local_tile(mO(_, bidh, _), Shape<Int<kBlockM>, Int<kHeadDim>>{},
+                         make_coord(m_block, 0));  // (kBlockM, kHeadDim)
+  Tensor gLSE = get_lse_tile<ElementAccum, Params, kBlockM, Is_even_MN>(params, bidb, bidh, m_block, binfo);
+
+  typename Kernel_traits::GmemTiledCopyO gmem_tiled_copy_O;
+  auto gmem_thr_copy_O = gmem_tiled_copy_O.get_thread_slice(tidx);
+  Tensor tOsO = gmem_thr_copy_O.partition_S(sO);        // ((Atom,AtomNum),ATOM_M,ATOM_N)
+  Tensor tOgO = gmem_thr_copy_O.partition_D(gO);
+
+  __syncthreads();
+
+  Tensor tOrO = make_tensor<Element>(shape(tOgO));
+  cute::copy(gmem_tiled_copy_O, tOsO, tOrO);
+  ```
+
+  这里又将共享内存拷贝到了寄存器，为什么？
+
+  全局显存写回最高效的方式是使用 128-bit 向量化指令（STG.128）。这要求每个线程持有的寄存器数据在物理地址上必须是绝对连续且对齐的。
+
+  但是写回 gmem 的拷贝原子（GmemTiledCopyO）期望的是寄存器片段布局，而 sO 的共享内存布局是为 MMA/访存优化的（可能带 swizzle/不同步长）。直接从 sO 写 gmem 不能保证：
+
+  布局匹配：gmem 写回要求连续/对齐的寄存器向量；
+  向量化与对齐：每线程 128‑bit 写出需要寄存器中的连续向量；
+  谓词与边界处理：FLASH_NAMESPACE::copy 使用寄存器片段和谓词来屏蔽越界。
+
+  因此先把 O 写入 sO（布局重排/暂存），再把 sO “装回寄存器”形成 tOrO，最后用 gmem 拷贝原子高效写回。这样实现“计算布局”和“写回布局”的解耦。
+
+  上一步寄存器到共享内存搬运的意义是做一次共享内存“重排/落地”作为写回缓冲：
+  taccOrO 是 MMA 寄存器片段布局，不适合直接按 gmem 线性/向量化方式写出。
+  taccOsO 的 SmemLayoutO 是为写回准备的布局（对齐、连续性更好），先把寄存器结果“按正确布局”排到 taccOsO。
+
+  随后再从 taccOsO 装回寄存器形成 tOrO，配合 GmemTiledCopyO 做 128‑bit 合并写入并处理边界谓词。
+
+- 将输出 $O$ 写回全局显存 (Writing O to Gmem)
+
+  ```
+  // 处理 K 维度的 Padding
+  if (!Is_even_K) {
+      #pragma unroll
+      for (int k = 0; k < size(tOpO); ++k) { tOpO(k) = get<1>(tOcO(0, 0, k)) < params.d; }
+  }
+
+  // 最终写回
+  FLASH_NAMESPACE::copy<Is_even_MN, Is_even_K, false, false>(
+      gmem_tiled_copy_O, tOrO, tOgO, tOcO, tOpO, binfo.actual_seqlen_q - m_block * kBlockM
+  );
+  ```
+
+### 总结
+
+整体上整个FlashAttention2的源码到这就解读完了，其实还有其他的分支情况，比如各种mask和各种特殊情况，但是理解了full attention之后其他的部分应该就比较清晰了。
+
+最主要的是如果有任何一个地方不理解，打印出来直观看看数据是如何排布应该就会清晰了。
