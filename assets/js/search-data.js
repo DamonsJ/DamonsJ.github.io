@@ -44,7 +44,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/life/";
           },
-        },{id: "post-c-中的-mutable关键字",
+        },{id: "post-pyzmq的简介",
+      
+        title: "PyZMQ的简介",
+      
+      description: "使用PyZMQ过程中的记录。",
+      section: "Posts",
+      handler: () => {
+        
+          window.location.href = "/programming/2026/01/18/pyzmq-introduction.html";
+        
+      },
+    },{id: "post-c-中的-mutable关键字",
       
         title: "c++中的 mutable关键字",
       
