@@ -283,7 +283,7 @@ Layout<Shape<_8, Int<kBlockKSmem>>,Stride<Int<kBlockKSmem>, _1>>{}
     Fig. 2. swizzle变化之后的矩阵视图
 </div>
 
-为什么需要swizzle？
+为什么需要swizzle？{%sidenote 'eight' '参考[文章](https://mp.weixin.qq.com/s/IpGhpQlQBoE3RVBZqx2o-w)介绍，其中对Bank Conflict详细解释并附有例子。 Bank Conflict发生在同一warp（32个线程）中，两个或更多线程在同一时钟周期内访问同一bank的不同地址。GPU的Shared Memory划分为32个独立bank，每个bank每个时钟周期只能服务一个内存请求。当多个线程同时请求同一bank时，请求被序列化执行，导致性能下降。'%}
 
 GPU的smem 被分为固定数量的 bank（Ampere起通常是32 个），每个 bank 服务固定“地址模”的请求，每个bank是4byte 也就是2个float16。
 在一次指令内，如果多个线程访问映射到同一个 bank 的不同地址，就发生冲突（串行化），吞吐骤降。
