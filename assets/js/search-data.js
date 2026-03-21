@@ -127,6 +127,11 @@ ninja.data = [{
           description: "介绍一种方法，通过4个2构造任意整数",
           section: "Math",handler: () => {
               window.location.href = "/math/2025-03-08-making-any-integer-with-four-2s.html";
+            },},{id: "math-几个不等式的几何证明",
+          title: '几个不等式的几何证明',
+          description: "介绍几个不等式的可视化几何证明方法",
+          section: "Math",handler: () => {
+              window.location.href = "/math/2026-03-21-The-Shape-of-Inequalities.html";
             },},{id: "projects-project-1",
           title: 'project 1',
           description: "with background image",
