@@ -44,7 +44,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/life/";
           },
-        },{id: "post-pyzmq的简介",
+        },{id: "post-最常用的-linux-命令的-windows-对应命令",
+      
+        title: "最常用的 Linux 命令的 Windows 对应命令",
+      
+      description: "记录最常用的 Linux 命令的 Windows 对应命令。",
+      section: "Posts",
+      handler: () => {
+        
+          window.location.href = "/programming/2026/04/03/linux-commands-in-windows.html";
+        
+      },
+    },{id: "post-pyzmq的简介",
       
         title: "PyZMQ的简介",
       
