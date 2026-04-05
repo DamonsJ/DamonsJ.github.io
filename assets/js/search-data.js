@@ -44,7 +44,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/life/";
           },
-        },{id: "post-最常用的-linux-命令的-windows-对应命令",
+        },{id: "post-python中多进程实现任务调度",
+      
+        title: "python中多进程实现任务调度",
+      
+      description: "记录python中实现多进程任务调度的工程实现,其中的进程调度架构类似vllm中的实现。",
+      section: "Posts",
+      handler: () => {
+        
+          window.location.href = "/programming/2026/04/06/python-task-scheduler.html";
+        
+      },
+    },{id: "post-最常用的-linux-命令的-windows-对应命令",
       
         title: "最常用的 Linux 命令的 Windows 对应命令",
       
