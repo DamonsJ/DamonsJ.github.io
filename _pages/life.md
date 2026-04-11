@@ -2,7 +2,7 @@
 layout: default
 title: Life
 permalink: /life/
-nav: true
+nav: false
 nav_order: 8
 blog_name: Isidora
 description: 在他盼望着城市时，心里就会想到所有这一切。因此，伊西多拉便是他梦中的城市，但只有一点不同。在梦中的城市里，他正值青春，而到达伊西多拉城时，他已年老。广场上有一堵墙，老人们倚坐在那里看着过往的年轻人；他和这些老人并坐在一起。当初的欲望已是记忆。
