@@ -37,13 +37,6 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/reading/";
           },
-        },{id: "nav-life",
-          title: "Life",
-          description: "在他盼望着城市时，心里就会想到所有这一切。因此，伊西多拉便是他梦中的城市，但只有一点不同。在梦中的城市里，他正值青春，而到达伊西多拉城时，他已年老。广场上有一堵墙，老人们倚坐在那里看着过往的年轻人；他和这些老人并坐在一起。当初的欲望已是记忆。",
-          section: "Navigation",
-          handler: () => {
-            window.location.href = "/life/";
-          },
         },{id: "post-python中多进程实现任务调度",
       
         title: "python中多进程实现任务调度",
@@ -199,6 +192,11 @@ ninja.data = [{
           description: "another project with an image 🎉",
           section: "Projects",handler: () => {
               window.location.href = "/projects/9_project.html";
+            },},{id: "reading-卡尔维诺-不确定世界中的旅行者",
+          title: '卡尔维诺：不确定世界中的旅行者',
+          description: "",
+          section: "Reading",handler: () => {
+              window.location.href = "/reading/calvino-traveller-uncertainty.html";
             },},{id: "reading-看不见的城市",
           title: '看不见的城市',
           description: "",
