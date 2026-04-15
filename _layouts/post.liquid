@@ -23,19 +23,16 @@ layout: default
       {% if page.meta %}• {{ page.meta }}{% endif %}
     </p>
     <p class="post-tags">
-      {% if url_beginning == '/blog/' %}
-        <a href="{{ year | prepend: '/blog/' | relative_url }}"> <i class="fa-solid fa-calendar fa-sm"></i> {{ year }} </a>
+      {% if page.collection == 'posts' %}
+        {% assign col_prefix = '/blog/' %}
       {% else %}
-        <i class="fa-solid fa-calendar fa-sm"></i> {{ year }}
+        {% assign col_prefix = '/' | append: page.collection | append: '/' %}
       {% endif %}
+      <a href="{{ year | prepend: col_prefix | relative_url }}"> <i class="fa-solid fa-calendar fa-sm"></i> {{ year }} </a>
       {% if tags != '' %}
         &nbsp; &middot; &nbsp;
         {% for tag in page.tags %}
-          {% if url_beginning == '/blog/' %}
-            <a href="{{ tag | slugify | prepend: '/blog/tag/' | relative_url }}"> <i class="fa-solid fa-hashtag fa-sm"></i> {{ tag }}</a>
-          {% else %}
-            <i class="fa-solid fa-hashtag fa-sm"></i> {{ tag }}
-          {% endif %}
+          <a href="{{ tag | slugify | prepend: col_prefix | append: 'tag/' | relative_url }}"> <i class="fa-solid fa-hashtag fa-sm"></i> {{ tag }}</a>
           {% unless forloop.last %}
             &nbsp;
           {% endunless %}
@@ -45,11 +42,9 @@ layout: default
       {% if categories != '' %}
         &nbsp; &middot; &nbsp;
         {% for category in page.categories %}
-          {% if url_beginning == '/blog/' %}
-            <a href="{{ category | slugify | prepend: '/blog/category/' | relative_url }}"> <i class="fa-solid fa-tag fa-sm"></i> {{ category -}}</a>
-          {% else %}
-            <i class="fa-solid fa-tag fa-sm"></i> {{ category }}
-          {% endif %}
+          <a href="{{ category | slugify | prepend: col_prefix | append: 'category/' | relative_url }}">
+            <i class="fa-solid fa-tag fa-sm"></i> {{ category -}}
+          </a>
           {% unless forloop.last %}
             &nbsp;
           {% endunless %}

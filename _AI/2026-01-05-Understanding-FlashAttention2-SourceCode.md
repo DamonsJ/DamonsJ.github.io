@@ -3,7 +3,7 @@ layout: post
 title: 解析FlashAttention2源码
 date: 2026-01-05 18:48:00
 description: 记录一下学习FlashAttention2源码过程中对一些概念的理解
-tags: cute cuda fa2
+tags: CUTE CUDA fa2
 categories: AI
 pretty_table: true
 toc:
