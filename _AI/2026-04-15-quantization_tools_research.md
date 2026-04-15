@@ -3,7 +3,7 @@ layout: post
 title: AIGC 模型量化工具调研报告
 date: 2026-04-15 12:00:00
 description: 对主流量化工具的调研与对比
-tags: quantization
+tags: quantization AIGC
 categories: AI
 pretty_table: true
 toc:
