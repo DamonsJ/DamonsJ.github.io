@@ -137,6 +137,11 @@ ninja.data = [{
           description: "记录一下学习FlashAttention2源码过程中对一些概念的理解",
           section: "Ai",handler: () => {
               window.location.href = "/AI/2026-01-05-Understanding-FlashAttention2-SourceCode.html";
+            },},{id: "AI-aigc-模型量化工具调研报告",
+          title: 'AIGC 模型量化工具调研报告',
+          description: "对主流量化工具的调研与对比",
+          section: "Ai",handler: () => {
+              window.location.href = "/AI/2026-04-15-quantization_tools_research.html";
             },},{id: "math-如何通过4个2构造任意整数",
           title: '如何通过4个2构造任意整数',
           description: "介绍一种方法，通过4个2构造任意整数",
