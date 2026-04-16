@@ -12,6 +12,7 @@ toc:
 
 > 本文基于 vLLM V1 (v0.18.x) 源码阅读整理，记录了从请求进入到 token 输出的完整链路。
 > 完整的架构图可下载 [vllm-architecture.drawio](/assets/img/AI/reading-vllm-v1/vllm-architecture.drawio) 在 draw.io 中查看。
+> 调度过程详解图可下载 [vllm-scheduler-64videos.drawio](/assets/img/AI/reading-vllm-v1/vllm-scheduler-64videos.drawio) 查看 64 路视频的调度全景。
 
 ## 整体架构概览
 
@@ -213,6 +214,77 @@ def run_busy_loop(self):
 - `allocate_slots` / `free` / `cache_blocks` 操作
 - **Prefix Caching**: `hash_request_tokens` + `find_longest_cache_hit`
 
+#### 2.3.1 统一的 Token-Gap 调度模型
+
+V1 Scheduler 最优雅的设计之一是**没有"prefill 阶段"和"decode 阶段"的区分**。源码注释明确写道：
+
+> _"There's no 'decoding phase' nor 'prefill phase' in the scheduler. Each request just has the `num_computed_tokens` and `num_tokens_with_spec`."_
+
+调度器用两个数值统一描述所有请求的状态：
+
+| 属性                   | 含义                                               |
+| ---------------------- | -------------------------------------------------- |
+| `num_computed_tokens`  | 模型已经计算到的位置                               |
+| `num_tokens_with_spec` | 目标位置（= prompt长度 + 已生成输出 + 投机 token） |
+
+每一步，调度器让 `num_computed_tokens` 尽量追赶 `num_tokens_with_spec`：
+
+- **"Prefill"** 不过是差距很大（需要处理整个 prompt）
+- **"Decode"** 不过是差距为 1（每次生成一个 token）
+- **"Chunked Prefill"** 是差距很大但被 budget 截断
+
+这个统一模型足够通用，可以覆盖 chunked prefill、prefix caching、speculative decoding 等所有场景。
+
+#### 2.3.2 调度循环与 Token Budget
+
+每次 `schedule()` 的执行流程：
+
+```
+token_budget = max_num_scheduled_tokens (通常 = max_num_batched_tokens)
+
+Step 1: 遍历 running 队列（decode 优先）
+  ├── 每个 request: num_new = target - computed (decode 通常 = 1)
+  ├── allocate_slots → 分配 KV blocks
+  ├── 失败 → 触发 Preemption（抢占低优先级请求）
+  └── budget -= num_new
+
+Step 2: 遍历 waiting 队列（仅在无抢占时）
+  ├── 前提: budget > 0 且 len(running) < max_num_seqs
+  ├── num_new = min(remaining_prompt, budget)
+  ├── chunked prefill: 如果 prompt 太长，分多个 step 完成
+  ├── 分配 KV blocks → 移入 running
+  └── budget -= num_new
+
+断言: sum(num_scheduled_tokens) <= max_num_scheduled_tokens
+```
+
+#### 2.3.3 关键调度参数对比
+
+| 参数                     | 限制维度                 | 含义                                                          |
+| ------------------------ | ------------------------ | ------------------------------------------------------------- |
+| `max_model_len`          | **单请求**，整个生命周期 | 一个请求 prompt + output 的**最大总长度**，达到后强制停止     |
+| `max_num_batched_tokens` | **所有请求**，单个 step  | 一次 forward pass 处理的**总 token 数上限**（= token budget） |
+| `max_num_seqs`           | **所有请求**，持续       | running 队列的**最大长度**，限制同时活跃的请求数              |
+
+简单类比：`max_model_len` 管**一个请求能跑多远**，`max_num_batched_tokens` 管**一步能干多少活**，`max_num_seqs` 管**同时能跑多少个**。
+
+#### 2.3.4 抢占机制 (Preemption)
+
+当 KV block 分配失败时，调度器逐步抢占优先级最低的请求来释放空间：
+
+```
+while allocate_slots 失败:
+  if PRIORITY 策略:
+    preempt max(running, key=(priority, arrival_time))  # 优先级最低的
+  else (FCFS):
+    preempt running.pop()  # 最晚加入的
+
+被抢占的请求:
+  ① 释放所有 KV blocks
+  ② num_computed_tokens 重置为 0
+  ③ 放回 waiting 队列头部（优先重新调度）
+```
+
 ## 三、Worker 进程
 
 {% include figure.liquid loading="eager" path="assets/img/AI/reading-vllm-v1/03-gpu-worker.png" class="img-fluid rounded z-depth-1" zoomable=true %}
@@ -399,6 +471,97 @@ KV Cache 不足时，V1 默认 **RECOMPUTE** 模式（V0 支持 SWAP）：将低
 - 每个 step 结束后，已完成的请求立即被移出，新请求可在下个 step 加入
 - V1 取消了 prefill/decode 的人为分界，统一用 `{req_id: num_tokens}` 表示调度决策
 - KV Cache 用 PagedAttention 管理，物理块按需分配/回收
+
+### 5.6 实例：Qwen3VL 64路视频理解的调度过程
+
+> 完整的调度过程图可下载 [vllm-scheduler-64videos.drawio](/assets/img/AI/reading-vllm-v1/vllm-scheduler-64videos.drawio) 在 draw.io 中查看。
+
+{% include figure.liquid loading="eager" path="assets/img/AI/reading-vllm-v1/vllm-scheduler-64videos.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+
+以 Qwen3VL 处理 64 个视频理解请求为例，展示 Continuous Batching 在真实多模态场景下的调度行为。
+
+#### Step-by-Step 调度过程
+
+**Step 1** — 首批进入：
+
+```
+Budget: 8192
+├── R1: prefill 7000 (一次完成)        → budget 剩余 1192
+└── R2: prefill 1192 (分块! 仅部分)    → budget = 0
+Batch size: 2, Waiting: 62
+```
+
+**Step 2** — 混合调度开始：
+
+```
+Budget: 8192
+├── R1: decode 1   (已完成 prefill)    → budget 8191
+├── R2: prefill 5808 (完成剩余部分)    → budget 2383
+└── R3: prefill 2383 (新请求, 分块)    → budget = 0
+Batch size: 3, Waiting: 61
+```
+
+> 这就是 Continuous Batching 的核心：**R1 在 decode，R2 在继续 prefill，R3 同时开始 prefill，三种状态共存于同一个 batch！**
+
+**Step 4** — 阶梯模式形成：
+
+```
+Budget: 8192
+├── R1-R3: decode × 3 = 3              → budget 8189
+├── R4: prefill 3427 (完成剩余)        → budget 4762
+└── R5: prefill 4762 (新请求, 分块)    → budget = 0
+Batch size: 5, Waiting: 59
+```
+
+**Step 6** — 加速效应：
+
+```
+Budget: 8192
+├── R1-R5: decode × 5 = 5              → budget 8187
+├── R6: prefill 1050 (完成)            → budget 7137
+├── R7: prefill 7000 (一次完成!)       → budget 137
+└── R8: prefill 137 (分块)             → budget = 0
+Batch size: 8, Waiting: 56
+```
+
+**关键洞察：decode 请求越多 → 每个只消耗 1 token → 剩余 budget 越大 → 新请求 prefill 越快！**
+
+**Step 40+** — 全速运行（running 达到 `max_num_seqs=32` 上限）：
+
+```
+Budget: 8192
+├── R1-R32: decode × 32 = 32 (仅占 0.4%!)  → budget 8160
+├── R33: prefill 7000 (从 waiting 进入)     → budget 1160
+└── R34: prefill 1160 (分块)                → budget = 0
+```
+
+**Step 200+** — 请求轮替：
+
+```
+R1 生成完毕 → 释放 slot 和 KV blocks
+→ R33-R64 中的下一个立即从 waiting 进入 running
+→ 开始 prefill，循环直到所有 64 个请求完成
+```
+
+#### 三阶段全景
+
+| 阶段            | Step 范围   | 瓶颈         | 状态                                             |
+| --------------- | ----------- | ------------ | ------------------------------------------------ |
+| **阶梯式接入**  | Step 1-40   | token budget | running 从 2 → 32 逐步增长                       |
+| **全速 decode** | Step 41-200 | max_num_seqs | 32 个请求全在 decode，新 prefill 充分利用 budget |
+| **请求轮替**    | Step 200+   | 请求完成速度 | R1 完成 → R33 进入，循环直到 R64                 |
+
+#### 对比：Static Batching vs Continuous Batching
+
+|                  | Static Batching                  | Continuous Batching   |
+| ---------------- | -------------------------------- | --------------------- |
+| 调度方式         | 等一批全部完成再处理下一批       | 随到随进，完成即走    |
+| batch 大小       | 固定（受限于显存预分配）         | 动态增减              |
+| prefill + decode | 严格分开                         | 同一 batch 混合       |
+| 64路视频估计步数 | 2批 × (7000+200) ≈ **14,400 步** | 阶梯并行 ≈ **440 步** |
+| GPU 利用率       | 短请求等长请求，大量空转         | 几乎满负载            |
+
+Continuous Batching 在这个场景下可以带来约 **30 倍**的吞吐量提升。
 
 ## 六、GPUModelRunner V1 vs Model Runner V2 (MRV2)
 
