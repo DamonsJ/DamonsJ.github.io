@@ -37,7 +37,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/reading/";
           },
-        },{id: "post-python中多进程实现任务调度",
+        },{id: "post-揭开浮点数的面纱",
+      
+        title: "揭开浮点数的面纱",
+      
+      description: "转载一篇浮点数的记录。",
+      section: "Posts",
+      handler: () => {
+        
+          window.location.href = "/programming/2026/05/07/floating-point.html";
+        
+      },
+    },{id: "post-python中多进程实现任务调度",
       
         title: "python中多进程实现任务调度",
       
