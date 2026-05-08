@@ -37,7 +37,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/reading/";
           },
-        },{id: "post-揭开浮点数的面纱",
+        },{id: "post-揭开cuda-stream的面纱",
+      
+        title: "揭开CUDA Stream的面纱",
+      
+      description: "从基础概念到 CUDA Graphs / Stream-Ordered Allocator / Hopper 异步特性，系统梳理 CUDA Stream 的过去、现在与今天的最佳实践。",
+      section: "Posts",
+      handler: () => {
+        
+          window.location.href = "/programming/2026/05/08/cuda-streams-and-concurrency.html";
+        
+      },
+    },{id: "post-揭开浮点数的面纱",
       
         title: "揭开浮点数的面纱",
       
