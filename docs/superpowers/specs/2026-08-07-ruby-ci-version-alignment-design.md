@@ -20,6 +20,7 @@ Restore GitHub Actions dependency installation by making every Ruby-based workfl
 - Leave `.github/workflows/deploy.yml` unchanged because it already uses Ruby 3.3.5.
 - Leave `Gemfile`, `Gemfile.lock`, and Bundler 2.6.9 unchanged.
 - Extend `test/test_ci_workflows.py` to scan every workflow containing `ruby/setup-ruby@v1` and require `ruby-version: "3.3.5"`. The test reports the offending workflow path if a different version is introduced later.
+- Remove the now-unused Reading tags `马里奥·普佐` and `犯罪小说` from `_data/taxonomy.yml`. The article that used them has already been deleted, and the taxonomy workflow intentionally rejects unused controlled terms after dependency setup succeeds.
 
 ## Verification
 
