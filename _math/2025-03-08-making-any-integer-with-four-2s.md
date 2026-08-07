@@ -3,8 +3,9 @@ layout: post
 title: 如何通过4个2构造任意整数
 date: 2025-03-08 22:20:00
 description: 介绍一种方法，通过4个2构造任意整数
-tags: 杂项 转载
-categories: math
+tags: [数论, 数学构造]
+categories: [趣味数学]
+source_type: repost
 ---
 
 这篇文章是我从[YC](https://news.ycombinator.com/)上的帖子中看到的，相当于一个转载，感兴趣请参考[原始博客](https://eli.thegreenplace.net/2025/making-any-integer-with-four-2s/).

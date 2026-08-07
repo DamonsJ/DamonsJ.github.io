@@ -1,0 +1,72 @@
+name: Validate blog taxonomy
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "_AI/**"
+      - "_posts/**"
+      - "_math/**"
+      - "_reading/**"
+      - "_data/taxonomy.yml"
+      - "_includes/collection_taxonomy.liquid"
+      - "_layouts/**"
+      - "_pages/**"
+      - "_scripts/search.liquid.js"
+      - "scripts/validate_taxonomy.rb"
+      - "test/test_taxonomy_validator.rb"
+      - "_config.yml"
+      - "Gemfile"
+      - "Gemfile.lock"
+      - ".github/workflows/taxonomy.yml"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "_AI/**"
+      - "_posts/**"
+      - "_math/**"
+      - "_reading/**"
+      - "_data/taxonomy.yml"
+      - "_includes/collection_taxonomy.liquid"
+      - "_layouts/**"
+      - "_pages/**"
+      - "_scripts/search.liquid.js"
+      - "scripts/validate_taxonomy.rb"
+      - "test/test_taxonomy_validator.rb"
+      - "_config.yml"
+      - "Gemfile"
+      - "Gemfile.lock"
+      - ".github/workflows/taxonomy.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2.2"
+          bundler-cache: true
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+          pip3 install --upgrade jupyter
+
+      - name: Validate source taxonomy
+        run: bundle exec ruby scripts/validate_taxonomy.rb
+
+      - name: Test taxonomy validator
+        run: bundle exec ruby -Itest test/test_taxonomy_validator.rb
+
+      - name: Build site
+        env:
+          JEKYLL_ENV: production
+        run: bundle exec jekyll build
+
+      - name: Validate generated archives and search data
+        run: bundle exec ruby scripts/validate_taxonomy.rb --site _site

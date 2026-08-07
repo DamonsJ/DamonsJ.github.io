@@ -32,7 +32,9 @@ layout: default
       {% if tags != '' %}
         &nbsp; &middot; &nbsp;
         {% for tag in page.tags %}
-          <a href="{{ tag | slugify | prepend: col_prefix | append: 'tag/' | relative_url }}"> <i class="fa-solid fa-hashtag fa-sm"></i> {{ tag }}</a>
+          <a href="{{ tag | slugify | prepend: 'tag/' | prepend: col_prefix | append: '/' | relative_url }}">
+            <i class="fa-solid fa-hashtag fa-sm"></i> {{ tag -}}
+          </a>
           {% unless forloop.last %}
             &nbsp;
           {% endunless %}
@@ -42,7 +44,7 @@ layout: default
       {% if categories != '' %}
         &nbsp; &middot; &nbsp;
         {% for category in page.categories %}
-          <a href="{{ category | slugify | prepend: col_prefix | append: 'category/' | relative_url }}">
+          <a href="{{ category | slugify | prepend: 'category/' | prepend: col_prefix | append: '/' | relative_url }}">
             <i class="fa-solid fa-tag fa-sm"></i> {{ category -}}
           </a>
           {% unless forloop.last %}

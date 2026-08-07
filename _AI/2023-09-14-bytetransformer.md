@@ -3,8 +3,8 @@ layout: post
 title: ByteTransformer源码解读
 date: 2023-09-14 22:21:00
 description: 记录学习ByteTransformer过程中的代码释疑
-tags: 源码解读
-categories: AI
+tags: [BERT, CUDA, 源码解读]
+categories: [GPU 与高性能计算]
 pretty_table: true
 toc:
   sidebar: left

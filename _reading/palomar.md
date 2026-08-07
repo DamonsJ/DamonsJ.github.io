@@ -4,8 +4,9 @@ title: 帕洛马尔
 author: Italo Calvino
 cover: assets/img/book_covers/palomar.jpg
 isbn: 9787544722315 # use ISBN to fetch cover (if no `olid` is provided, dashes are optional)
-categories: "小说"
-tags: "文学"
+categories: [小说]
+tags: [文学, 卡尔维诺, 哲思小说]
+date: 2025-06-08
 started: 2025-06-07
 finished: 2025-06-08
 released: 1983

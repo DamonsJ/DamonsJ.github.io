@@ -4,8 +4,9 @@ title: 看不见的城市
 author: Italo Calvino
 cover: assets/img/book_covers/invisible-cities.jpg
 isbn: 9787544777995 # use ISBN to fetch cover (if no `olid` is provided, dashes are optional)
-categories: "小说"
-tags: "文学"
+categories: [小说]
+tags: [文学, 卡尔维诺, 后现代主义]
+date: 2021-12-18
 started: 2021-12-11
 finished: 2021-12-18
 released: 1972

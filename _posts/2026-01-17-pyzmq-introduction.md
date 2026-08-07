@@ -3,8 +3,8 @@ layout: post
 title: PyZMQ的简介
 date: 2026-01-17 17:10:00
 description: 使用PyZMQ过程中的记录。
-tags: computer communication
-categories: programming
+tags: [Python, ZeroMQ, 网络通信, 异步编程]
+categories: [分布式与并发]
 giscus_comments: false
 related_posts: false
 pretty_table: true

@@ -3,8 +3,9 @@ layout: post
 title: 揭开浮点数的面纱
 date: 2026-05-06 19:42:00
 description: 转载一篇浮点数的记录。
-tags: computer floating-point 转载
-categories: programming
+tags: [浮点数, IEEE 754, 数值计算]
+categories: [计算机基础]
+source_type: repost
 giscus_comments: false
 related_posts: false
 pretty_table: true

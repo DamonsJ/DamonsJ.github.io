@@ -63,7 +63,9 @@ ninja.data = [
       {% else %}
         title: "{{ title | truncatewords: 13 }}",
       {% endif %}
-      description: "{{ post.description | strip_html | strip_newlines | escape | strip }}",
+      taxonomySource: "{{ post.path | escape }}",
+      keywords: "{{ post.categories | join: ' ' | escape }} {{ post.tags | join: ' ' | escape }}{% if post.source_type == 'repost' %} 转载{% endif %}",
+      description: "{{ post.description | strip_html | strip_newlines | escape | strip }} {{ post.categories | join: ' ' | escape }} {{ post.tags | join: ' ' | escape }}{% if post.source_type == 'repost' %} 转载{% endif %}",
       section: "Posts",
       handler: () => {
         {% if post.redirect == blank %}
@@ -87,7 +89,9 @@ ninja.data = [
           {%- endif -%}
           id: "{{ collection.label }}-{{ title | slugify }}",
           title: '{{ title | escape | emojify | truncatewords: 13 }}',
-          description: "{{ item.description | strip_html | strip_newlines | escape | strip }}",
+          taxonomySource: "{{ item.path | escape }}",
+          keywords: "{{ item.categories | join: ' ' | escape }} {{ item.tags | join: ' ' | escape }}{% if item.source_type == 'repost' %} 转载{% endif %}",
+          description: "{{ item.description | strip_html | strip_newlines | escape | strip }} {{ item.categories | join: ' ' | escape }} {{ item.tags | join: ' ' | escape }}{% if item.source_type == 'repost' %} 转载{% endif %}",
           section: "{{ collection.label | capitalize }}",
           {%- unless item.inline -%}
             handler: () => {

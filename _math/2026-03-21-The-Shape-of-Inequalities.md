@@ -3,8 +3,9 @@ layout: post
 title: 几个不等式的几何证明
 date: 2026-03-21 08:12:00
 description: 介绍几个不等式的可视化几何证明方法
-tags: 几何代数 杂项 转载
-categories: math
+tags: [不等式, 几何证明, AM-GM]
+categories: [数学可视化]
+source_type: repost
 ---
 
 这篇文章翻译/整理自 Andrei N. Ciobanu 的博文《The Shape of Inequalities》，原文见：[The Shape of Inequalities](https://www.andreinc.net/2026/03/16/the-shape-of-inequalities/)。

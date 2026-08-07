@@ -3,8 +3,8 @@ layout: post
 title: Attention系列整理Part2-FlashAttention
 date: 2025-04-26 12:42:00
 description: 整理FlashAttention系列以及其计算原理
-tags: attention
-categories: AI
+tags: [Attention, FlashAttention, CUDA, GPU]
+categories: [GPU 与高性能计算]
 pretty_table: true
 toc:
   beginning: true

@@ -13,6 +13,7 @@
 ### Task 1: Define validator behavior test-first
 
 **Files:**
+
 - Create: `test/test_taxonomy_validator.rb`
 - Create: `scripts/validate_taxonomy.rb`
 
@@ -46,6 +47,7 @@ Expected: all tests pass.
 ### Task 2: Install the controlled vocabulary and migrate front matter
 
 **Files:**
+
 - Create: `_data/taxonomy.yml`
 - Modify: `_config.yml`
 - Modify: `_AI/*.md`
@@ -72,7 +74,7 @@ categories: [GPU 与高性能计算]
 tags: [BERT, CUDA, 源码解读]
 ```
 
-Add `source_type: repost` only to the seven entries marked repost. Do not change content after the closing front-matter delimiter.
+Add `source_type: repost` only to the five entries marked repost. Add a `date` matching `finished` to the four reading entries so their displayed year links match generated year archives. Do not change content after the closing front-matter delimiter.
 
 - [ ] **Step 4: Remove legacy display arrays**
 
@@ -87,6 +89,7 @@ Expected: `Taxonomy source validation passed (24 entries).`
 ### Task 3: Render active taxonomy and correct archive links
 
 **Files:**
+
 - Create: `_includes/collection_taxonomy.liquid`
 - Modify: `_pages/programming.md`
 - Modify: `_pages/AI.md`
@@ -138,8 +141,8 @@ Expected: build succeeds and no archive page is missing.
 ### Task 4: Make categories and tags searchable
 
 **Files:**
+
 - Modify: `_scripts/search.liquid.js`
-- Modify: `assets/js/search/ninja-keys.min.js`
 - Modify: `test/test_taxonomy_validator.rb`
 
 - [ ] **Step 1: Add failing search-output tests**
@@ -154,18 +157,22 @@ Expected: failure because search output has no taxonomy metadata.
 
 - [ ] **Step 3: Generate search keywords**
 
-For posts and all non-post collection documents, add:
+For posts and all non-post collection documents, add taxonomy metadata and append it to the generated action description:
 
 ```liquid
-taxonomySource: "{{ item.path }}",
-keywords: "{{ item.categories | join: ' ' }} {{ item.tags | join: ' ' }}{% if item.source_type == 'repost' %} 转载{% endif %}",
+taxonomySource: "{{ item.path }}", keywords: "{{ item.categories | join: ' ' }}
+{{ item.tags | join: ' ' -}}
+{%- if item.source_type == 'repost' %} 转载{% endif %}", description: "{{ item.description }}
+{{ item.categories | join: ' ' }}
+{{ item.tags | join: ' ' -}}
+{%- if item.source_type == 'repost' %} 转载{% endif %}",
 ```
 
 Use `post` rather than `item` in the posts loop.
 
-- [ ] **Step 4: Include keywords in Ninja Keys scoring**
+- [ ] **Step 4: Include taxonomy in Ninja Keys scoring**
 
-Change the vendored score input from title plus description to title plus description plus `(e.keywords || "")`. Do not alter rendering, so taxonomy remains searchable but visually hidden.
+Keep the dedicated `keywords` field for validation and append the same terms to each generated action description. Ninja Keys 1.2.11 already scores descriptions but renders only titles, so taxonomy becomes searchable without modifying the vendored library or visible search result.
 
 - [ ] **Step 5: Build and verify search output**
 
@@ -176,6 +183,7 @@ Expected: every article passes its generated keyword check.
 ### Task 5: Enforce the taxonomy in CI and complete verification
 
 **Files:**
+
 - Create: `.github/workflows/taxonomy.yml`
 - Modify: `docs/superpowers/specs/2026-08-07-blog-taxonomy-design.md`
 

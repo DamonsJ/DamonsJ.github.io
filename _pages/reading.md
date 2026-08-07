@@ -25,4 +25,5 @@ pagination:
     <p align="left">{{ page.description }}</p>
     <p align="right"> ——《看不见的城市·城市与欲望之五》</p>
   </div>
+  {% include collection_taxonomy.liquid collection="reading" %}
 </div>

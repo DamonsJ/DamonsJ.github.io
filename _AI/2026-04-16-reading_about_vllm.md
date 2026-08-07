@@ -3,8 +3,8 @@ layout: post
 title: vLLM V1 源码阅读笔记
 date: 2026-04-16 12:00:00
 description: 阅读 vLLM V1 源码后的架构理解与核心流程记录
-tags: 源码解读 LLM
-categories: AI
+tags: [vLLM, LLM, 推理系统, 源码解读]
+categories: [大模型系统]
 pretty_table: true
 toc:
   sidebar: left

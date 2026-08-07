@@ -25,21 +25,7 @@ pagination:
     <p align="right"> ——《看不见的城市·城市与眼睛之三》</p>
   </div>
 
-{% if site.AI_tags and site.AI_tags.size > 0 %}
-
-  <div class="tag-category-list">
-    <ul class="p-0 m-0">
-      {% for tag in site.AI_tags %}
-        <li>
-          <i class="fa-solid fa-hashtag fa-sm"></i> <a href="{{ tag | slugify | prepend: '/AI/tag/' | relative_url }}">{{ tag }}</a>
-        </li>
-        {% unless forloop.last %}
-          <p>&bull;</p>
-        {% endunless %}
-      {% endfor %}
-    </ul>
-  </div>
-{% endif %}
+{% include collection_taxonomy.liquid collection="AI" %}
 
 <ul class="post-list">
 

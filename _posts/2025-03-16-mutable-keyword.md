@@ -3,8 +3,8 @@ layout: post
 title: c++中的 mutable关键字
 date: 2025-03-15 17:10:00
 description: 简单解释一下c++中的 mutable关键字。
-tags: c++
-categories: programming
+tags: [C++, 现代C++, 语言特性]
+categories: [C++ 语言]
 giscus_comments: false
 related_posts: false
 ---

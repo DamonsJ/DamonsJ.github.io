@@ -3,8 +3,9 @@ layout: post
 title: 最常用的 Linux 命令的 Windows 对应命令
 date: 2026-04-02 17:10:00
 description: 记录最常用的 Linux 命令的 Windows 对应命令。
-tags: computer 转载
-categories: programming
+tags: [Windows, PowerShell, 命令行]
+categories: [开发工具]
+source_type: repost
 giscus_comments: false
 related_posts: false
 pretty_table: true

@@ -3,8 +3,8 @@ layout: post
 title: 对CUTE中的Thread-Value Layout的理解
 date: 2025-12-10 12:42:00
 description: 记录一下学习cute过程中的对Thread-Value Layout的理解
-tags: CUTE CUDA attention
-categories: AI
+tags: [CuTe, CUTLASS, CUDA, 张量布局]
+categories: [GPU 与高性能计算]
 pretty_table: true
 toc:
   beginning: true

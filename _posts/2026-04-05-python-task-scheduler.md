@@ -3,8 +3,8 @@ layout: post
 title: python中多进程实现任务调度
 date: 2026-04-05 18:07:00
 description: 记录python中实现多进程任务调度的工程实现,其中的进程调度架构类似vllm中的实现。
-tags: computer python
-categories: programming
+tags: [Python, 多进程, 任务调度, 系统设计]
+categories: [分布式与并发]
 giscus_comments: false
 related_posts: false
 pretty_table: true

@@ -3,8 +3,8 @@ layout: post
 title: Attention系列整理Part1-基础
 date: 2025-04-02 16:47:00
 description: 整理Attention的基础知识，推导计算量
-tags: attention
-categories: AI
+tags: [Attention, Transformer, 模型原理]
+categories: [大模型基础]
 pretty_table: true
 toc:
   beginning: true

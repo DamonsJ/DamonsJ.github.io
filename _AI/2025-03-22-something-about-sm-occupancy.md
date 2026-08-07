@@ -3,8 +3,8 @@ layout: post
 title: 关于SM Occupancy的一些解释说明
 date: 2025-03-21 11:46:00
 description: 解释SM Occupancy的计算和意义
-tags: GPU
-categories: AI
+tags: [CUDA, GPU, 性能分析]
+categories: [GPU 与高性能计算]
 pretty_table: true
 ---
 

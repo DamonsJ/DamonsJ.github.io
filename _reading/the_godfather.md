@@ -5,8 +5,9 @@ author: Mario Puzo
 cover: assets/img/book_covers/the_godfather.jpg
 olid: OL43499941M # use Open Library ID to fetch cover (if no `cover` is provided)
 isbn: 7539967447 # use ISBN to fetch cover (if no `olid` is provided, dashes are optional)
-categories: "小说"
-tags: "文学"
+categories: [小说]
+tags: [文学, 马里奥·普佐, 犯罪小说]
+date: 2024-09-07
 # buy_link: https://www.amazon.com/Godfather-Deluxe-Mario-Puzo/dp/0593542592
 started: 2024-08-23
 finished: 2024-09-07

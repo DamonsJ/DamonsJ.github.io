@@ -16,21 +16,7 @@ collection: math
     <p align="right"> ——《看不见的城市·城市与眼睛之一》</p>
   </div>
 
-{% if site.math_tags and site.math_tags.size > 0 %}
-
-  <div class="tag-category-list">
-    <ul class="p-0 m-0">
-      {% for tag in site.math_tags %}
-        <li>
-          <i class="fa-solid fa-hashtag fa-sm"></i> <a href="{{ tag | slugify | prepend: 'tag/' | prepend: page.permalink | relative_url }}">{{ tag }}</a>
-        </li>
-        {% unless forloop.last %}
-          <p>&bull;</p>
-        {% endunless %}
-      {% endfor %}
-    </ul>
-  </div>
-{% endif %}
+{% include collection_taxonomy.liquid collection="math" %}
 
 <ul class="post-list">
 

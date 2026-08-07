@@ -3,8 +3,8 @@ layout: post
 title: 揭开CUDA Stream的面纱
 date: 2026-05-08 10:00:00
 description: 从基础概念到 CUDA Graphs / Stream-Ordered Allocator / Hopper 异步特性，系统梳理 CUDA Stream 的过去、现在与今天的最佳实践。
-tags: cuda gpu computer
-categories: programming
+tags: [CUDA, GPU, 并发, 性能优化]
+categories: [GPU 与高性能计算]
 giscus_comments: false
 related_posts: false
 pretty_table: true

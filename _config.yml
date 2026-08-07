@@ -88,7 +88,7 @@ bing_site_verification: # out your bing-site-verification ID (Bing Webmaster)
 
 # blog_name: al-folio # blog_name will be displayed in your blog page
 # blog_description: a simple whitespace theme for academics
-# permalink: /blog/:year/:title/
+permalink: /programming/:year/:month/:day/:title:output_ext
 # lsi: false # produce an index for related posts
 # programming_blog_name: Programming Language
 # programming_blog_description: write something about programming language
@@ -273,11 +273,6 @@ jekyll-archives:
   reading:
     enabled: [year, tags, categories]
 
-# display_tags: ["formatting", "images", "links", "math", "code", "blockquotes"] # these tags will be displayed on the front page of your blog
-# display_categories: ["转载"] # these categories will be displayed on the front page of your blog
-programming_tags: ["c++", "rust", "python", "opengl", "算法", "转载"]
-math_tags: ["微分几何", "线性代数", "概率论", "几何代数", "图形", "图像", "杂项", "转载"]
-AI_tags: ["AIGC", "LLM", "GPU", "源码解读", "attention", "CUDA", "CUTE", "quantization", "diffusion", "rope", "转载"]
 # -----------------------------------------------------------------------------
 # Jekyll Scholar
 # -----------------------------------------------------------------------------

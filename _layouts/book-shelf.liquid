@@ -5,6 +5,7 @@ layout: default
 
 {% if page.books and page.books.size > 0 %}
   {% assign collection = site[page.books] %}
+  {% assign taxonomy = site.data.taxonomy.collections[page.books] %}
   {% if collection and collection.size > 0 %}
     {% for item in collection reversed %}
       {% assign current_year = item.date | date: '%Y' %}
@@ -12,8 +13,9 @@ layout: default
         {% unless forloop.first %}
           </ul>
         {% endunless %}
+        {% assign year_path = current_year | prepend: taxonomy.archive_prefix | append: '/' %}
         <h1 id="y{{item.date | date: "%Y"}}">
-          <a href="{{ current_year | prepend: collection | relative_url }}">{{ current_year }}</a>
+          <a href="{{ year_path | relative_url }}">{{ current_year }}</a>
         </h1>
         <ul>
           {% assign year = current_year %}

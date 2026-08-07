@@ -1,0 +1,94 @@
+collections:
+  posts:
+    directory: _posts
+    archive_prefix: /blog/
+    categories:
+      - C++ 语言
+      - 分布式与并发
+      - 开发工具
+      - 计算机基础
+      - GPU 与高性能计算
+    tags:
+      - C++
+      - 现代C++
+      - 移动语义
+      - 语言特性
+      - Python
+      - ZeroMQ
+      - 网络通信
+      - 异步编程
+      - Windows
+      - PowerShell
+      - 命令行
+      - 多进程
+      - 任务调度
+      - 系统设计
+      - 浮点数
+      - IEEE 754
+      - 数值计算
+      - CUDA
+      - GPU
+      - 并发
+      - 性能优化
+  AI:
+    directory: _AI
+    archive_prefix: /AI/
+    categories:
+      - 大模型基础
+      - GPU 与高性能计算
+      - 生成模型
+      - 模型优化
+      - 大模型系统
+    tags:
+      - BERT
+      - CUDA
+      - 源码解读
+      - GPU
+      - 性能分析
+      - Attention
+      - Transformer
+      - 模型原理
+      - FlashAttention
+      - RoPE
+      - 位置编码
+      - Diffusion
+      - DDPM
+      - DDIM
+      - 采样算法
+      - CuTe
+      - CUTLASS
+      - 张量布局
+      - 模型量化
+      - LLM
+      - 推理优化
+      - vLLM
+      - 推理系统
+  math:
+    directory: _math
+    archive_prefix: /math/
+    categories:
+      - 趣味数学
+      - 数学可视化
+    tags:
+      - 数论
+      - 数学构造
+      - 不等式
+      - 几何证明
+      - AM-GM
+  reading:
+    directory: _reading
+    archive_prefix: /reading/
+    categories:
+      - 文学评论
+      - 小说
+    tags:
+      - 文学
+      - 卡尔维诺
+      - 文学史
+      - 后现代主义
+      - 哲思小说
+      - 马里奥·普佐
+      - 犯罪小说
+
+source_types:
+  - repost

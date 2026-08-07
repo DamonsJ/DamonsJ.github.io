@@ -13,6 +13,7 @@ Reorganize all 24 technical, mathematics, AI, and reading entries into a consist
 - Record provenance with `source_type`. Omit it for original writing; use `source_type: repost` for translated, reproduced, or substantially adapted writing.
 - Keep `源码解读` as a searchable content-form tag because it is useful for discovering code-reading articles.
 - Preserve every filename, collection, layout, date, title, description, article body, and generated article URL.
+- Pin `_posts` to `/programming/:year/:month/:day/:title:output_ext`; otherwise Jekyll's default permalink would insert the new category and silently change Programming article URLs.
 - Old category and tag archive URLs do not require redirects. Jekyll will regenerate archives from the new front matter.
 
 ## Controlled taxonomy
@@ -21,47 +22,47 @@ The canonical vocabulary will live in `_data/taxonomy.yml`. Categories and tags 
 
 ### AI
 
-| Article | Category | Tags |
-| --- | --- | --- |
-| ByteTransformer源码解读 | GPU 与高性能计算 | BERT, CUDA, 源码解读 |
-| 关于SM Occupancy的一些解释说明 | GPU 与高性能计算 | CUDA, GPU, 性能分析 |
-| Attention系列整理Part1-基础 | 大模型基础 | Attention, Transformer, 模型原理 |
+| Article                               | Category         | Tags                                 |
+| ------------------------------------- | ---------------- | ------------------------------------ |
+| ByteTransformer源码解读               | GPU 与高性能计算 | BERT, CUDA, 源码解读                 |
+| 关于SM Occupancy的一些解释说明        | GPU 与高性能计算 | CUDA, GPU, 性能分析                  |
+| Attention系列整理Part1-基础           | 大模型基础       | Attention, Transformer, 模型原理     |
 | Attention系列整理Part2-FlashAttention | GPU 与高性能计算 | Attention, FlashAttention, CUDA, GPU |
-| 旋转位置编码 | 大模型基础 | RoPE, Transformer, 位置编码 |
-| 生成式扩散模型DDPM及其推导 | 生成模型 | Diffusion, DDPM, 模型原理 |
-| 生成式扩散模型采样方法DDIM及其推导 | 生成模型 | Diffusion, DDIM, 采样算法 |
-| 对CUTE中的Thread-Value Layout的理解 | GPU 与高性能计算 | CuTe, CUTLASS, CUDA, 张量布局 |
-| 解析FlashAttention2源码 | GPU 与高性能计算 | FlashAttention, CuTe, CUDA, 源码解读 |
-| AIGC 模型量化工具调研报告 | 模型优化 | 模型量化, LLM, Diffusion, 推理优化 |
-| vLLM V1 源码阅读笔记 | 大模型系统 | vLLM, LLM, 推理系统, 源码解读 |
+| 旋转位置编码                          | 大模型基础       | RoPE, Transformer, 位置编码          |
+| 生成式扩散模型DDPM及其推导            | 生成模型         | Diffusion, DDPM, 模型原理            |
+| 生成式扩散模型采样方法DDIM及其推导    | 生成模型         | Diffusion, DDIM, 采样算法            |
+| 对CUTE中的Thread-Value Layout的理解   | GPU 与高性能计算 | CuTe, CUTLASS, CUDA, 张量布局        |
+| 解析FlashAttention2源码               | GPU 与高性能计算 | FlashAttention, CuTe, CUDA, 源码解读 |
+| AIGC 模型量化工具调研报告             | 模型优化         | 模型量化, LLM, Diffusion, 推理优化   |
+| vLLM V1 源码阅读笔记                  | 大模型系统       | vLLM, LLM, 推理系统, 源码解读        |
 
 ### Programming
 
-| Article | Category | Tags | Source type |
-| --- | --- | --- | --- |
-| c++中的 move 和 forward | C++ 语言 | C++, 现代C++, 移动语义 | original |
-| c++中的 mutable关键字 | C++ 语言 | C++, 现代C++, 语言特性 | original |
-| PyZMQ的简单入门 | 分布式与并发 | Python, ZeroMQ, 网络通信, 异步编程 | original |
-| Windows中Linux常用命令的替代方案 | 开发工具 | Windows, PowerShell, 命令行 | repost |
-| python中多进程实现任务调度 | 分布式与并发 | Python, 多进程, 任务调度, 系统设计 | original |
-| 揭开浮点数的面纱 | 计算机基础 | 浮点数, IEEE 754, 数值计算 | repost |
-| 揭开CUDA Stream的面纱 | GPU 与高性能计算 | CUDA, GPU, 并发, 性能优化 | original |
+| Article                          | Category         | Tags                               | Source type |
+| -------------------------------- | ---------------- | ---------------------------------- | ----------- |
+| c++中的 move 和 forward          | C++ 语言         | C++, 现代C++, 移动语义             | original    |
+| c++中的 mutable关键字            | C++ 语言         | C++, 现代C++, 语言特性             | original    |
+| PyZMQ的简单入门                  | 分布式与并发     | Python, ZeroMQ, 网络通信, 异步编程 | original    |
+| Windows中Linux常用命令的替代方案 | 开发工具         | Windows, PowerShell, 命令行        | repost      |
+| python中多进程实现任务调度       | 分布式与并发     | Python, 多进程, 任务调度, 系统设计 | original    |
+| 揭开浮点数的面纱                 | 计算机基础       | 浮点数, IEEE 754, 数值计算         | repost      |
+| 揭开CUDA Stream的面纱            | GPU 与高性能计算 | CUDA, GPU, 并发, 性能优化          | original    |
 
 ### Math
 
-| Article | Category | Tags | Source type |
-| --- | --- | --- | --- |
-| 如何通过4个2构造任意整数 | 趣味数学 | 数论, 数学构造 | repost |
-| 几个不等式的几何证明 | 数学可视化 | 不等式, 几何证明, AM-GM | repost |
+| Article                  | Category   | Tags                    | Source type |
+| ------------------------ | ---------- | ----------------------- | ----------- |
+| 如何通过4个2构造任意整数 | 趣味数学   | 数论, 数学构造          | repost      |
+| 几个不等式的几何证明     | 数学可视化 | 不等式, 几何证明, AM-GM | repost      |
 
 ### Reading
 
-| Article | Category | Tags | Source type |
-| --- | --- | --- | --- |
-| 卡尔维诺：不确定世界中的旅行者 | 文学评论 | 文学, 卡尔维诺, 文学史 | repost |
-| 看不见的城市 | 小说 | 文学, 卡尔维诺, 后现代主义 | original |
-| 帕洛马尔 | 小说 | 文学, 卡尔维诺, 哲思小说 | original |
-| The Godfather | 小说 | 文学, 马里奥·普佐, 犯罪小说 | original |
+| Article                        | Category | Tags                        | Source type |
+| ------------------------------ | -------- | --------------------------- | ----------- |
+| 卡尔维诺：不确定世界中的旅行者 | 文学评论 | 文学, 卡尔维诺, 文学史      | repost      |
+| 看不见的城市                   | 小说     | 文学, 卡尔维诺, 后现代主义  | original    |
+| 帕洛马尔                       | 小说     | 文学, 卡尔维诺, 哲思小说    | original    |
+| The Godfather                  | 小说     | 文学, 马里奥·普佐, 犯罪小说 | original    |
 
 ## Display and archive behavior
 
@@ -72,9 +73,8 @@ The canonical vocabulary will live in `_data/taxonomy.yml`. Categories and tags 
 
 ## Search behavior
 
-- Extend each article's Ninja Keys search action with its category, tags, and source label as search keywords.
-- Keep the visible title and description unchanged. Taxonomy terms are search metadata rather than text appended to the article description.
-- Verify the vendored Ninja Keys data contract before choosing the keyword field. If version 1.2.11 does not search a dedicated keyword property, add a small local search adapter that includes taxonomy terms while keeping them visually hidden.
+- Extend each article's Ninja Keys search action with its category, tags, and source label as a dedicated `keywords` field.
+- Ninja Keys 1.2.11 scores only `title` and `description` and renders only the title. Generate the same terms in the action description as a local search adapter; the visible title stays unchanged and the article's source `description` front matter is not modified.
 - The generated `assets/js/search-data.js` must contain all assigned categories and tags for the corresponding entries.
 
 ## Validation and failure handling
