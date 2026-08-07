@@ -67,8 +67,9 @@ The canonical vocabulary will live in `_data/taxonomy.yml`. Categories and tags 
 ## Display and archive behavior
 
 - Replace the manually maintained tag arrays in `_config.yml` with `_data/taxonomy.yml` as the single vocabulary source.
-- A reusable collection taxonomy include will render categories and tags for a section. It will show only terms used by at least one entry, so every displayed link points to a generated archive page.
-- Programming, AI, Math, and Reading landing pages will use the same include and collection-scoped archive URL convention already used by `jekyll-archives-v2`.
+- A reusable collection taxonomy include will render only the secondary categories on section landing pages. Showing the full controlled tag vocabulary makes the header visually dense and duplicates the more specific navigation available on each article.
+- Programming, AI, Math, and Reading landing pages will use the same category-only include and collection-scoped archive URL convention already used by `jekyll-archives-v2`.
+- Tags remain visible on article metadata, remain available through collection-scoped archive pages, and remain searchable through Ninja Keys; this is a presentation change, not a taxonomy deletion.
 - Keep the existing archive permalink formats, but correct two legacy link bugs: post layout filters currently append `tag/` and `category/` after the term, and the reading layout still points at `/books/`. All entry links must use the actual collection archive prefixes (`/blog/`, `/AI/`, `/math/`, and `/reading/`).
 
 ## Search behavior
@@ -102,6 +103,7 @@ The metadata checks run before Jekyll build and do not require generated files. 
 5. Every article's generated search action contains its title plus category and tag terms.
 6. Prettier, existing Python tests, and `git diff --check` pass.
 7. A diff of article files shows front matter-only changes; bodies are byte-for-byte unchanged.
+8. The four section landing pages render category links but no top-level tag links; article pages still render their assigned tag links.
 
 ## Out of scope
 
