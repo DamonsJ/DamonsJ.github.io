@@ -11,7 +11,7 @@ profile:
   more_info: >
     <p>📷 Victoria Harbour, HK</p>
     <p>📧 shlkl99@163.com</p>
-    <p>🌐 <a href='https://www.aipodcast.cn/'>www.aipodcast.cn</a></p>
+    <p>🌐 <a href='https://www.similarity.cn/'>www.similarity.cn/</a></p>
     <p>📍 Beijing,China</p>
 
 selected_papers: true # includes a list of papers marked as "selected={true}"
@@ -41,4 +41,4 @@ I’m a big fan of Italo Calvino’s books, and Invisible Cities is one of my fa
 **About This Blog**
 
 I’ve always wanted to have my own blog. I once came across a [blog](https://jax-ml.github.io/scaling-book/) with a beautifully clean and minimalist interface, and I was immediately drawn to it. That inspired me to create my own. After some research, I discovered [Jekyll](https://jekyllrb.com/) and [al-folio](https://github.com/alshedivat/al-folio/tree/main)—both fantastic solutions—so I used them as the foundation to build my blog.
-Here, I plan to document and share my thoughts. Some posts will be about technology, but more often, I’d like to capture moments from life and the joy of reading. Occasionally, I might also write about technical topics.
+Here, I document and share what I learn about technology, mathematics, artificial intelligence, programming, and books. This site is now focused on technical study and reading notes; personal life entries are kept separately in Journal.

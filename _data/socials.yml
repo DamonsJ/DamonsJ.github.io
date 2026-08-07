@@ -49,4 +49,4 @@ weibo_username: 7288151508 # your weibo username
 custom_social: # can be any name here other than the ones already defined above
   logo: assets/img/icon/damons.jpg # can be png, svg, jpg
   title: Custom Social
-  url: https://www.aipodcast.cn/
+  url: https://www.similarity.cn/
