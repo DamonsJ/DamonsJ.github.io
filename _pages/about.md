@@ -11,7 +11,7 @@ profile:
   more_info: >
     <p>📷 Victoria Harbour, HK</p>
     <p>📧 shlkl99@163.com</p>
-    <p>🌐 <a href='https://www.similarity.cn/'>www.similarity.cn/</a></p>
+    <p>🌐 <a href='https://www.similarity.cn/'>www.similarity.cn</a></p>
     <p>📍 Beijing,China</p>
 
 selected_papers: true # includes a list of papers marked as "selected={true}"

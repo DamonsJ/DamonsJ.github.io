@@ -7,8 +7,8 @@ isbn: 9787544777995 # use ISBN to fetch cover (if no `olid` is provided, dashes 
 categories: [小说]
 tags: [文学, 卡尔维诺, 后现代主义]
 date: 2021-12-18
-started: 2021-12-11
-finished: 2021-12-18
+started: 2025-02-11
+finished: 2025-02-18
 released: 1972
 stars: 4.5
 douban_review: 34005470
