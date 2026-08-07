@@ -104,6 +104,27 @@ class TaxonomyValidator
       end
     end
 
+    @taxonomy.fetch("collections").each do |collection, config|
+      landing_path = config.fetch("landing_path").sub(%r{\A/}, "").sub(%r{/\z}, "")
+      landing_page = site_dir / landing_path / "index.html"
+      unless landing_page.file?
+        errors << "#{collection}: missing collection landing page #{landing_page.relative_path_from(site_dir)}"
+        next
+      end
+
+      html = landing_page.read(encoding: "UTF-8")
+      taxonomy_block = html[/<div[^>]*class=["'][^"']*tag-category-list[^"']*["'][^>]*>.*?<\/div>/m]
+      unless taxonomy_block
+        errors << "#{collection}: landing page is missing the taxonomy category list"
+        next
+      end
+
+      errors << "#{collection}: landing taxonomy must display category links" unless taxonomy_block.include?("/category/")
+      if taxonomy_block.include?("/tag/") || taxonomy_block.include?("fa-hashtag")
+        errors << "#{collection}: landing taxonomy must not display tag links"
+      end
+    end
+
     search_path = site_dir / "assets/js/search-data.js"
     unless search_path.file?
       errors << "#{relative(search_path)}: missing generated search data"

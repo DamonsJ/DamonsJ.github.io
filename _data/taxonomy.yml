@@ -2,6 +2,7 @@ collections:
   posts:
     directory: _posts
     archive_prefix: /blog/
+    landing_path: /programming/
     categories:
       - C++ 语言
       - 分布式与并发
@@ -33,6 +34,7 @@ collections:
   AI:
     directory: _AI
     archive_prefix: /AI/
+    landing_path: /AI/
     categories:
       - 大模型基础
       - GPU 与高性能计算
@@ -66,6 +68,7 @@ collections:
   math:
     directory: _math
     archive_prefix: /math/
+    landing_path: /math/
     categories:
       - 趣味数学
       - 数学可视化
@@ -78,6 +81,7 @@ collections:
   reading:
     directory: _reading
     archive_prefix: /reading/
+    landing_path: /reading/
     categories:
       - 文学评论
       - 小说

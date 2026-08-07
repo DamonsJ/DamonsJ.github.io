@@ -1,23 +1,11 @@
 {% assign taxonomy = site.data.taxonomy.collections[include.collection] %}
-{% if taxonomy and taxonomy.categories.size > 0 or taxonomy.tags.size > 0 %}
+{% if taxonomy and taxonomy.categories.size > 0 %}
   <div class="tag-category-list">
     <ul class="p-0 m-0">
       {% for category in taxonomy.categories %}
         {% assign category_path = category | slugify | prepend: 'category/' | prepend: taxonomy.archive_prefix | append: '/' %}
         <li>
           <i class="fa-solid fa-tag fa-sm"></i> <a href="{{ category_path | relative_url }}">{{ category }}</a>
-        </li>
-        {% unless forloop.last %}
-          <p>&bull;</p>
-        {% endunless %}
-        {% if forloop.last and taxonomy.tags.size > 0 %}
-          <p>&bull;</p>
-        {% endif %}
-      {% endfor %}
-      {% for tag in taxonomy.tags %}
-        {% assign tag_path = tag | slugify | prepend: 'tag/' | prepend: taxonomy.archive_prefix | append: '/' %}
-        <li>
-          <i class="fa-solid fa-hashtag fa-sm"></i> <a href="{{ tag_path | relative_url }}">{{ tag }}</a>
         </li>
         {% unless forloop.last %}
           <p>&bull;</p>

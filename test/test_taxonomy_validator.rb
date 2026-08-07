@@ -81,6 +81,7 @@ class TaxonomyValidatorTest < Minitest::Test
     assert_includes missing_errors, "missing category archive"
     assert_includes missing_errors, "missing tag archive"
     assert_includes missing_errors, "missing generated search data"
+    assert_includes missing_errors, "missing collection landing page"
 
     %w[category/topic tag/one tag/two].each do |relative_path|
       path = site_dir / "blog" / relative_path / "index.html"
@@ -115,6 +116,22 @@ class TaxonomyValidatorTest < Minitest::Test
       encoding: "UTF-8"
     )
 
+    landing_page = site_dir / "blog/index.html"
+    landing_page.dirname.mkpath
+    landing_page.write(
+      '<div class="tag-category-list"><a href="/blog/tag/one/">One</a></div>',
+      mode: "w",
+      encoding: "UTF-8"
+    )
+    landing_errors = validator.validate_generated(site_dir: site_dir).join("\n")
+    assert_includes landing_errors, "landing taxonomy must not display tag links"
+
+    landing_page.write(
+      '<div class="tag-category-list"><a href="/blog/category/topic/">Topic</a></div>',
+      mode: "w",
+      encoding: "UTF-8"
+    )
+
     assert_empty validator.validate_generated(site_dir: site_dir)
   end
 
@@ -125,7 +142,8 @@ class TaxonomyValidatorTest < Minitest::Test
       "collections" => {
         "posts" => {
           "directory" => "_posts",
-          "archive_prefix" => "/blog/"
+          "archive_prefix" => "/blog/",
+          "landing_path" => "/blog/"
         }.merge(collection_values)
       },
       "source_types" => ["repost"]
