@@ -68,7 +68,7 @@ The canonical vocabulary will live in `_data/taxonomy.yml`. Categories and tags 
 - Replace the manually maintained tag arrays in `_config.yml` with `_data/taxonomy.yml` as the single vocabulary source.
 - A reusable collection taxonomy include will render categories and tags for a section. It will show only terms used by at least one entry, so every displayed link points to a generated archive page.
 - Programming, AI, Math, and Reading landing pages will use the same include and collection-scoped archive URL convention already used by `jekyll-archives-v2`.
-- Existing post and book layouts will continue to render each entry's category and tag links. No archive permalink format changes are required.
+- Keep the existing archive permalink formats, but correct two legacy link bugs: post layout filters currently append `tag/` and `category/` after the term, and the reading layout still points at `/books/`. All entry links must use the actual collection archive prefixes (`/blog/`, `/AI/`, `/math/`, and `/reading/`).
 
 ## Search behavior
 
