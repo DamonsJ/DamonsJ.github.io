@@ -65,6 +65,8 @@ collections:
       - 推理优化
       - vLLM
       - 推理系统
+      - 分布式推理
+      - 视频生成
   math:
     directory: _math
     archive_prefix: /math/
