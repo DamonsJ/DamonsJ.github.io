@@ -64,7 +64,8 @@ class TaxonomyValidatorTest < Minitest::Test
     errors = TaxonomyValidator.new(root: @root).validate_source.join("\n")
 
     assert_includes errors, "categories must be a YAML array"
-    assert_includes errors, "tags must be a YAML  end
+    assert_includes errors, "tags must be a YAML array"
+  end
 
   def test_validates_generated_archives_and_search_keywords
     write_entry(
@@ -123,7 +124,9 @@ class TaxonomyValidatorTest < Minitest::Test
       encoding: "UTF-8"
     )
     landing_errors = validator.validate_generated(site_dir: site_dir).join("\n")
-    assert_includes landing_errors, "landing taxonomy must not display tag landing_page.write(
+    assert_includes landing_errors, "landing taxonomy must not display tag links"
+
+    landing_page.write(
       '<div class="tag-category-list"><a href="/blog/category/topic/">Topic</a></div>',
       mode: "w",
       encoding: "UTF-8"
