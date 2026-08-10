@@ -205,6 +205,13 @@ ninja.data = [{
           description: "阅读 vLLM V1 源码后的架构理解与核心流程记录 大模型系统 vLLM LLM 推理系统 源码解读",
           section: "Ai",handler: () => {
               window.location.href = "/AI/2026-04-16-reading_about_vllm.html";
+            },},{id: "AI-aigc-分布式推理-从-wan2-2-理解-dp-tp-cp-sp-pp",
+          title: 'AIGC 分布式推理：从 Wan2.2 理解 DP/TP/CP/SP/PP',
+          taxonomySource: "_AI/2026-08-08-distribute-aigc.md",
+          keywords: "大模型系统 分布式推理 Diffusion 视频生成 推理优化",
+          description: "以 Wan2.2 TI2V 5B 为例，记录分布式推理中各种并行方式切什么、怎么通信、代价有多大 大模型系统 分布式推理 Diffusion 视频生成 推理优化",
+          section: "Ai",handler: () => {
+              window.location.href = "/AI/2026-08-08-distribute-aigc.html";
             },},{id: "math-如何通过4个2构造任意整数",
           title: '如何通过4个2构造任意整数',
           taxonomySource: "_math/2025-03-08-making-any-integer-with-four-2s.md",
