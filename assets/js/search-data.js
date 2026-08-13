@@ -226,6 +226,13 @@ ninja.data = [{
           description: "介绍几个不等式的可视化几何证明方法 数学可视化 不等式 几何证明 AM-GM 转载",
           section: "Math",handler: () => {
               window.location.href = "/math/2026-03-21-The-Shape-of-Inequalities.html";
+            },},{id: "math-快速平方根倒数-0x5f3759df-这个魔法数是怎么来的",
+          title: '快速平方根倒数：0x5f3759df 这个魔法数是怎么来的',
+          taxonomySource: "_math/2026-08-13-fast-inverse-square-root.md",
+          keywords: "数值计算 平方根倒数 IEEE 754 牛顿迭代 数值计算",
+          description: "从 IEEE 754 的位表示出发，通俗推导快速平方根倒数中的魔法数与牛顿迭代 数值计算 平方根倒数 IEEE 754 牛顿迭代 数值计算",
+          section: "Math",handler: () => {
+              window.location.href = "/math/2026-08-13-fast-inverse-square-root.html";
             },},{id: "projects-project-1",
           title: 'project 1',
           taxonomySource: "_projects/1_project.md",
