@@ -74,12 +74,17 @@ collections:
     categories:
       - 趣味数学
       - 数学可视化
+      - 数值计算
     tags:
       - 数论
       - 数学构造
       - 不等式
       - 几何证明
       - AM-GM
+      - 平方根倒数
+      - IEEE 754
+      - 牛顿迭代
+      - 数值计算
   reading:
     directory: _reading
     archive_prefix: /reading/
