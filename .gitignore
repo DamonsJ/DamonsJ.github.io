@@ -8,6 +8,7 @@ _site
 .tweet-cache
 assets/libs/
 node_modules/
+.worktrees/
 vendor
 .idea
 _life/*.md
