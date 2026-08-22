@@ -96,6 +96,8 @@ jobs:
         run: |
           npm install -g purgecss
           purgecss -c purgecss.config.js
+      - name: Validate Medium Zoom production artifacts 🔍
+        run: bundle exec ruby scripts/validate_medium_zoom.rb _site
       - name: Disable GitHub Pages Jekyll rebuild
         run: touch _site/.nojekyll
       - name: Deploy 🚀
