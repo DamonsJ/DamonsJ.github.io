@@ -3,11 +3,13 @@ layout: book-review
 title: "读《通向蜘蛛巢的小径》之前：卡尔维诺、抵抗运动与一个孩子眼中的战争"
 author: Italo Calvino
 cover: assets/img/book_covers/the-path-to-the-spiders-nests.jpg
+ISBN: 9787544722322
 categories: [小说]
-tags: [文学, 卡尔维诺, 意大利抵抗运动]
+tags: [文学, 卡尔维诺]
 date: 2026-08-23
 started: 2026-08-23
 released: 1947
+stars: 4.0
 douban_review: 10555485
 status: Reading
 ---
@@ -46,7 +48,7 @@ status: Reading
 
 许多意大利人以为墨索里尼倒台就意味着战争结束，实际情况恰恰相反。巴多利奥政府公开宣称继续与德国并肩作战，私下却同盟军谈判，并于 9 月 3 日签署停战协议。9 月 8 日停战消息公开时，政府没有给军队留下清晰、统一的应对命令。德国早已为意大利可能退出战争准备了“轴心行动”，随即解除大量意大利部队的武装，占领北部和中部。国王与巴多利奥政府逃往南方，国家的军事和行政体系几乎在几天内瓦解。
 
-9 月 12 日，德军从拘禁地救出墨索里尼。随后，墨索里尼在德国支持下建立了**意大利社会共和国**（Repubblica Sociale Italiana，简称 RSI），因为政府机构主要设在加尔达湖畔的萨洛，也常被称作“萨洛共和国”。它名义上是一个重新革命化的法西斯共和国，实际上严重依赖德国军队和占领体系。
+9 月 12 日，德军从拘禁地救出墨索里尼。随后，墨索里尼在德国支持下建立了**意大利社会共和国**{%sidenote 'One' '注意这和社会主义没有一点关系'%}（Repubblica Sociale Italiana，简称 RSI），因为政府机构主要设在加尔达湖畔的萨洛，也常被称作“萨洛共和国”。它名义上是一个重新革命化的法西斯共和国，实际上严重依赖德国军队和占领体系。
 
 于是，意大利突然出现了一个很难用普通“对外战争”描述的局面：
 
@@ -207,8 +209,6 @@ status: Reading
 
 我想带着这种张力开始读，而不是带着一套已经完成的结论。
 
-豆瓣条目：[《通向蜘蛛巢的小径》](https://book.douban.com/subject/10555485/)。
-
 ## 资料来源
 
 - 卡尔维诺为 1964 年再版所写的序言，是本文理解创作动机、儿童视角、新现实主义与记忆问题的主要依据；豆瓣提供了部分[试读页面](https://book.douban.com/reading/17546473/)。
@@ -216,4 +216,3 @@ status: Reading
 - [美国大屠杀纪念馆：Italy](https://encyclopedia.ushmm.org/content/en/article/italy)：墨索里尼倒台、停战、德国占领和 RSI 建立的历史概览。
 - [ANPI：Felice Cascione](https://www.anpi.it/biografia/felice-cascione)：利古里亚抵抗运动及“费利切·卡肖内”部队名称的地方背景。
 - [Wikimedia Commons：Italy September 1943](https://commons.wikimedia.org/wiki/File:Italy_September_1943.png)、[Partigiani1](https://commons.wikimedia.org/wiki/File:Partigiani1.jpg)：正文历史图片及许可信息。
-- 译林出版社 2012 年版，王焕宝、王恺冰译，ISBN 9787544722322；版本信息参考[孔夫子旧书网条目](https://book.kongfz.com/22916/7764065251/)。
