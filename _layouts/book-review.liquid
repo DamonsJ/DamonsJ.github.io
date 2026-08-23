@@ -67,7 +67,7 @@ layout: default
           {%- for i in (1..empty_stars) -%}
             <i class="fa-regular fa-star fa-sm"></i>
           {%- endfor -%}
-          {% if page.goodreads_review %}
+          {% if page.goodreads_review or page.douban_review %}
             </a>
           {% endif %}
         {% endif %}
