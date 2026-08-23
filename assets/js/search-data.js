@@ -317,6 +317,13 @@ ninja.data = [{
           description: " 文学评论 文学 卡尔维诺 文学史 转载",
           section: "Reading",handler: () => {
               window.location.href = "/reading/calvino-traveller-uncertainty.html";
+            },},{id: "reading-读-通向蜘蛛巢的小径-之前-卡尔维诺-抵抗运动与一个孩子眼中的战争",
+          title: '读《通向蜘蛛巢的小径》之前：卡尔维诺、抵抗运动与一个孩子眼中的战争',
+          taxonomySource: "_reading/the-path-to-the-spiders-nests.md",
+          keywords: "小说 文学 卡尔维诺 意大利抵抗运动",
+          description: " 小说 文学 卡尔维诺 意大利抵抗运动",
+          section: "Reading",handler: () => {
+              window.location.href = "/reading/the-path-to-the-spiders-nests.html";
             },},{
         id: 'social-email',
         title: 'email',
