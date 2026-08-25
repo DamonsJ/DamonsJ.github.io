@@ -37,9 +37,9 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/reading/";
           },
-        },{id: "post-揭开cuda-stream的面纱",
+        },{id: "post-cuda-stream和并发",
       
-        title: "揭开CUDA Stream的面纱",
+        title: "CUDA Stream和并发",
       
       taxonomySource: "_posts/2026-05-08-cuda-streams-and-concurrency.md",
       keywords: "GPU 与高性能计算 CUDA GPU 并发 性能优化",
