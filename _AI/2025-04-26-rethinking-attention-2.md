@@ -10,7 +10,7 @@ toc:
   beginning: true
 ---
 
-接着[上篇](<[AI/2025-04-02-rethinking-attention-1.html](https://valdrada.site/AI/2025-04-02-rethinking-attention-1.html)>)对Attention的基础分析之后，继续来整理一下FlashAttention系列。
+接着[上篇](<[AI/2025-04-02-rethinking-attention-1.html](https://valdrada.cn/AI/2025-04-02-rethinking-attention-1.html)>)对Attention的基础分析之后，继续来整理一下FlashAttention系列。
 
 # [FlashAttention1](https://arxiv.org/abs/2205.14135)
 

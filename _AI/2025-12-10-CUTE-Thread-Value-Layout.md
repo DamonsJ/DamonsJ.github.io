@@ -12,7 +12,7 @@ toc:
 
 ## 问题由来
 
-最近在研究 [flash-attention2](https://github.com/Dao-AILab/flash-attention)的源码，算法层面的流程基本已经理解了{%sidenote 'One' '参考[Attention记录](https://valdrada.site/AI/2025-04-26-rethinking-attention-2.html)'%}，但实际代码里是怎么把这些计算落实到硬件上的，这部分一直没有完全想清楚。所以我开始沿着源码，把底层实现细节再看一遍。
+最近在研究 [flash-attention2](https://github.com/Dao-AILab/flash-attention)的源码，算法层面的流程基本已经理解了{%sidenote 'One' '参考[Attention记录](https://valdrada.cn/AI/2025-04-26-rethinking-attention-2.html)'%}，但实际代码里是怎么把这些计算落实到硬件上的，这部分一直没有完全想清楚。所以我开始沿着源码，把底层实现细节再看一遍。
 
 在阅读源码时，我先去理解了 MMA（Matrix Multiply-Accumulate）的基本知识。参考了[CuTe Tiled MMA](https://leimao.github.io/blog/CuTe-Tiled-MMA/)这篇博客，大致搞明白了 MMA 是如何分块和运算的。不过，对于其中 cute::SM80_16x8x16_F16F16F16F16_TN 这个具体的 MMA 原子操作，还是有一个地方没弄懂——它打印出来的 Thread-Value Layout 图到底表示什么？这个“Thread-Value Layout”究竟是如何画出来的，又代表怎样的数据分布？
 

@@ -12,7 +12,7 @@ toc:
 
 ## 为什么？
 
-随着优化工作的深入，需要对底层的具体执行代码要有深入的理解。之前算法层面的流程基本已经理解了{%sidenote 'One' '参考[Attention记录](https://valdrada.site/AI/2025-04-26-rethinking-attention-2.html)'%}，但实际代码执行和算法理解上也不是一个层面的知识。所以决定沿着源码，把底层实现细节再看一遍，同时也是熟悉一下CUTE和Cutlass的一些知识，为以后的算子层面的优化做铺垫。
+随着优化工作的深入，需要对底层的具体执行代码要有深入的理解。之前算法层面的流程基本已经理解了{%sidenote 'One' '参考[Attention记录](https://valdrada.cn/AI/2025-04-26-rethinking-attention-2.html)'%}，但实际代码执行和算法理解上也不是一个层面的知识。所以决定沿着源码，把底层实现细节再看一遍，同时也是熟悉一下CUTE和Cutlass的一些知识，为以后的算子层面的优化做铺垫。
 
 ## Flash Attention2 源码
 
@@ -20,7 +20,7 @@ toc:
 
 实际上FA2的源码虽然看上去很多，但是核心的执行部分在[flash_fwd_kernel.h](https://github.com/Dao-AILab/flash-attention/blob/main/csrc/flash_attn/src/flash_fwd_kernel.h)中，也就是其中的`compute_attn_1rowblock`函数。
 
-根据[Attention记录](https://valdrada.site/AI/2025-04-26-rethinking-attention-2.html)中的算法流程，我主要记录显存搬运，MMA以及softmax三个大的部分的详细内容，代码基本上是按照算法流程进行的。
+根据[Attention记录](https://valdrada.cn/AI/2025-04-26-rethinking-attention-2.html)中的算法流程，我主要记录显存搬运，MMA以及softmax三个大的部分的详细内容，代码基本上是按照算法流程进行的。
 
 ### 基本模版参数及说明
 
@@ -582,7 +582,7 @@ make_tiled_copy 将三件事组合成一个可执行的拷贝策略对象：
 
 也就是说tile copy中的thread layout，把一个线程块的拷贝线程组织成二维网格，确保同一行的相邻线程访问相邻地址，从而实现 128-bit 向量化/cp.async 合并访问。thread layout 只定义“线程如何排布”，拷贝多少数据，由 CopyAtom 决定。一个拷贝指令读取128-bit也就是8个值，thread layout的shape是`16x8`，因为设置中总共threads的数量就是128，也就是4个warps， 128个线程布局成了二维网格，也就是`16x8`， 那么这128个线程总共读取的数据就是`16x8x8 = 16x64`个数据， 总共数据大小是`128x128`，需要`128/16 x 128/64 = 8x2`次才能读取完成。
 
-`gmem_thr_copy_QKV`实际上是一个thread-value的layout{%sidenote 'Four' '参考[CUTE中的Thread-Value Layout](https://valdrada.site/AI/2025-12-10-CUTE-Thread-Value-Layout.html)'%}
+`gmem_thr_copy_QKV`实际上是一个thread-value的layout{%sidenote 'Four' '参考[CUTE中的Thread-Value Layout](https://valdrada.cn/AI/2025-12-10-CUTE-Thread-Value-Layout.html)'%}
 
 ```
 auto gmem_thr_copy_QKV = gmem_tiled_copy_QKV.get_thread_slice(tidx);
@@ -892,7 +892,7 @@ struct SM80_16x8x16_F32F16F16F32_TN
 
 ```
 
-这个原子操作实际上是对PTX {%sidenote 'Six' '参考PTX[官方文档](https://docs.nvidia.com/cuda/parallel-thread-execution/)'%}指令的一个封装，意思是说计算一个`m16n8k16` 也就是`16x16 和 16x8 `的矩阵乘法，`f32.f16.f16.f32`分别表示`D=A*B + C`对应的数据类型，也就是D是`f32`，A和B分别是`f16`， C累加是`f32`, `.row` 表示A是行主序，`.col`表示B是列主序{%sidenote 'Seven' '参考[CUTE中的Thread-Value Layout](https://valdrada.site/AI/2025-12-10-CUTE-Thread-Value-Layout.html)'%}
+这个原子操作实际上是对PTX {%sidenote 'Six' '参考PTX[官方文档](https://docs.nvidia.com/cuda/parallel-thread-execution/)'%}指令的一个封装，意思是说计算一个`m16n8k16` 也就是`16x16 和 16x8 `的矩阵乘法，`f32.f16.f16.f32`分别表示`D=A*B + C`对应的数据类型，也就是D是`f32`，A和B分别是`f16`， C累加是`f32`, `.row` 表示A是行主序，`.col`表示B是列主序{%sidenote 'Seven' '参考[CUTE中的Thread-Value Layout](https://valdrada.cn/AI/2025-12-10-CUTE-Thread-Value-Layout.html)'%}
 。
 
 需要注意的是这个PTX是**warp**级别的指令，也就是在warp中完成这个矩阵的乘法，它操作的是**寄存器**数据，**不是shared memory**，所以为了执行这个指令，需要将shared memory数据搬运到寄存器中，然后在执行这个指令。
@@ -928,7 +928,7 @@ using TiledMma = TiledMMA<
 一个block 有 kNWarps 个 warp，可以并行计算一个更大的 tile，block 级别计算的 `tile = (16*kNWarps) × 16 × 16 = 64x16x16`，也就是有一个矩阵块是64×16×16。我需要用TiledMma 去计算完成
 这个TiledMma计算的时候的Warp的分布是`Layout<Shape<Int<kNWarps>,_1,_1>> `，也就是M方向分了4份，N方向1份，K方向1份，但 Atom 只能算 N=8，N=16 是通过两个 MMA Atom 在 N 方向累加完成的，每份都是`16×16×16`，意思是1个warp去计算`16×16×16` ，在N方向需要两次atom操作 。
 
-为了方便线程和值之间的对应，也可以用`cute::print_latex()`打印TiledMMA。参考之前我的[文章](https://valdrada.site/AI/2025-12-10-CUTE-Thread-Value-Layout.html)查看具体的操作过程，对于这个MMA来说结果如下：
+为了方便线程和值之间的对应，也可以用`cute::print_latex()`打印TiledMMA。参考之前我的[文章](https://valdrada.cn/AI/2025-12-10-CUTE-Thread-Value-Layout.html)查看具体的操作过程，对于这个MMA来说结果如下：
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -1256,7 +1256,7 @@ __forceinline__ __device__ void softmax_rescale_o(Tensor0 &acc_s, Tensor1 &acc_o
 };
 ```
 
-这里实际上是[online softmax](https://valdrada.site/AI/2025-04-26-rethinking-attention-2.html)的计算过程，流程解释如下：
+这里实际上是[online softmax](https://valdrada.cn/AI/2025-04-26-rethinking-attention-2.html)的计算过程，流程解释如下：
 
 - 寄存器布局重排 (Data Re-layout)
 
