@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 揭开CUDA Stream的面纱
+title: CUDA Stream和并发
 date: 2026-05-08 10:00:00
 description: 从基础概念到 CUDA Graphs / Stream-Ordered Allocator / Hopper 异步特性，系统梳理 CUDA Stream 的过去、现在与今天的最佳实践。
 tags: [CUDA, GPU, 并发, 性能优化]
@@ -61,18 +61,20 @@ CUDA Stream 解决的就是这种“**任务级别**”的并行：让 H2D、ker
 
 ### 2. 默认 stream（Legacy / Per-thread）
 
-如果你没指定 stream，所有调用都会落在**默认 stream**（也叫 NULL stream，stream 0）。
+如果 kernel launch 或支持 stream 的异步 CUDA 操作没有显式指定 stream，它们会落在**默认 stream**（也叫 NULL stream，stream 0）。
 
-默认 stream 的语义有两种，由编译器开关决定：
+默认 stream 的语义有两种，由编译选项决定：
 
-| 模式                      | 编译选项                                                                | 行为                                                                                  |
-| :------------------------ | :---------------------------------------------------------------------- | :------------------------------------------------------------------------------------ |
-| Legacy default stream     | 默认 / `--default-stream legacy`                                        | 默认 stream 是**全局同步**的，它和任何其他 stream 上的操作都互相阻塞。                |
-| Per-thread default stream | `--default-stream per-thread` 或宏 `CUDA_API_PER_THREAD_DEFAULT_STREAM` | 每个 host 线程都有自己独立的默认 stream，行为与显式创建的 stream 一致，不会互相阻塞。 |
+| 模式                      | 编译选项                                                                | 行为                                                                                                                                                                                   |
+| :------------------------ | :---------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Legacy default stream     | 默认 / `--default-stream legacy`                                        | 默认 stream 具有特殊的**隐式同步语义**：它会与普通 blocking stream 上的操作互相等待；但使用 `cudaStreamNonBlocking` 创建的 stream 是例外，不会与 legacy 默认 stream 发生这种隐式同步。 |
+| Per-thread default stream | `--default-stream per-thread` 或宏 `CUDA_API_PER_THREAD_DEFAULT_STREAM` | 每个 host 线程都有自己独立的默认 stream，不具有 legacy default stream 那种特殊的跨 stream 隐式同步语义，因此可以像普通 stream 一样参与并发执行。                                       |
 
-CUDA 7 之后官方推荐 per-thread 模式，因为它让多线程程序天然地获得并发。
+CUDA 7 开始支持 per-thread default stream。它可以避免 legacy default stream 带来的隐式同步，因此在多线程程序中更容易获得预期的并发行为。
 
-> 一条很值得记的经验法则：**只要你想要并发，就不要把任何操作放在 legacy 默认 stream 上**——它会一刀切地把所有 stream 都同步住。
+需要注意的是，**per-thread default stream 并不能简单等同于 `cudaStreamNonBlocking` 创建的 stream**；两者的语义仍然存在区别。
+
+> 一条很值得记的经验法则：**如果程序依赖多个普通 blocking stream 之间的并发，应避免无意中把操作提交到 legacy 默认 stream 上**——它可能引入隐式同步，破坏原本可以发生的并发。使用 `cudaStreamNonBlocking` 创建的 stream 则不受这种 legacy 隐式同步关系约束。
 > {: .block-warning }
 
 ### 3. 创建和使用一个 stream
