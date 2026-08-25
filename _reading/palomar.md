@@ -2,7 +2,7 @@
 layout: book-review
 title: 帕洛马尔
 author: Italo Calvino
-cover: assets/img/book_covers/palomar.jpg
+cover: assets/img/book_covers/palomar/palomar.jpg
 isbn: 9787544722315 # use ISBN to fetch cover (if no `olid` is provided, dashes are optional)
 categories: [小说]
 tags: [文学, 卡尔维诺, 哲思小说]

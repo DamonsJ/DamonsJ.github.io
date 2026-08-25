@@ -2,7 +2,7 @@
 layout: book-review
 title: 卡尔维诺：不确定世界中的旅行者
 author: Alexander Lee
-cover: assets/img/book_covers/italo_calvino_history_today.webp
+cover: assets/img/book_covers/calvino-traveller-uncertainty/italo_calvino_history_today.webp
 categories: [文学评论]
 tags: [文学, 卡尔维诺, 文学史]
 source_type: repost
