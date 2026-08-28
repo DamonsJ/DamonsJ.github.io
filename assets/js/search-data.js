@@ -331,6 +331,13 @@ ninja.data = [{
           description: " 小说 文学 卡尔维诺",
           section: "Reading",handler: () => {
               window.location.href = "/reading/the-path-to-the-spiders-nests.html";
+            },},{id: "reading-读-烟云-阿根廷蚂蚁-之前-两种无法清除的现代生活",
+          title: '读《烟云·阿根廷蚂蚁》之前：两种无法清除的现代生活',
+          taxonomySource: "_reading/before-reading-smog-and-the-argentine-ant.md",
+          keywords: "小说 文学 卡尔维诺 意大利文学",
+          description: " 小说 文学 卡尔维诺 意大利文学",
+          section: "Reading",handler: () => {
+              window.location.href = "/reading/before-reading-smog-and-the-argentine-ant.html";
             },},{
         id: 'social-email',
         title: 'email',
