@@ -338,6 +338,13 @@ ninja.data = [{
           description: " 小说 文学 卡尔维诺",
           section: "Reading",handler: () => {
               window.location.href = "/reading/before-reading-smog-and-the-argentine-ant.html";
+            },},{id: "reading-烟云-阿根廷蚂蚁-生活在无法清除的困境里",
+          title: '《烟云·阿根廷蚂蚁》：生活在无法清除的困境里',
+          taxonomySource: "_reading/smog-and-the-argentine-ant.md",
+          keywords: "小说 文学 卡尔维诺",
+          description: " 小说 文学 卡尔维诺",
+          section: "Reading",handler: () => {
+              window.location.href = "/reading/smog-and-the-argentine-ant.html";
             },},{
         id: 'social-email',
         title: 'email',
