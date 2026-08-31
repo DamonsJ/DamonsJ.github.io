@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 520" role="img" aria-labelledby="title desc">
+  <title id="title">卡尔维诺 1947 至 1960 年创作时间线</title>
+  <desc id="desc">从通向蜘蛛巢的小径出版，到分成两半的子爵写作和出版，再到意大利童话及我们的祖先三部曲形成。</desc>
+  <rect width="1400" height="520" rx="28" fill="#f4efe7"/>
+  <text x="70" y="72" fill="#332b26" font-family="-apple-system, BlinkMacSystemFont, 'Noto Sans SC', sans-serif" font-size="34" font-weight="700">从现实主义小说到“我们的祖先”</text>
+  <text x="70" y="112" fill="#75675d" font-family="-apple-system, BlinkMacSystemFont, 'Noto Sans SC', sans-serif" font-size="20">卡尔维诺 1947—1960 年部分作品与编辑工作</text>
+  <line x1="90" y1="270" x2="1310" y2="270" stroke="#b7a99b" stroke-width="5" stroke-linecap="round"/>
+
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Noto Sans SC', sans-serif" text-anchor="middle">
+    <g transform="translate(110 270)">
+      <circle r="15" fill="#b84f3a"/>
+      <line y1="-15" y2="-74" stroke="#b84f3a" stroke-width="3"/>
+      <text y="-96" fill="#b84f3a" font-size="25" font-weight="700">1947</text>
+      <text y="44" fill="#332b26" font-size="18"><tspan x="0">《通向蜘蛛巢</tspan><tspan x="0" dy="25">的小径》出版</tspan></text>
+    </g>
+    <g transform="translate(315 270)">
+      <circle r="15" fill="#287f8b"/>
+      <line y1="15" y2="74" stroke="#287f8b" stroke-width="3"/>
+      <text y="108" fill="#287f8b" font-size="25" font-weight="700">1951</text>
+      <text y="-70" fill="#332b26" font-size="18"><tspan x="0">写作《分成两半</tspan><tspan x="0" dy="25">的子爵》</tspan></text>
+    </g>
+    <g transform="translate(510 270)">
+      <circle r="15" fill="#287f8b"/>
+      <line y1="-15" y2="-74" stroke="#287f8b" stroke-width="3"/>
+      <text y="-96" fill="#287f8b" font-size="25" font-weight="700">1952</text>
+      <text y="44" fill="#332b26" font-size="18"><tspan x="0">《分成两半的子爵》</tspan><tspan x="0" dy="25">《阿根廷蚂蚁》出版</tspan></text>
+    </g>
+    <g transform="translate(700 270)">
+      <circle r="15" fill="#b98a2f"/>
+      <line y1="15" y2="74" stroke="#b98a2f" stroke-width="3"/>
+      <text y="108" fill="#b98a2f" font-size="25" font-weight="700">1956</text>
+      <text y="-56" fill="#332b26" font-size="18">《意大利童话》</text>
+    </g>
+    <g transform="translate(875 270)">
+      <circle r="15" fill="#287f8b"/>
+      <line y1="-15" y2="-74" stroke="#287f8b" stroke-width="3"/>
+      <text y="-96" fill="#287f8b" font-size="25" font-weight="700">1957</text>
+      <text y="48" fill="#332b26" font-size="18">《树上的男爵》</text>
+    </g>
+    <g transform="translate(1050 270)">
+      <circle r="15" fill="#287f8b"/>
+      <line y1="15" y2="74" stroke="#287f8b" stroke-width="3"/>
+      <text y="108" fill="#287f8b" font-size="25" font-weight="700">1959</text>
+      <text y="-56" fill="#332b26" font-size="18">《不存在的骑士》</text>
+    </g>
+    <g transform="translate(1270 270)">
+      <circle r="18" fill="#b84f3a"/>
+      <line y1="-18" y2="-74" stroke="#b84f3a" stroke-width="3"/>
+      <text y="-96" fill="#b84f3a" font-size="25" font-weight="700">1960</text>
+      <text y="44" fill="#332b26" font-size="18"><tspan x="0">三部作品合编为</tspan><tspan x="0" dy="25">《我们的祖先》</tspan></text>
+    </g>
+  </g>
+
+  <g transform="translate(70 460)" font-family="-apple-system, BlinkMacSystemFont, 'Noto Sans SC', sans-serif" font-size="17" fill="#75675d">
+    <circle cx="8" cy="-6" r="8" fill="#b84f3a"/><text x="25">阶段节点</text>
+    <circle cx="155" cy="-6" r="8" fill="#287f8b"/><text x="172">幻想小说</text>
+    <circle cx="302" cy="-6" r="8" fill="#b98a2f"/><text x="319">民间故事整理</text>
+  </g>
+</svg>

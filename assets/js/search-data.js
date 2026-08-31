@@ -345,6 +345,13 @@ ninja.data = [{
           description: " 小说 文学 卡尔维诺",
           section: "Reading",handler: () => {
               window.location.href = "/reading/smog-and-the-argentine-ant.html";
+            },},{id: "reading-读-分成两半的子爵-之前-一场遥远的战争与一个被劈开的现代人",
+          title: '读《分成两半的子爵》之前：一场遥远的战争与一个被劈开的现代人',
+          taxonomySource: "_reading/before-reading-the-cloven-viscount.md",
+          keywords: "小说 文学 卡尔维诺",
+          description: " 小说 文学 卡尔维诺",
+          section: "Reading",handler: () => {
+              window.location.href = "/reading/before-reading-the-cloven-viscount.html";
             },},{
         id: 'social-email',
         title: 'email',
