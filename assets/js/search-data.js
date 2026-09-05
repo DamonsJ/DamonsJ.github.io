@@ -352,6 +352,13 @@ ninja.data = [{
           description: " 小说 文学 卡尔维诺 文学史",
           section: "Reading",handler: () => {
               window.location.href = "/reading/before-reading-the-cloven-viscount.html";
+            },},{id: "reading-分成两半的子爵-完整不是没有受伤",
+          title: '《分成两半的子爵》：完整不是没有受伤',
+          taxonomySource: "_reading/Il-viscount-dimezzato.md",
+          keywords: "小说 文学 卡尔维诺 文学史",
+          description: " 小说 文学 卡尔维诺 文学史",
+          section: "Reading",handler: () => {
+              window.location.href = "/reading/Il-viscount-dimezzato.html";
             },},{
         id: 'social-email',
         title: 'email',
