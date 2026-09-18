@@ -352,13 +352,20 @@ ninja.data = [{
           description: " 小说 文学 卡尔维诺 文学史",
           section: "Reading",handler: () => {
               window.location.href = "/reading/before-reading-the-cloven-viscount.html";
-            },},{id: "reading-分成两半的子爵-完整不是没有受伤",
-          title: '《分成两半的子爵》：完整不是没有受伤',
+            },},{id: "reading-分成两半的子爵",
+          title: '《分成两半的子爵》',
           taxonomySource: "_reading/Il-viscount-dimezzato.md",
           keywords: "小说 文学 卡尔维诺 文学史",
           description: " 小说 文学 卡尔维诺 文学史",
           section: "Reading",handler: () => {
               window.location.href = "/reading/Il-viscount-dimezzato.html";
+            },},{id: "reading-树上的男爵",
+          title: '《树上的男爵》',
+          taxonomySource: "_reading/the-baron-in-the-trees.md",
+          keywords: "小说 文学 卡尔维诺 文学史",
+          description: " 小说 文学 卡尔维诺 文学史",
+          section: "Reading",handler: () => {
+              window.location.href = "/reading/the-baron-in-the-trees.html";
             },},{
         id: 'social-email',
         title: 'email',
