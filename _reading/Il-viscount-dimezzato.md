@@ -1,6 +1,6 @@
 ---
 layout: book-review
-title: "《分成两半的子爵》：完整不是没有受伤"
+title: "《分成两半的子爵》"
 author: Italo Calvino
 cover: assets/img/book_covers/Il-viscount-dimezzato/visconte-dimezzato.jpg
 ISBN: 9787544779807
