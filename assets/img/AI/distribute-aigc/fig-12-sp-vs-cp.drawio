@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" version="26.0.0">
+  <diagram id="sp-cp-comparison" name="Megatron-SP vs Ulysses CP">
+    <mxGraphModel dx="1420" dy="1040" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1420" pageHeight="1040" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Megatron-SP 与 Ulysses CP：序列在哪里恢复，权重如何分工？" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=28;fontColor=#2F4E9E;fontStyle=1;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="30" y="16" width="1360" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Wan2.2 两卡对照 · 只看 rank 0 · 省略 B=1 · N=27280 / H=3072 / 24 heads × 128 / FFN=14336" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=18;fontColor=#6B7280;fontStyle=0;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="30" y="64" width="1360" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-attn" value="" style="rounded=1;arcSize=8;html=1;fillColor=#EAF4FF;strokeColor=#4A90E2;strokeWidth=2;container=1;collapsible=0;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="30" y="110" width="1360" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-attn-title" value="① Self-Attention · TP=2 + Megatron-SP（CP=1）" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=21;fontColor=#245B94;fontStyle=1;fontFamily=PingFang SC;" vertex="1" parent="sp-attn">
+          <mxGeometry x="20" y="8" width="1320" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-attn-0" value="&lt;b&gt;本地 LayerNorm&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[13640, 3072]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;前一半 tokens，完整 hidden&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#4A90E2;strokeWidth=1.5;fontSize=18;fontColor=#245B94;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="sp-attn">
+          <mxGeometry x="20" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-attn-1" value="&lt;b&gt;All-Gather X&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[27280, 3072]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;每卡临时复制完整 X&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#4A90E2;strokeWidth=1.5;fontSize=18;fontColor=#245B94;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="sp-attn">
+          <mxGeometry x="287" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-attn-2" value="&lt;b&gt;Q/K/V 投影 → Attention&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[27280, 12, 128]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;分片权重；heads 0…11&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#4A90E2;strokeWidth=1.5;fontSize=18;fontColor=#245B94;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="sp-attn">
+          <mxGeometry x="554" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-attn-3" value="&lt;b&gt;分片 Wo&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[27280, 3072] partial&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;仅计算一半 heads 的贡献&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#4A90E2;strokeWidth=1.5;fontSize=18;fontColor=#245B94;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="sp-attn">
+          <mxGeometry x="821" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-attn-4" value="&lt;b&gt;Reduce-Scatter SUM&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[13640, 3072]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;贡献相加，再切回 token&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#4A90E2;strokeWidth=1.5;fontSize=18;fontColor=#245B94;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="sp-attn">
+          <mxGeometry x="1088" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-attn-edge-0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="sp-attn" source="sp-attn-0" target="sp-attn-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-attn-edge-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="sp-attn" source="sp-attn-1" target="sp-attn-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-attn-edge-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="sp-attn" source="sp-attn-2" target="sp-attn-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-attn-edge-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="sp-attn" source="sp-attn-3" target="sp-attn-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-attn-note" value="通信放在投影两侧：先收齐 X 再做 Q/K/V；先做分片 Wo 再求和。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=17;fontColor=#6B7280;fontStyle=0;fontFamily=PingFang SC;" vertex="1" parent="sp-attn">
+          <mxGeometry x="20" y="163" width="1320" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-attn" value="" style="rounded=1;arcSize=8;html=1;fillColor=#EAF8ED;strokeColor=#57B26A;strokeWidth=2;container=1;collapsible=0;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="30" y="330" width="1360" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-attn-title" value="② Self-Attention · Ulysses CP=2（TP=1）" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=21;fontColor=#2D6940;fontStyle=1;fontFamily=PingFang SC;" vertex="1" parent="cp-attn">
+          <mxGeometry x="20" y="8" width="1320" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-attn-0" value="&lt;b&gt;本地 LN → Q/K/V&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[13640, 24, 128]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;完整权重；前一半 tokens&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#57B26A;strokeWidth=1.5;fontSize=18;fontColor=#2D6940;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="cp-attn">
+          <mxGeometry x="20" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-attn-1" value="&lt;b&gt;All-to-All：seq → head&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[27280, 12, 128]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;收齐 heads 0…11 的序列&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#57B26A;strokeWidth=1.5;fontSize=18;fontColor=#2D6940;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="cp-attn">
+          <mxGeometry x="287" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-attn-2" value="&lt;b&gt;Attention 核心&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[27280, 12, 128]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;12 heads 看全部 tokens&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#57B26A;strokeWidth=1.5;fontSize=18;fontColor=#2D6940;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="cp-attn">
+          <mxGeometry x="554" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-attn-3" value="&lt;b&gt;All-to-All：head → seq&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[13640, 24, 128]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;收齐本地 token 的 heads&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#57B26A;strokeWidth=1.5;fontSize=18;fontColor=#2D6940;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="cp-attn">
+          <mxGeometry x="821" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-attn-4" value="&lt;b&gt;完整 Wo → residual&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[13640, 3072]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;完整权重，本地得到结果&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#57B26A;strokeWidth=1.5;fontSize=18;fontColor=#2D6940;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="cp-attn">
+          <mxGeometry x="1088" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-attn-edge-0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="cp-attn" source="cp-attn-0" target="cp-attn-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-attn-edge-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="cp-attn" source="cp-attn-1" target="cp-attn-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-attn-edge-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="cp-attn" source="cp-attn-2" target="cp-attn-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-attn-edge-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="cp-attn" source="cp-attn-3" target="cp-attn-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-attn-note" value="通信放在 Attention 核心两侧：交换 Q/K/V 与 Attention 输出，不做 partial sum 归约。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=17;fontColor=#6B7280;fontStyle=0;fontFamily=PingFang SC;" vertex="1" parent="cp-attn">
+          <mxGeometry x="20" y="163" width="1320" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-ffn" value="" style="rounded=1;arcSize=8;html=1;fillColor=#EAF4FF;strokeColor=#4A90E2;strokeWidth=2;container=1;collapsible=0;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="30" y="550" width="1360" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-ffn-title" value="③ FFN · TP=2 + Megatron-SP（CP=1）" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=21;fontColor=#245B94;fontStyle=1;fontFamily=PingFang SC;" vertex="1" parent="sp-ffn">
+          <mxGeometry x="20" y="8" width="1320" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-ffn-0" value="&lt;b&gt;本地 LayerNorm&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[13640, 3072]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;仍是 token 分片&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#4A90E2;strokeWidth=1.5;fontSize=18;fontColor=#245B94;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="sp-ffn">
+          <mxGeometry x="20" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-ffn-1" value="&lt;b&gt;All-Gather X&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[27280, 3072]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;进入 FFN 前恢复完整序列&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#4A90E2;strokeWidth=1.5;fontSize=18;fontColor=#245B94;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="sp-ffn">
+          <mxGeometry x="287" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-ffn-2" value="&lt;b&gt;分片 W₁ → GELU&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[27280, 7168]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;全部 tokens × 一半通道&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#4A90E2;strokeWidth=1.5;fontSize=18;fontColor=#245B94;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="sp-ffn">
+          <mxGeometry x="554" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-ffn-3" value="&lt;b&gt;分片 W₂&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[27280, 3072] partial&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;各卡持有部分通道贡献&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#4A90E2;strokeWidth=1.5;fontSize=18;fontColor=#245B94;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="sp-ffn">
+          <mxGeometry x="821" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-ffn-4" value="&lt;b&gt;Reduce-Scatter SUM&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[13640, 3072]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;回到 token 分片做 residual&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#4A90E2;strokeWidth=1.5;fontSize=18;fontColor=#245B94;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="sp-ffn">
+          <mxGeometry x="1088" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-ffn-edge-0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="sp-ffn" source="sp-ffn-0" target="sp-ffn-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-ffn-edge-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="sp-ffn" source="sp-ffn-1" target="sp-ffn-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-ffn-edge-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="sp-ffn" source="sp-ffn-2" target="sp-ffn-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-ffn-edge-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="sp-ffn" source="sp-ffn-3" target="sp-ffn-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-ffn-note" value="FFN 仍沿用 TP：矩阵权重分片；前向需要 1 次 All-Gather + 1 次 Reduce-Scatter。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=17;fontColor=#6B7280;fontStyle=0;fontFamily=PingFang SC;" vertex="1" parent="sp-ffn">
+          <mxGeometry x="20" y="163" width="1320" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-ffn" value="" style="rounded=1;arcSize=8;html=1;fillColor=#EAF8ED;strokeColor=#57B26A;strokeWidth=2;container=1;collapsible=0;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="30" y="770" width="1360" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-ffn-title" value="④ FFN · Ulysses CP=2（TP=1）" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=21;fontColor=#2D6940;fontStyle=1;fontFamily=PingFang SC;" vertex="1" parent="cp-ffn">
+          <mxGeometry x="20" y="8" width="1320" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-ffn-0" value="&lt;b&gt;本地 LayerNorm&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[13640, 3072]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;前一半 tokens，完整 hidden&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#57B26A;strokeWidth=1.5;fontSize=18;fontColor=#2D6940;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="cp-ffn">
+          <mxGeometry x="20" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-ffn-1" value="&lt;b&gt;完整 W₁&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[13640, 14336]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;一半 tokens × 全部通道&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#57B26A;strokeWidth=1.5;fontSize=18;fontColor=#2D6940;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="cp-ffn">
+          <mxGeometry x="287" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-ffn-2" value="&lt;b&gt;本地 GELU&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[13640, 14336]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;逐元素计算&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#57B26A;strokeWidth=1.5;fontSize=18;fontColor=#2D6940;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="cp-ffn">
+          <mxGeometry x="554" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-ffn-3" value="&lt;b&gt;完整 W₂&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[13640, 3072]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;结果数值已完整&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#57B26A;strokeWidth=1.5;fontSize=18;fontColor=#2D6940;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="cp-ffn">
+          <mxGeometry x="821" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-ffn-4" value="&lt;b&gt;本地 residual&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:18px&quot;&gt;[13640, 3072]&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:16px;color:#6B7280&quot;&gt;保持 token 分片进入下一层&lt;/span&gt;" style="rounded=1;arcSize=8;html=1;fillColor=#FFFFFF;strokeColor=#57B26A;strokeWidth=1.5;fontSize=18;fontColor=#2D6940;align=center;verticalAlign=middle;spacing=6;whiteSpace=wrap;fontFamily=PingFang SC;" vertex="1" parent="cp-ffn">
+          <mxGeometry x="1088" y="57" width="252" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-ffn-edge-0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="cp-ffn" source="cp-ffn-0" target="cp-ffn-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-ffn-edge-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="cp-ffn" source="cp-ffn-1" target="cp-ffn-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-ffn-edge-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="cp-ffn" source="cp-ffn-2" target="cp-ffn-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-ffn-edge-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=classic;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="cp-ffn" source="cp-ffn-3" target="cp-ffn-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cp-ffn-note" value="FFN 按 token 分工：权重完整复制；这整段前向无需激活通信。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=17;fontColor=#6B7280;fontStyle=0;fontFamily=PingFang SC;" vertex="1" parent="cp-ffn">
+          <mxGeometry x="20" y="163" width="1320" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="footer" value="共同点：Attention 核心均为 [27280,12,128]；FFN 中间激活元素数相同。区别在通信位置、分工维度与权重归属。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=18;fontColor=#334155;fontStyle=1;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="30" y="987" width="1360" height="34" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

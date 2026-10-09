@@ -52,13 +52,13 @@ Layers=30, Steps=50, dtype=BF16
 
 分布式推理并不是简单地把同一个模型放到多张 GPU 上运行，而是把原本由一张 GPU 完成的计算，拆成多个 rank 上的局部计算，再通过集合通信恢复与单卡等价的结果。分布式计算可以从下面几个维度进行切分：
 
-| 切分对象            | 对应方式 | Wan2.2 中的实际对象                     | 主要目的                  |
-| :------------------ | :------- | :-------------------------------------- | :------------------------ |
-| Batch / Request     | DP       | `B` 或多个生成请求                      | 提高吞吐量                |
-| Token Sequence      | CP       | `N=27280` 个视频 token                  | 降低单卡 Attention 计算量 |
-| Token Sequence      | SP       | LayerNorm、Residual、FFN 等区域的 token | 降低激活显存              |
-| Hidden / Head / FFN | TP       | `24 heads`、`H=3072`、`FFN=14336`       | 拆分权重和矩阵乘法        |
-| Transformer Layers  | PP       | `30` 个 WanBlock                        | 降低单卡模型显存          |
+| 切分对象            | 对应方式 | Wan2.2 中的实际对象                        | 主要目的                  |
+| :------------------ | :------- | :----------------------------------------- | :------------------------ |
+| Batch / Request     | DP       | `B` 或多个生成请求                         | 提高吞吐量                |
+| Token Sequence      | CP       | `N=27280` 个视频 token                     | 降低单卡 Attention 计算量 |
+| Token Sequence      | SP       | LayerNorm、Residual 等 TP 外部区域的 token | 降低激活显存              |
+| Hidden / Head / FFN | TP       | `24 heads`、`H=3072`、`FFN=14336`          | 拆分权重和矩阵乘法        |
+| Transformer Layers  | PP       | `30` 个 WanBlock                           | 降低单卡模型显存          |
 
 把这张表画到那个真实的张量上，就是下面这张图。同一个 `[1, 27280, 3072]`，DP 切 B、CP/SP 切 N、TP 切 D，而 PP 切的是"这张图重复 30 次"的那个方向：
 
@@ -268,7 +268,7 @@ FFN 部分的逻辑一样，只是数字更大：
 - **Reduce-Scatter**：每个 rank 只对 1/p 的通道求和，结束后 rank i 持有第 i 段的正确值；
 - **All-Gather**：这 p 段正确值互相交换拼接，每个 rank 拿到完整张量。
 
-总链路流量约为 `2 × (p-1)/p × 张量大小`，而不是 p 倍。顺带一提，这个分解也直接解释了 Sequence Parallel 的思路 —— 既然中间本来就会经过一个"按维度切开"的状态，那不如就停在那里，别再 All-Gather 回去了。
+采用 ring 算法时，每个 rank 的发送量约为 `2 × (p-1)/p × 张量大小`，接收量相同。这个分解也解释了 Sequence Parallel 的思路：让 Reduce-Scatter 沿 token 维切分，先用这份分片做 LayerNorm、residual 等计算，等下一次 TP Column Linear 才 All-Gather。
 
 最后算一下这次通信到底有多贵（BF16、B=1）：
 
@@ -302,7 +302,7 @@ CP 的第一步很直白：进入 30 层之前，把 token 序列切开，而且
 
 有两条路：
 
-- **方案 A：All-Gather K/V**，把完整的 K/V 复制到每张卡。正确，但激活显存一点没省下来，在 27280 这种长度上代价过高。
+- **方案 A：All-Gather K/V**，把完整的 K/V 复制到每张卡。Q 和其余 token 分片仍然省显存，但 K/V 的全量副本与通信会成为长序列瓶颈。
 - **方案 B：Ulysses —— 换一个切法。** 既然"按 token 切"在 Attention 内部看不到全局，那就临时换成"按 head 切"。
 
 Ulysses 的核心就是这一步。把 `[token, head]` 看成一张二维所有权表，All-to-All 做的事情本质上是"转置所有权"：
@@ -326,7 +326,7 @@ Ulysses 的核心就是这一步。把 `[token, head]` 看成一张二维所有�
 - **head 之间互相独立** —— head i 的 softmax 只用 head i 的 Q/K/V；
 - **token 之间不独立** —— 每个 query token 必须看到全部 27280 个 key。
 
-所以"切 head"是安全的，"切 token"在 Attention 内部是不安全的。**Ulysses 就是在进入 softmax 之前，把不安全的切法临时换成安全的，算完再换回来。** 代价是两次 All-to-All，收益是整个 block 的其余部分都只需处理 N/CP 个 token。
+所以按 head 分工可以各自计算完整 Attention；按 token 分工则必须补齐远端 K/V 的信息。**Ulysses 在 Attention 核心计算之前换成 head 分片，算完再换回来。** 其余部分只需处理 N/CP 个 token。（也可以用 Ring Attention 分块交换 K/V，这里只展开 Ulysses。）
 
 完整的数据流：
 
@@ -339,7 +339,7 @@ Ulysses 的核心就是这一步。把 `[token, head]` 看成一张二维所有�
     Fig. 12. Ulysses CP 的完整数据流.
 </div>
 
-所以每个 Self-Attention 的通信总账是：**1 次 fused QKV All-to-All + 1 次 output All-to-All**。
+所以每个 Self-Attention 的通信总账是：**QKV 融合时，1 次 QKV All-to-All + 1 次 Attention 输出 All-to-All**。Q/K/V 分别交换时是 3+1 次调用，传输的总字节数相同。
 
 还有一个容易忽略但很划算的工程细节：**30 层跑完之后的那次 All-Gather，要放在 output head 之后。**
 
@@ -354,38 +354,85 @@ CP 到底省了什么，一张表说清楚：
 | 模型权重              | 完整复制             | **一分没省** |
 | 新增通信              | 每层 2 次 All-to-All | 换来的代价   |
 
-**CP 是"时延优化"，而不是"显存装得下"的手段。** 这正是实时视频生成需要它的原因 —— 也是我这个项目最开始就选它的原因。
+**CP 同时降低单卡计算量和激活显存，但不减少权重显存。** 在这个项目里，我主要利用它降低单条视频的时延。
 
 另外，Cross-Attention 不需要这次 A2A：video token 做 Query，text 的 K/V 只有 512 个，且在每张卡上都是完整复制的。
 
-### SP：按非 Attention 区域的 Token 切分
+### SP：与 Ulysses CP 对照，看清 Token 分片的边界
 
-SP 和 CP 都切 token，名字也很像，很多框架甚至混用这两个词。但它们的边界完全不同，区别就在于：**Attention 期间，谁拥有完整序列。**
+这里的 **Megatron-SP** 指搭配 TP 的 Sequence Parallelism；DeepSpeed 也把 **Ulysses** 称为 Sequence Parallelism，本文按其上下文切分方式归入 CP。两者在 LayerNorm、residual 处都切 token，在 Attention 核心里却都会变成 **完整序列 × 部分 heads**。因此真正要比较的是：**在哪一步恢复序列、权重有没有切、FFN 怎么分工**。
+
+仍用 Wan2.2 的两卡例子：`B=1, N=27280, H=3072, heads=24, head_dim=128, FFN=14336`。对比的两种配置分别为 **TP=2 + Megatron-SP（CP=1）** 和 **Ulysses CP=2（TP=1）**。
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/AI/distribute-aigc/fig-12-sp-vs-cp.svg" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/AI/distribute-aigc/fig-12-sp-vs-cp.svg" alt="Megatron-SP 与 Ulysses CP 两卡对照：Attention 和 FFN 的张量形状、通信位置及权重切分" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
-    Fig. 13. SP 与 CP 的边界差异.
+    Fig. 13. 两卡配置下，rank 0 在 Self-Attention 与 FFN 中的张量变化；省略 B=1，partial 表示通道贡献尚未求和.
 </div>
 
-**Megatron 风格的 SP**，是 TP 的一个补丁。TP 切了 Attention 和 FFN 的权重，但 LayerNorm、dropout、residual 这些 token-local 算子的激活在每个 TP rank 上还是完整复制的。SP 的做法是：在 block 边界保持 sequence shard，只在进入 TP Column Linear 之前 All-Gather 恢复完整序列，在 TP Row Linear 之后用 Reduce-Scatter 重新切回去。
+#### Attention：结果布局相同，得到它的路径不同
 
-注意这正好利用了前面提到的分解：`All-Reduce = Reduce-Scatter + All-Gather`。SP 只是把这两半拆开用，所以**它几乎不增加通信量** —— 只是把原本 All-Reduce 的那次通信换了个形式。
+两边的 block 输入相同：rank 0 持有 token `0…13639`，rank 1 持有 `13640…27279`，各自都是 `[1,13640,3072]`。
 
-**Ulysses CP** 则是整个 block 全程保持 sequence shard，只在 Attention 内部用 head shard 临时换取完整上下文。
+| 阶段            | TP=2 + Megatron-SP                                                   | Ulysses CP=2，TP=1                                                   |
+| :-------------- | :------------------------------------------------------------------- | :------------------------------------------------------------------- |
+| LayerNorm       | 本地 13640 tokens，完整 3072 通道                                    | 相同                                                                 |
+| Q/K/V 投影之前  | **All-Gather X**，每卡得到 `[1,27280,3072]`                          | 保持本地 `[1,13640,3072]`                                            |
+| Q/K/V 投影      | 分片权重：全部 token → 12 heads                                      | 完整权重：一半 token → 24 heads                                      |
+| Attention 之前  | Q/K/V 已是 `[1,27280,12,128]`                                        | **All-to-All Q/K/V**：`[1,13640,24,128] → [1,27280,12,128]`          |
+| Attention 核心  | 每卡算 12 heads，各 head 都看全部 27280 tokens                       | 相同                                                                 |
+| Attention 之后  | 分片 Wo 生成 `[1,27280,3072]` **partial**，再 **Reduce-Scatter SUM** | **All-to-All（head→seq）** 得到 `[1,13640,24,128]`，再用完整 Wo 投影 |
+| 输出与 residual | `[1,13640,3072]`，数值已完整                                         | 相同                                                                 |
 
-| 对比项           | Megatron-SP                         | Ulysses CP                               |
-| :--------------- | :---------------------------------- | :--------------------------------------- |
-| 主要目的         | 省掉 TP 没覆盖的激活（LN/residual） | 降低长序列 Attention 的计算与激活        |
-| Attention 内部   | 不保留 sequence shard               | 不保留 sequence shard（换成 head shard） |
-| 标志性算子       | All-Gather + Reduce-Scatter         | **sequence ↔ head All-to-All**          |
-| 是否解决长上下文 | 否                                  | 是                                       |
-| 是否与 TP 耦合   | 紧耦合                              | 正交，可独立使用                         |
+例如 rank 0 最终都负责 heads `0…11` 的全序列 Attention。Megatron 路径是“**先收齐 X，再用自己的 head 权重计算 Q/K/V**”；Ulysses 路径是“**先算自己 token 的全部 Q/K/V，再把 heads 12…23 发走，收来远端 token 的 heads 0…11**”。
 
-> **术语提醒**：判断一份实现到底是哪一种，不要看它叫什么名字，看 Attention 前后出现的是什么算子。出现 All-Gather / Reduce-Scatter 的是 Megatron-SP；出现 sequence ↔ head All-to-All 的是 Ulysses CP。
+算完之后，Megatron 的 Wo 只持有一半输入通道，必须把两卡的贡献**相加**；Ulysses 先收齐本地 token 的全部 heads，完整 Wo 可以本地计算，所以只需**交换和拼接**。Reduce-Scatter 与 All-to-All 的区别就在这里。[Megatron Linear 实现](https://github.com/NVIDIA/Megatron-LM/blob/main/megatron/core/tensor_parallel/layers.py)、[Ulysses 设计说明](https://github.com/deepspeedai/DeepSpeed/blob/master/blogs/deepspeed-ulysses/README.md)分别对应这两条路径。
+
+#### 非 Attention：LN/residual 相同，FFN 不同
+
+LayerNorm 对单个 token 的完整 hidden 向量归一化；residual、modulation、dropout 也是 token-local 的。两种方案在这些位置都只处理 N/2 个 token，无需交换激活。**但 FFN 虽然不跨 token，Megatron-SP 仍沿用 TP 的矩阵切法，并不让整个 FFN 保持 token 分片。**
+
+| FFN 阶段      | TP=2 + Megatron-SP                               | Ulysses CP=2，TP=1               |
+| :------------ | :----------------------------------------------- | :------------------------------- |
+| 输入          | All-Gather：`[1,13640,3072] → [1,27280,3072]`    | 保持 `[1,13640,3072]`            |
+| 第一层 + GELU | 分片权重，激活 `[1,27280,7168]`                  | 完整权重，激活 `[1,13640,14336]` |
+| 第二层        | 得到 `[1,27280,3072]` partial，再 Reduce-Scatter | 本地得到 `[1,13640,3072]`        |
+| FFN 前向通信  | 1 次 All-Gather + 1 次 Reduce-Scatter            | **0**                            |
+
+有意思的是，两边的 FFN 中间激活元素数相同：`27280×7168 = 13640×14336`，BF16 都约 **372.97 MiB**。两卡都把这段计算分成一半，只是 Megatron 分通道、Ulysses 分 token；前者还把线性层权重减半，后者复制完整权重。
+
+#### 通信量：统一按每卡发送字节数计算
+
+以下只统计**推理前向的主要激活通信**：每卡向其他卡发送的字节数，接收量相同，收发合计需乘 2。假设标准 MHA、均匀分片，AG/RS 用 ring 的带宽模型；不计 QK RMSNorm 的小规模归约、模型入口/出口通信和临时缓冲区。令 `p` 为各自的并行度，`α=(p-1)/p`，完整 hidden 激活大小为：
+
+$$
+M = BNH\times 2\text{ bytes} = 159.84375\text{ MiB}
+$$
+
+- **Megatron-SP**：一次 AG 或 RS 每卡发送 `αM`。所以一组“AG → TP 计算 → RS”发送 `2αM`，与原 TP 的一次 ring All-Reduce 相同。**这是相对已有 TP 不增加主要前向字节量，不是 SP 没有通信，也不保证耗时相同。**
+- **Ulysses**：Q/K/V 各有 `M/p` 的本地数据，只发走其中 `α`；第一次 A2A 共发送 `3αM/p`，Attention 输出的第二次 A2A 发送 `αM/p`，合计 **`4αM/p`**。p=2 时，分别为 **119.88 MiB、39.96 MiB**。这些数字是上述模型推算值。
+
+把 WanBlock 的 Self-Attention、Cross-Attention、FFN 都算上：
+
+| 模块              | Megatron-SP + TP | Ulysses CP           | p=2：SP+TP / CP         |
+| :---------------- | :--------------- | :------------------- | :---------------------- |
+| Self-Attention    | `2αM`            | `4αM/p`              | 159.84 / 159.84 MiB     |
+| Cross-Attention   | `2αM`            | 0（text K/V 已复制） | 159.84 / 0 MiB          |
+| FFN               | `2αM`            | 0                    | 159.84 / 0 MiB          |
+| **一个 WanBlock** | **`6αM`**        | **`4αM/p`**          | **479.53 / 159.84 MiB** |
+
+Cross-Attention 行忽略短 text 序列相关通信，只统计主导的 video 激活。因此，**两卡 Self-Attention 的发送量恰好相同，整个 WanBlock 的差距来自 Cross-Attention 和 FFN**。如果是只有 Self-Attention + FFN 的普通 Transformer，Megatron 为 `4αM`，Ulysses 为 `4αM/p`，相差 p 倍；随着 p 增大，前者趋近 O(M)，后者为 O(M/p)。这是通信字节量比较，实际时延还取决于链路、collective 实现和计算重叠。
+
+#### 两者的联系：可以组合，优化的范围不同
+
+**Megatron-SP 补上 TP 在 LN/residual 等位置的激活冗余；开启 SP 前后，TP 的 Attention 仍是完整 N、部分 heads。Ulysses 则增加一条 CP 轴，让投影和 FFN 按 token 分工，只在 Attention 核心临时切换成 head 分工。** 因此不能把“Megatron-SP 不改变 Attention 的布局”理解成“TP+SP 无法处理长序列”。
+
+组合成 `TP=2 × CP=2` 并开启 SP 时，LN/residual 每卡持有 **6820 tokens**；先在 TP group 中 AG 到 13640 tokens，用分片权重得到 12 heads，再在 CP group 中 A2A 成 **27280 tokens × 6 heads**。SP 复用 TP group，不再乘一个 world-size 维度；这里的均匀 MHA 分片要求 `24 % (TP×CP) == 0`。
+
+训练时还要计算反向通信：SP 的 AG/RS 在反向对应 RS/AG，Ulysses 的 A2A 在反向做逆向交换；Megatron 为节省保存的激活还可能在反向重做输入 AG，复制参数的梯度也需要同步，不能把这张前向表直接当作训练总通信量。细节可参照 [Megatron-SP 原论文 §4.2.2](https://arxiv.org/html/2205.05198)、[Ulysses 的反向实现](https://github.com/deepspeedai/DeepSpeed/blob/master/deepspeed/sequence/layer.py)。
 
 ### PP：按 WanBlock 层切分
 
