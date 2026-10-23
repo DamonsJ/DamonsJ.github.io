@@ -212,6 +212,13 @@ ninja.data = [{
           description: "以 Wan2.2 TI2V 5B 为例，记录分布式推理中各种并行方式切什么、怎么通信、代价有多大 生成模型 分布式推理 Diffusion 视频生成 推理优化",
           section: "Ai",handler: () => {
               window.location.href = "/AI/2026-08-08-distribute-aigc.html";
+            },},{id: "AI-aigc-推理加速-扩散模型的特征缓存",
+          title: 'AIGC 推理加速：扩散模型的特征缓存',
+          taxonomySource: "_AI/2026-10-22-diffusion-feature-cache.md",
+          keywords: "生成模型 特征缓存 Diffusion 推理优化 视频生成",
+          description: "整理 FBCache、TeaCache、TaylorSeer、SeaCache、DPCache、SoftCache 等特征缓存方法，记录它们缓存什么、什么时候重算、跳过的步怎么补 生成模型 特征缓存 Diffusion 推理优化 视频生成",
+          section: "Ai",handler: () => {
+              window.location.href = "/AI/2026-10-22-diffusion-feature-cache.html";
             },},{id: "math-如何通过4个2构造任意整数",
           title: '如何通过4个2构造任意整数',
           taxonomySource: "_math/2025-03-08-making-any-integer-with-four-2s.md",
