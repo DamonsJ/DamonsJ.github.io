@@ -373,6 +373,13 @@ ninja.data = [{
           description: " 小说 文学 卡尔维诺 文学史",
           section: "Reading",handler: () => {
               window.location.href = "/reading/the-baron-in-the-trees.html";
+            },},{id: "reading-不存在的骑士",
+          title: '《不存在的骑士》',
+          taxonomySource: "_reading/the-nonexistent-knight.md",
+          keywords: "小说 文学 卡尔维诺 文学史",
+          description: " 小说 文学 卡尔维诺 文学史",
+          section: "Reading",handler: () => {
+              window.location.href = "/reading/the-nonexistent-knight.html";
             },},{
         id: 'social-email',
         title: 'email',
