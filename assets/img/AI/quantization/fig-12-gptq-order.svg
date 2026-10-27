@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-12 -12 724 254" width="724" height="254" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif">
+  <defs><marker id="arr-w" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#bf5a0c" /></marker><marker id="arr-v" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6340b8" /></marker></defs><rect x="-12" y="-12" width="724" height="254" fill="#ffffff" /><title id="gq-t">GPTQ 的逐列量化与分块延迟更新</title>
+  <text x="20" y="22" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="13px" fill="#141b27" font-weight="700">权重 W（d_row × d_col）</text>
+  <rect x="20" y="40" width="160" height="140" fill="#e7edfb" stroke="#2457c5" stroke-width="1.3" />
+  <text x="100" y="114" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#2457c5">已量化</text>
+  <rect x="180" y="40" width="160" height="140" fill="#efe9fa" stroke="#6340b8" stroke-width="1.3" />
+  <rect x="180" y="40" width="40" height="140" fill="#e7edfb" stroke="#2457c5" stroke-width="1.3" />
+  <rect x="220" y="40" width="20" height="140" fill="#fcefe2" stroke="#bf5a0c" stroke-width="1.3" />
+  <text x="230" y="200" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#bf5a0c">第 j 列</text>
+  <text x="290" y="114" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#6340b8">当前块</text>
+  <text x="290" y="132" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#6340b8">B = 128 列</text>
+  <rect x="340" y="40" width="300" height="140" fill="#ffffff" stroke="#7b8597" stroke-width="1.2" />
+  <text x="490" y="106" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">尚未处理的列</text>
+  <text x="490" y="126" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#7b8597">块结束时一次性更新</text>
+  <path d="M240,30 C270,10 310,10 336,30" marker-end="url(#arr-w)" stroke="#bf5a0c" stroke-width="2" fill="none" />
+  <text x="290" y="16" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#bf5a0c">块内逐列更新</text>
+  <path d="M310,192 C380,222 460,222 520,186" marker-end="url(#arr-v)" stroke="#6340b8" stroke-width="2" fill="none" />
+  <text x="420" y="226" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#6340b8">W[:, i+B:] −= E · U[i:i+B, i+B:]（一次 GEMM）</text>
+  <text x="660" y="114" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#7b8597">→</text>
+</svg>

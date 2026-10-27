@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-12 -12 724 254" width="724" height="254" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif">
+  <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7b8597" /></marker></defs><rect x="-12" y="-12" width="724" height="254" fill="#ffffff" /><title id="w8-t">W8A8 推理数据流</title>
+  <rect x="10" y="30" width="120" height="48" rx="5" fill="#ffffff" stroke="#7b8597" stroke-width="1.2" />
+  <text x="70" y="50" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">上一层输出</text><text x="70" y="68" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">X (FP16)</text>
+  <rect x="160" y="18" width="180" height="72" rx="5" fill="#efe9fa" stroke="#6340b8" stroke-width="1.3" />
+  <text x="250" y="38" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="13px" fill="#141b27" font-weight="700">RMSNorm + 量化 kernel</text>
+  <text x="250" y="58" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">每行求 absmax → s_x[i]</text>
+  <text x="250" y="76" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">q = round(x / s_x[i])</text>
+  <rect x="370" y="18" width="140" height="44" rx="5" fill="#e7edfb" stroke="#2457c5" stroke-width="1.3" />
+  <text x="440" y="36" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">X_q  INT8 (T×K)</text><text x="440" y="53" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">s_x  FP32 (T)</text>
+  <rect x="370" y="140" width="140" height="44" rx="5" fill="#eaeef4" stroke="#d9dfe8" stroke-width="1" />
+  <text x="440" y="158" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">W_q  INT8 (N×K)</text><text x="440" y="175" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">s_w  FP32 (N)</text>
+  <text x="440" y="202" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#7b8597">离线量化，常驻显存</text>
+  <rect x="540" y="18" width="150" height="58" rx="5" fill="#e7edfb" stroke="#2457c5" stroke-width="1.3" />
+  <text x="615" y="40" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="13px" fill="#141b27" font-weight="700">INT8 Tensor Core</text>
+  <text x="615" y="60" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">INT8×INT8 → INT32 累加</text>
+  <rect x="540" y="110" width="150" height="74" rx="5" fill="#e2f3e9" stroke="#12784a" stroke-width="1.3" />
+  <text x="615" y="130" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="13px" fill="#141b27" font-weight="700">Epilogue（寄存器内）</text>
+  <text x="615" y="150" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">acc × s_x[i] × s_w[j]</text>
+  <text x="615" y="168" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">+ bias → FP16 输出 Y</text>
+  <path d="M130,54 L156,54" marker-end="url(#arr)" stroke="#465163" stroke-width="1.3" fill="none" />
+  <path d="M340,40 L366,40" marker-end="url(#arr)" stroke="#465163" stroke-width="1.3" fill="none" />
+  <path d="M510,40 L536,40" marker-end="url(#arr)" stroke="#465163" stroke-width="1.3" fill="none" />
+  <path d="M510,162 L525,162 L525,62 L536,62" marker-end="url(#arr)" stroke="#465163" stroke-width="1.3" fill="none" />
+  <path d="M615,76 L615,106" marker-end="url(#arr)" stroke="#465163" stroke-width="1.3" fill="none" />
+</svg>

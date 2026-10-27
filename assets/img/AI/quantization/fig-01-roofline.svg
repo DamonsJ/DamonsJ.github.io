@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-12 -12 624 364" width="624" height="364" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif">
+  <rect x="-12" y="-12" width="624" height="364" fill="#ffffff" /><title id="roof-t">A100 Roofline 模型：decode 位于带宽受限区，prefill 位于算力受限区</title>
+  <g stroke="#d9dfe8" stroke-width="1" fill="none">
+    <line x1="105.5" y1="20" x2="105.5" y2="300" /><line x1="196.4" y1="20" x2="196.4" y2="300" /><line x1="287.3" y1="20" x2="287.3" y2="300" /><line x1="378.2" y1="20" x2="378.2" y2="300" /><line x1="469.1" y1="20" x2="469.1" y2="300" />
+    <line x1="60" y1="274.5" x2="560" y2="274.5" /><line x1="60" y1="198.2" x2="560" y2="198.2" /><line x1="60" y1="121.9" x2="560" y2="121.9" /><line x1="60" y1="45.5" x2="560" y2="45.5" />
+  </g>
+  <line x1="60" y1="300" x2="560" y2="300" stroke="#7b8597" stroke-width="1" fill="none" /><line x1="60" y1="20" x2="60" y2="300" stroke="#7b8597" stroke-width="1" fill="none" />
+  <text x="105.5" y="316" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">1</text><text x="196.4" y="316" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">4</text><text x="287.3" y="316" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">16</text><text x="378.2" y="316" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">64</text><text x="469.1" y="316" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">256</text><text x="560" y="316" text-anchor="end" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">1024</text>
+  <text x="310" y="334" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">算术强度（FLOP / Byte，对数轴）</text>
+  <text x="54" y="278" text-anchor="end" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">1</text><text x="54" y="202" text-anchor="end" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">8</text><text x="54" y="126" text-anchor="end" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">64</text><text x="54" y="49" text-anchor="end" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">512</text>
+  <text x="14" y="160" transform="rotate(-90 14 160)" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">可达性能（TFLOPS）</text>
+  <path d="M60,274.5 L436.6,63.7 L560,63.7" stroke="#2457c5" stroke-width="2" fill="none" />
+  <path d="M436.6,63.7 L482,38.2 L560,38.2" stroke="#12784a" stroke-width="2" fill="none" stroke-dasharray="4 4" />
+  <text x="444" y="82" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#2457c5">FP16 峰值 312</text>
+  <text x="560" y="31" text-anchor="end" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#12784a">INT8 / FP8 峰值 624</text>
+  <text x="196" y="160" transform="rotate(-29.3 196 160)" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#2457c5">带宽屋顶：2 TB/s × AI</text>
+  <line x1="436.6" y1="63.7" x2="436.6" y2="300" stroke="#d9dfe8" stroke-width="1" fill="none" stroke-dasharray="4 4" />
+  <text x="440" y="294" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#7b8597">拐点 ≈156</text>
+  <circle cx="105.5" cy="249.1" r="5.5" fill="#bf5a0c" />
+  <text x="114" y="262" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#bf5a0c">decode b=1, FP16 权重</text>
+  <circle cx="196.4" cy="198.2" r="5.5" fill="#12784a" />
+  <text x="205" y="212" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#12784a">decode b=1, INT4 权重（4× 快）</text>
+  <circle cx="378.2" cy="96.4" r="5.5" fill="#6340b8" />
+  <text x="300" y="86" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#6340b8">decode b=64</text>
+  <circle cx="535" cy="63.7" r="5.5" fill="#2457c5" />
+  <text x="535" y="55" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#2457c5">prefill</text>
+</svg>

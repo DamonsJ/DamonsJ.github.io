@@ -219,6 +219,13 @@ ninja.data = [{
           description: "整理 FBCache、TeaCache、TaylorSeer、SeaCache、DPCache、SoftCache 等特征缓存方法，记录它们缓存什么、什么时候重算、跳过的步怎么补 生成模型 特征缓存 Diffusion 推理优化 视频生成",
           section: "Ai",handler: () => {
               window.location.href = "/AI/2026-10-22-diffusion-feature-cache.html";
+            },},{id: "AI-llm-与-aigc-量化-从数值格式到-w4a4",
+          title: 'LLM 与 AIGC 量化：从数值格式到 W4A4',
+          taxonomySource: "_AI/2026-10-27-llm-aigc-quantization.md",
+          keywords: "模型优化 模型量化 LLM Diffusion 推理优化",
+          description: "从比特、舍入和矩阵乘讲起，整理 GPTQ、AWQ、SmoothQuant、QuaRot/SpinQuant、ConvRot、SVDQuant 分别解决什么问题、怎么做、在 GPU 上怎么跑，以及扩散模型、KV Cache、FP8/FP4 的量化 模型优化 模型量化 LLM Diffusion 推理优化",
+          section: "Ai",handler: () => {
+              window.location.href = "/AI/2026-10-27-llm-aigc-quantization.html";
             },},{id: "math-如何通过4个2构造任意整数",
           title: '如何通过4个2构造任意整数',
           taxonomySource: "_math/2025-03-08-making-any-integer-with-four-2s.md",
