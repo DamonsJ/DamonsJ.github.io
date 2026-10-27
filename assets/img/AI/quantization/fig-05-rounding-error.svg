@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-12 -12 384 274" width="384" height="274" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif">
+        <rect x="-12" y="-12" width="384" height="274" fill="#ffffff" /><title id="hero-t">连续值 x 与 3 比特量化值 x̂ 的阶梯关系，以及锯齿状的舍入误差</title>
+        <g stroke="#d9dfe8" stroke-width="1" fill="none">
+          <line x1="30" y1="25" x2="330" y2="25" /><line x1="30" y1="46.4" x2="330" y2="46.4" /><line x1="30" y1="67.9" x2="330" y2="67.9" /><line x1="30" y1="89.3" x2="330" y2="89.3" />
+          <line x1="30" y1="110.7" x2="330" y2="110.7" /><line x1="30" y1="132.1" x2="330" y2="132.1" /><line x1="30" y1="153.6" x2="330" y2="153.6" /><line x1="30" y1="175" x2="330" y2="175" />
+        </g>
+        <line x1="30" y1="100" x2="334" y2="100" stroke="#7b8597" stroke-width="1" fill="none" />
+        <line x1="180" y1="20" x2="180" y2="180" stroke="#7b8597" stroke-width="1" fill="none" />
+        <path d="M30,175 L330,25" stroke="#465163" stroke-width="1.3" fill="none" stroke-dasharray="4 4" />
+        <path d="M30,175 H51.4 V153.6 H94.3 V132.1 H137.1 V110.7 H180 V89.3 H222.9 V67.9 H265.7 V46.4 H308.6 V25 H330" stroke="#2457c5" stroke-width="2" fill="none" />
+        <text x="334" y="95" text-anchor="end" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#465163">x</text>
+        <text x="186" y="18" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#2457c5">x̂ = Q(x)，8 个等级</text>
+        <text x="40" y="60" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#7b8597">虚线：x̂ = x（无损）</text>
+        <line x1="30" y1="212" x2="334" y2="212" stroke="#7b8597" stroke-width="1" fill="none" />
+        <path d="M30,212 L51.4,230 L51.4,194 L94.3,230 L94.3,194 L137.1,230 L137.1,194 L180,230 L180,194 L222.9,230 L222.9,194 L265.7,230 L265.7,194 L308.6,230 L308.6,194 L330,212" stroke="#bf5a0c" stroke-width="2" fill="none" />
+        <text x="30" y="246" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#bf5a0c">误差 e = x̂ − x，落在 [−s/2, s/2] 内</text>
+      </svg>

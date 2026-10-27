@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-12 -12 714 354" width="714" height="354" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif">
+  <rect x="-12" y="-12" width="714" height="354" fill="#ffffff" /><title id="fac-t">per-token 与 per-output-channel 的 scale 可以提到求和号外，per-input-channel 的不行</title>
+  <rect x="30" y="70" width="14" height="110" fill="#e7edfb" stroke="#2457c5" stroke-width="1.3" />
+  <text x="37" y="62" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#2457c5">s_x</text>
+  <rect x="50" y="70" width="150" height="110" fill="#ffffff" stroke="#7b8597" stroke-width="1.2" />
+  <rect x="50" y="112" width="150" height="16" fill="#e7edfb" stroke="#2457c5" stroke-width="1.3" />
+  <text x="125" y="196" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">X_q（T×K，INT8）</text>
+  <text x="58" y="124" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#2457c5">第 i 行</text>
+  <text x="216" y="130" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="13px" fill="#141b27" font-weight="700">×</text>
+  <rect x="235" y="50" width="110" height="14" fill="#e2f3e9" stroke="#12784a" stroke-width="1.3" />
+  <text x="290" y="42" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#12784a">s_w</text>
+  <rect x="235" y="70" width="110" height="110" fill="#ffffff" stroke="#7b8597" stroke-width="1.2" />
+  <rect x="290" y="70" width="16" height="110" fill="#e2f3e9" stroke="#12784a" stroke-width="1.3" />
+  <text x="290" y="196" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">W_q<tspan dy="-4" font-size="0.72em">T</tspan><tspan dy="4">​</tspan>（K×N，INT8）</text>
+  <text x="361" y="130" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="13px" fill="#141b27" font-weight="700">=</text>
+  <rect x="380" y="70" width="110" height="110" fill="#ffffff" stroke="#7b8597" stroke-width="1.2" />
+  <rect x="435" y="112" width="16" height="16" fill="#efe9fa" stroke="#6340b8" stroke-width="1.3" />
+  <text x="435" y="196" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">Y（T×N）</text>
+  <text x="510" y="96" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">Y_ij = s_x[i] · s_w[j] ·</text>
+  <text x="510" y="116" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">Σ_k X_q[i,k] · W_q[j,k]</text>
+  <text x="510" y="142" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#12784a">✓ scale 与 k 无关</text>
+  <text x="510" y="160" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#12784a">✓ 整数点积 + 一次缩放</text>
+  <line x1="20" y1="215" x2="670" y2="215" stroke="#d9dfe8" stroke-width="1" fill="none" />
+  <rect x="50" y="240" width="150" height="12" fill="#fcefe2" stroke="#bf5a0c" stroke-width="1.3" />
+  <text x="125" y="234" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#bf5a0c">s_k（每个输入通道一个）</text>
+  <rect x="50" y="256" width="150" height="60" fill="#ffffff" stroke="#7b8597" stroke-width="1.2" />
+  <text x="125" y="291" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">X_q（per-channel）</text>
+  <text x="230" y="258" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">Y_ij = s_w[j] · Σ_k s_k · X_q[i,k] · W_q[j,k]</text>
+  <text x="230" y="280" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#bf5a0c">✗ s_k 随 k 变化，困在求和号里，整数 GEMM 用不了</text>
+  <text x="230" y="302" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#2457c5">出路：离线把 s_k 乘进 W 的第 k 列（第 8 章 SmoothQuant）</text>
+</svg>

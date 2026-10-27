@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-12 -12 724 324" width="724" height="324" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif">
+  <rect x="-12" y="-12" width="724" height="324" fill="#ffffff" /><title id="map2-t">应对量化难点的五类方法</title>
+  <rect x="265" y="118" width="170" height="64" rx="8" fill="#fcefe2" stroke="#bf5a0c" stroke-width="1.3" />
+  <text x="350" y="146" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="13px" fill="#141b27" font-weight="700">低比特误差</text>
+  <text x="350" y="166" text-anchor="middle" font-family="&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Menlo,Consolas,monospace" font-size="11px" fill="#bf5a0c">舍入误差 · 离群值</text>
+  <g stroke="#465163" stroke-width="1.3" fill="none">
+    <path d="M300,118 L200,74" /><path d="M400,118 L500,74" /><path d="M265,150 L210,150" /><path d="M435,150 L490,150" /><path d="M350,182 L350,214" />
+  </g>
+  <rect x="20" y="20" width="200" height="64" rx="6" fill="#ffffff" stroke="#7b8597" stroke-width="1.2" />
+  <text x="120" y="44" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="13px" fill="#141b27" font-weight="700">① 隔离</text>
+  <text x="120" y="66" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">LLM.int8()：离群列走 FP16</text>
+  <rect x="480" y="20" width="200" height="64" rx="6" fill="#ffffff" stroke="#7b8597" stroke-width="1.2" />
+  <text x="580" y="44" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="13px" fill="#141b27" font-weight="700">② 误差补偿</text>
+  <text x="580" y="66" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">GPTQ：H<tspan dy="-4" font-size="0.72em">−1</tspan><tspan dy="4">​</tspan> 把误差摊给其他权重</text>
+  <rect x="10" y="118" width="200" height="64" rx="6" fill="#e7edfb" stroke="#2457c5" stroke-width="1.3" />
+  <text x="110" y="142" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="13px" fill="#141b27" font-weight="700">③ 缩放迁移 diag(s)</text>
+  <text x="110" y="164" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">AWQ、SmoothQuant</text>
+  <rect x="490" y="118" width="200" height="64" rx="6" fill="#efe9fa" stroke="#6340b8" stroke-width="1.3" />
+  <text x="590" y="142" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="13px" fill="#141b27" font-weight="700">④ 正交旋转 Q</text>
+  <text x="590" y="164" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">QuaRot、SpinQuant、ConvRot</text>
+  <rect x="235" y="214" width="230" height="64" rx="6" fill="#e2f3e9" stroke="#12784a" stroke-width="1.3" />
+  <text x="350" y="238" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="13px" fill="#141b27" font-weight="700">⑤ 低秩吸收</text>
+  <text x="350" y="260" text-anchor="middle" font-family="&quot;PingFang SC&quot;,&quot;Noto Sans SC&quot;,&quot;Hiragino Sans GB&quot;,&quot;Microsoft YaHei&quot;,sans-serif" font-size="12px" fill="#141b27">SVDQuant：16 bit 低秩支路 + 4 bit 残差</text>
+</svg>
