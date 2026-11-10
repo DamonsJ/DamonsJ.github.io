@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="412" viewBox="0 0 920 412" font-family="PingFang SC, Noto Sans CJK SC, Arial, sans-serif"><title>R1 退出后的持久状态与本步批次</title><defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 Z" fill="#9AA3B2"/></marker></defs>
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="26" y="28.5" dominant-baseline="central" text-anchor="start" font-size="28" fill="#2F4E9E" font-weight="bold">R1 退出后的持久状态与本步批次</text>
+<text x="27" y="59.5" dominant-baseline="central" text-anchor="start" font-size="16" fill="#475569" font-weight="normal">两代 Runner 都要组装 [R2, R3]，要移动的数据不同</text>
+<rect x="25" y="84" width="423" height="279" rx="12" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="41" y="106" dominant-baseline="central" text-anchor="start" font-size="20" fill="#1E4A78" font-weight="bold">MRV1 · CPU InputBatch</text>
+<rect x="472" y="84" width="423" height="279" rx="12" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="488" y="106" dominant-baseline="central" text-anchor="start" font-size="20" fill="#275E3A" font-weight="bold">MRV2 · 持久槽位与本步输入</text>
+<rect x="45" y="129" width="383" height="52" rx="8" fill="#FFFFFF" stroke="#4A90E2"/>
+<text x="236.5" y="146.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#1E4A78" font-weight="bold">第 2 步的持久行</text>
+<text x="236.5" y="167.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">行 0 = R1　　行 1 = R2</text>
+<rect x="45" y="208" width="383" height="52" rx="8" fill="#FFFFFF" stroke="#4A90E2"/>
+<text x="236.5" y="225.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#1E4A78" font-weight="bold">R3 填 R1 的旧行</text>
+<text x="236.5" y="246.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">行 0 = R3　　行 1 = R2</text>
+<rect x="45" y="287" width="383" height="52" rx="8" fill="#FFFFFF" stroke="#4A90E2"/>
+<text x="236.5" y="304.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#1E4A78" font-weight="bold">按 decode-first 交换状态行</text>
+<text x="236.5" y="325.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">行 0 = R2　　行 1 = R3</text>
+<rect x="492" y="129" width="383" height="52" rx="8" fill="#FFFFFF" stroke="#57B26A"/>
+<text x="683.5" y="146.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#275E3A" font-weight="bold">第 2 步的持久槽</text>
+<text x="683.5" y="167.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">槽 0 = R2　　槽 1 = R1</text>
+<rect x="492" y="208" width="383" height="52" rx="8" fill="#FFFFFF" stroke="#57B26A"/>
+<text x="683.5" y="225.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#275E3A" font-weight="bold">R3 复用 R1 的槽</text>
+<text x="683.5" y="246.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">槽 0 = R2　　槽 1 = R3</text>
+<rect x="492" y="287" width="383" height="52" rx="8" fill="#FFFFFF" stroke="#57B26A"/>
+<text x="683.5" y="304.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#275E3A" font-weight="bold">按 idx_mapping = [0, 1] 取数据</text>
+<text x="683.5" y="325.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">批次行 0 ← 槽 0　　批次行 1 ← 槽 1</text>
+<polyline points="236,181 236,208" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="236,260 236,287" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="683,181 683,208" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="683,260 683,287" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="460" y="386.5" dominant-baseline="central" text-anchor="middle" font-size="16" fill="#334155" font-weight="normal">第 3 步的模型输入都是 [R2, R3]，R2 在 MRV2 中始终使用槽 0。</text>
+</svg>

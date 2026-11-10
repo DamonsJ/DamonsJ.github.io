@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" font-family="PingFang SC, Hiragino Sans GB, Noto Sans CJK SC, Microsoft YaHei, Arial, sans-serif"><title>一条主线：把请求状态和本步输入拆开</title><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#9AA3B2"/></marker><marker id="arrowO" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#F28C38"/></marker><marker id="arrowG" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#57B26A"/></marker><marker id="arrowB" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#4A90E2"/></marker><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#F4F6F9"/><line x1="0" y1="0" x2="0" y2="8" stroke="#CBD5E1" stroke-width="3"/></pattern></defs><rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="24" y="30" dominant-baseline="central" text-anchor="start" font-size="26" fill="#2F4E9E" font-weight="bold">一条主线：把“请求状态”和“本步输入”拆开</text>
+<text x="25" y="60" dominant-baseline="central" text-anchor="start" font-size="15" fill="#475569" font-weight="normal">以第 3 步为例：R1、R2 decode，R3、R4 prefill。左边状态和输入是同一张表，右边是两样东西</text>
+<rect x="20" y="82" width="450" height="462" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+<text x="38" y="106" dominant-baseline="central" text-anchor="start" font-size="19" fill="#1E4A78" font-weight="bold">MRV1 · 持久状态就是模型输入</text>
+<rect x="490" y="82" width="450" height="462" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+<text x="508" y="106" dominant-baseline="central" text-anchor="start" font-size="19" fill="#275E3A" font-weight="bold">MRV2 · 固定槽位 + 每步 gather</text>
+<rect x="40" y="124" width="410" height="148" rx="10" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="54" y="142" dominant-baseline="central" text-anchor="start" font-size="15" fill="#1E4A78" font-weight="bold">InputBatch（CPU 内存）</text>
+<rect x="50" y="160" width="390" height="26" rx="5" fill="#FFFFFF" stroke="#4A90E2" stroke-opacity="0.45"/>
+<text x="62" y="173" dominant-baseline="central" text-anchor="start" font-size="14" fill="#1E4A78" font-weight="bold">行 0</text>
+<text x="126" y="173" dominant-baseline="central" text-anchor="start" font-size="14" fill="#334155" font-weight="bold">R1</text>
+<text x="166" y="173" dominant-baseline="central" text-anchor="start" font-size="13" fill="#475569" font-weight="normal">token 行 · 进度 · 块表行 · 采样参数</text>
+<rect x="50" y="188" width="390" height="26" rx="5" fill="#FFFFFF" stroke="#4A90E2" stroke-opacity="0.45"/>
+<text x="62" y="201" dominant-baseline="central" text-anchor="start" font-size="14" fill="#1E4A78" font-weight="bold">行 1</text>
+<text x="126" y="201" dominant-baseline="central" text-anchor="start" font-size="14" fill="#334155" font-weight="bold">R2</text>
+<text x="166" y="201" dominant-baseline="central" text-anchor="start" font-size="13" fill="#475569" font-weight="normal">（每行宽 = max_model_len）</text>
+<rect x="50" y="216" width="390" height="26" rx="5" fill="#FFFFFF" stroke="#4A90E2" stroke-opacity="0.45"/>
+<text x="62" y="229" dominant-baseline="central" text-anchor="start" font-size="14" fill="#1E4A78" font-weight="bold">行 2</text>
+<text x="126" y="229" dominant-baseline="central" text-anchor="start" font-size="14" fill="#334155" font-weight="bold">R3</text>
+<text x="166" y="229" dominant-baseline="central" text-anchor="start" font-size="13" fill="#475569" font-weight="normal"></text>
+<rect x="50" y="244" width="390" height="26" rx="5" fill="#FFFFFF" stroke="#4A90E2" stroke-opacity="0.45"/>
+<text x="62" y="257" dominant-baseline="central" text-anchor="start" font-size="14" fill="#1E4A78" font-weight="bold">行 3</text>
+<text x="126" y="257" dominant-baseline="central" text-anchor="start" font-size="14" fill="#334155" font-weight="bold">R4</text>
+<text x="166" y="257" dominant-baseline="central" text-anchor="start" font-size="13" fill="#475569" font-weight="normal"></text>
+<text x="245" y="290" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#1E4A78" font-weight="bold">行号 = 本步 batch 里的位置</text>
+<polyline points="245,304 245,344" fill="none" stroke="#F28C38" stroke-width="2.4" marker-end="url(#arrowO)"/>
+<text x="260" y="324" dominant-baseline="central" text-anchor="start" font-size="14" fill="#86440E" font-weight="normal">CPU 逐 token 计算，整块拷到 GPU</text>
+<rect x="40" y="348" width="410" height="58" rx="8" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="245.0" y="368.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#275E3A" font-weight="bold">模型输入缓冲区（GPU）</text>
+<text x="245.0" y="385.5" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">input_ids · positions · slot_mapping · 块表</text>
+<circle cx="50" cy="438" r="4" fill="#F28C38"/>
+<text x="62" y="438" dominant-baseline="central" text-anchor="start" font-size="15" fill="#334155" font-weight="normal">请求进出 → 整行状态跟着搬（condense / swap）</text>
+<circle cx="50" cy="470" r="4" fill="#F28C38"/>
+<text x="62" y="470" dominant-baseline="central" text-anchor="start" font-size="15" fill="#334155" font-weight="normal">上一步 token 还在 GPU → 先填 -1，再 scatter</text>
+<circle cx="50" cy="502" r="4" fill="#F28C38"/>
+<text x="62" y="502" dominant-baseline="central" text-anchor="start" font-size="15" fill="#334155" font-weight="normal">pinned 缓冲跨步复用 → 需要 barrier 防竞态</text>
+<rect x="510" y="124" width="410" height="148" rx="10" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="524" y="142" dominant-baseline="central" text-anchor="start" font-size="15" fill="#275E3A" font-weight="bold">RequestState（GPU / UVA，常驻）</text>
+<rect x="520" y="160" width="390" height="26" rx="5" fill="#FFFFFF" stroke="#57B26A" stroke-opacity="0.45"/>
+<text x="532" y="173" dominant-baseline="central" text-anchor="start" font-size="14" fill="#275E3A" font-weight="bold">槽 31</text>
+<text x="596" y="173" dominant-baseline="central" text-anchor="start" font-size="14" fill="#334155" font-weight="bold">R1</text>
+<text x="636" y="173" dominant-baseline="central" text-anchor="start" font-size="13" fill="#475569" font-weight="normal">token 历史 · 进度 · 上次采样 · 块表</text>
+<rect x="520" y="188" width="390" height="26" rx="5" fill="#FFFFFF" stroke="#57B26A" stroke-opacity="0.45"/>
+<text x="532" y="201" dominant-baseline="central" text-anchor="start" font-size="14" fill="#275E3A" font-weight="bold">槽 30</text>
+<text x="596" y="201" dominant-baseline="central" text-anchor="start" font-size="14" fill="#334155" font-weight="bold">R2</text>
+<text x="636" y="201" dominant-baseline="central" text-anchor="start" font-size="13" fill="#475569" font-weight="normal">（请求活多久，槽号就用多久）</text>
+<rect x="520" y="216" width="390" height="26" rx="5" fill="#FFFFFF" stroke="#57B26A" stroke-opacity="0.45"/>
+<text x="532" y="229" dominant-baseline="central" text-anchor="start" font-size="14" fill="#275E3A" font-weight="bold">槽 29</text>
+<text x="596" y="229" dominant-baseline="central" text-anchor="start" font-size="14" fill="#334155" font-weight="bold">R3</text>
+<text x="636" y="229" dominant-baseline="central" text-anchor="start" font-size="13" fill="#475569" font-weight="normal"></text>
+<rect x="520" y="244" width="390" height="26" rx="5" fill="#FFFFFF" stroke="#57B26A" stroke-opacity="0.45"/>
+<text x="532" y="257" dominant-baseline="central" text-anchor="start" font-size="14" fill="#275E3A" font-weight="bold">槽 28</text>
+<text x="596" y="257" dominant-baseline="central" text-anchor="start" font-size="14" fill="#334155" font-weight="bold">R4</text>
+<text x="636" y="257" dominant-baseline="central" text-anchor="start" font-size="13" fill="#475569" font-weight="normal"></text>
+<text x="715" y="290" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#275E3A" font-weight="bold">槽号与本步顺序无关</text>
+<polyline points="715,304 715,344" fill="none" stroke="#57B26A" stroke-width="2.4" marker-end="url(#arrowG)"/>
+<rect x="726" y="309" width="196" height="30" rx="6" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="824" y="324" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#1E4A78" font-weight="bold">CPU 只给 idx_mapping</text>
+<rect x="510" y="348" width="410" height="58" rx="8" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="715.0" y="368.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#275E3A" font-weight="bold">Triton kernel 按 idx_mapping 生成本步输入</text>
+<text x="715.0" y="385.5" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">idx_mapping = [31, 30, 28, 29] → [R1, R2, R4, R3]</text>
+<polyline points="920,377 932,377 932,190 922,190" fill="none" stroke="#57B26A" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrowG)"/>
+<circle cx="520" cy="438" r="4" fill="#57B26A"/>
+<text x="532" y="438" dominant-baseline="central" text-anchor="start" font-size="15" fill="#334155" font-weight="normal">请求进出 → 占用或归还一个槽，别人不动</text>
+<circle cx="520" cy="470" r="4" fill="#57B26A"/>
+<text x="532" y="470" dominant-baseline="central" text-anchor="start" font-size="15" fill="#334155" font-weight="normal">采样结果写回槽位，下一步按槽号直接读</text>
+<circle cx="520" cy="502" r="4" fill="#57B26A"/>
+<text x="532" y="502" dominant-baseline="central" text-anchor="start" font-size="15" fill="#334155" font-weight="normal">CPU 每步交新快照 → 不需要 barrier</text>
+<text x="715" y="530" dominant-baseline="central" text-anchor="middle" font-size="12" fill="#475569" font-weight="normal">虚线箭头：post_update kernel 把 token、进度写回槽位</text>
+<text x="245" y="530" dominant-baseline="central" text-anchor="middle" font-size="12" fill="#475569" font-weight="normal">橙色箭头：每步都要 CPU 参与的数据通路</text>
+</svg>

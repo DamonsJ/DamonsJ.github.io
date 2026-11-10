@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="470" viewBox="0 0 960 470" font-family="PingFang SC, Hiragino Sans GB, Noto Sans CJK SC, Microsoft YaHei, Arial, sans-serif"><title>异步调度下的同步点</title><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#9AA3B2"/></marker><marker id="arrowO" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#F28C38"/></marker><marker id="arrowG" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#57B26A"/></marker><marker id="arrowB" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#4A90E2"/></marker><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#F4F6F9"/><line x1="0" y1="0" x2="0" y2="8" stroke="#CBD5E1" stroke-width="3"/></pattern></defs><rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="24" y="30" dominant-baseline="central" text-anchor="start" font-size="26" fill="#2F4E9E" font-weight="bold">异步调度 + 投机解码：CPU 什么时候必须等 GPU</text>
+<text x="25" y="60" dominant-baseline="central" text-anchor="start" font-size="15" fill="#475569" font-weight="normal">CPU 应该在 GPU 跑第 N 步时准备第 N+1 步。示意图，不按实测比例</text>
+<rect x="20" y="80" width="920" height="168" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+<text x="36" y="100" dominant-baseline="central" text-anchor="start" font-size="17" fill="#1E4A78" font-weight="bold">MRV1</text>
+<text x="60" y="135" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="bold">CPU</text>
+<text x="60" y="195" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="bold">GPU</text>
+<rect x="110" y="118" width="70" height="34" rx="6" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="145.0" y="135" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#1E4A78" font-weight="bold">调度 N+1</text>
+<rect x="184" y="118" width="290" height="34" rx="6" fill="#FFF2E3" stroke="#F28C38" stroke-width="1.4"/>
+<text x="329.0" y="135" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#86440E" font-weight="bold">等第 N 步接受数（event.synchronize）</text>
+<rect x="478" y="118" width="200" height="34" rx="6" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="578.0" y="135" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#1E4A78" font-weight="bold">_update_states + 备输入</text>
+<rect x="110" y="178" width="360" height="34" rx="6" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="290.0" y="195" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#275E3A" font-weight="bold">第 N 步：forward + 拒绝采样</text>
+<rect x="474" y="178" width="110" height="34" rx="6" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="529.0" y="195" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#275E3A" font-weight="bold">draft 提议</text>
+<rect x="588" y="178" width="90" height="34" rx="6" fill="url(#hatch)" stroke="#A7B0BE"/>
+<text x="633.0" y="195" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#475569" font-weight="bold">空闲</text>
+<rect x="682" y="178" width="250" height="34" rx="6" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="807.0" y="195" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#275E3A" font-weight="bold">第 N+1 步：forward …</text>
+<polyline points="472,176 472,154" fill="none" stroke="#F28C38" stroke-width="1.8" marker-end="url(#arrowO)"/>
+<text x="466" y="166" dominant-baseline="central" text-anchor="end" font-size="12" fill="#86440E" font-weight="normal">接受数拷回</text>
+<polyline points="680,154 680,176" fill="none" stroke="#4A90E2" stroke-width="1.8" marker-end="url(#arrowB)"/>
+<text x="688" y="166" dominant-baseline="central" text-anchor="start" font-size="12" fill="#1E4A78" font-weight="normal">提交</text>
+<text x="800" y="135" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#86440E" font-weight="bold">CPU 准备时间一长，GPU 就要空等</text>
+<rect x="20" y="262" width="920" height="168" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+<text x="36" y="282" dominant-baseline="central" text-anchor="start" font-size="17" fill="#275E3A" font-weight="bold">MRV2</text>
+<text x="60" y="317" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="bold">CPU</text>
+<text x="60" y="377" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="bold">GPU</text>
+<rect x="110" y="300" width="70" height="34" rx="6" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="145.0" y="317" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#1E4A78" font-weight="bold">调度 N+1</text>
+<rect x="184" y="300" width="230" height="34" rx="6" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="299.0" y="317" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#1E4A78" font-weight="bold">备输入：只需 idx_mapping 等</text>
+<rect x="418" y="300" width="260" height="34" rx="6" fill="url(#hatch)" stroke="#A7B0BE"/>
+<text x="548.0" y="317" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#475569" font-weight="bold">空出来：处理第 N−1 步输出</text>
+<rect x="110" y="360" width="360" height="34" rx="6" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="290.0" y="377" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#275E3A" font-weight="bold">第 N 步：forward + 拒绝采样</text>
+<rect x="474" y="360" width="110" height="34" rx="6" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="529.0" y="377" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#275E3A" font-weight="bold">draft 提议</text>
+<rect x="588" y="360" width="344" height="34" rx="6" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="760.0" y="377" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#275E3A" font-weight="bold">第 N+1 步：kernel 在 GPU 上读接受数</text>
+<polyline points="414,336 414,347 586,347 586,358" fill="none" stroke="#4A90E2" stroke-width="1.8" marker-end="url(#arrowB)"/>
+<text x="598" y="347" dominant-baseline="central" text-anchor="start" font-size="12" fill="#1E4A78" font-weight="normal">早已提交，排在 stream 上</text>
+<text x="480" y="450" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#475569" font-weight="normal">MRV2 在 GPU 上用 num_rejected 修正 num_computed_tokens；CPU 只保留一个乐观上界，用来估 buffer 大小</text>
+</svg>

@@ -226,6 +226,13 @@ ninja.data = [{
           description: "从比特、舍入和矩阵乘讲起，整理 GPTQ、AWQ、SmoothQuant、QuaRot/SpinQuant、ConvRot、SVDQuant 分别解决什么问题、怎么做、在 GPU 上怎么跑，以及扩散模型、KV Cache、FP8/FP4 的量化 模型优化 模型量化 LLM Diffusion 推理优化",
           section: "Ai",handler: () => {
               window.location.href = "/AI/2026-10-27-llm-aigc-quantization.html";
+            },},{id: "AI-vllm-源码阅读笔记-二-model-runner-v2-到底改了什么",
+          title: 'vLLM 源码阅读笔记（二）· Model Runner V2 到底改了什么',
+          taxonomySource: "_AI/2026-11-10-reading_about_vllm_v2.md",
+          keywords: "大模型系统 vLLM LLM 推理系统 源码解读",
+          description: "沿用上一篇的 64 路 Qwen3-VL 视频例子，把同一份调度交给 MRV1 和 MRV2，逐步对照怎么执行、搬了多少数据、省掉了什么 大模型系统 vLLM LLM 推理系统 源码解读",
+          section: "Ai",handler: () => {
+              window.location.href = "/AI/2026-11-10-reading_about_vllm_v2.html";
             },},{id: "math-如何通过4个2构造任意整数",
           title: '如何通过4个2构造任意整数',
           taxonomySource: "_math/2025-03-08-making-any-integer-with-four-2s.md",
