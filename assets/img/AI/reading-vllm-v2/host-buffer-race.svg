@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="381" viewBox="0 0 920 381" font-family="PingFang SC, Noto Sans CJK SC, Arial, sans-serif"><title>两步重叠时，传输读哪块主机内存</title><defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 Z" fill="#9AA3B2"/></marker></defs>
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="26" y="28.5" dominant-baseline="central" text-anchor="start" font-size="28" fill="#2F4E9E" font-weight="bold">两步重叠时，传输读哪块主机内存</text>
+<text x="27" y="59.5" dominant-baseline="central" text-anchor="start" font-size="16" fill="#475569" font-weight="normal">时间从左向右。H2D 指从 CPU 内存向 GPU 传输。</text>
+<rect x="24" y="83" width="872" height="122" rx="12" fill="#FFF2E3" stroke="#F28C38" stroke-width="1.4"/>
+<text x="40" y="105" dominant-baseline="central" text-anchor="start" font-size="20" fill="#86440E" font-weight="bold">复用同一块 pinned 内存时的竞态 · 假设没有 barrier</text>
+<rect x="24" y="225" width="872" height="122" rx="12" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="40" y="247" dominant-baseline="central" text-anchor="start" font-size="20" fill="#1E4A78" font-weight="bold">MRV2 · 每步的主机快照独立</text>
+<rect x="39" y="137" width="255" height="52" rx="8" fill="#FFFFFF" stroke="#F28C38"/>
+<text x="166.5" y="154.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#86440E" font-weight="bold">CPU 写第 1 步的 B</text>
+<text x="166.5" y="175.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">B[1] = 7000，提交 H2D</text>
+<rect x="332" y="137" width="255" height="52" rx="8" fill="#FFFFFF" stroke="#F28C38"/>
+<text x="459.5" y="154.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#86440E" font-weight="bold">CPU 先写第 2 步</text>
+<text x="459.5" y="175.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">复用 B，把 B[1] 改成 1</text>
+<rect x="625" y="137" width="255" height="52" rx="8" fill="#FFFFFF" stroke="#F28C38"/>
+<text x="752.5" y="154.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#86440E" font-weight="bold">第 1 步传输才读 B</text>
+<text x="752.5" y="175.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">可能读到第 2 步的 1</text>
+<polyline points="294,163 332,163" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="587,163 625,163" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="39" y="279" width="255" height="52" rx="8" fill="#FFFFFF" stroke="#4A90E2"/>
+<text x="166.5" y="296.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#1E4A78" font-weight="bold">CPU 提交第 1 步</text>
+<text x="166.5" y="317.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">数据先复制进 pinned A</text>
+<rect x="332" y="279" width="255" height="52" rx="8" fill="#FFFFFF" stroke="#4A90E2"/>
+<text x="459.5" y="296.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#1E4A78" font-weight="bold">CPU 准备第 2 步</text>
+<text x="459.5" y="317.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">新数据用另一份 pinned B</text>
+<rect x="625" y="279" width="255" height="52" rx="8" fill="#FFFFFF" stroke="#4A90E2"/>
+<text x="752.5" y="296.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#1E4A78" font-weight="bold">第 1 步传输继续</text>
+<text x="752.5" y="317.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">源地址仍是自己的 A</text>
+<polyline points="294,305 332,305" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="587,305 625,305" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="460" y="364" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#475569" font-weight="normal">实际 MRV1 会等待输入准备 event，再允许 CPU 复用这块缓冲区。</text>
+</svg>

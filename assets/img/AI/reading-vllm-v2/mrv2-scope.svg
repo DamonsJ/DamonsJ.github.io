@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="360" viewBox="0 0 960 360" font-family="PingFang SC, Hiragino Sans GB, Noto Sans CJK SC, Microsoft YaHei, Arial, sans-serif"><title>MRV2 换掉的是哪一层</title><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#9AA3B2"/></marker><marker id="arrowO" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#F28C38"/></marker><marker id="arrowG" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#57B26A"/></marker><marker id="arrowB" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#4A90E2"/></marker><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#F4F6F9"/><line x1="0" y1="0" x2="0" y2="8" stroke="#CBD5E1" stroke-width="3"/></pattern></defs><rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="24" y="30" dominant-baseline="central" text-anchor="start" font-size="26" fill="#2F4E9E" font-weight="bold">MRV2 换掉的只是 Worker 里的 Model Runner</text>
+<text x="25" y="60" dominant-baseline="central" text-anchor="start" font-size="15" fill="#475569" font-weight="normal">上下游接口不变：输入同一份 SchedulerOutput，输出同一种 ModelRunnerOutput</text>
+<rect x="24" y="88" width="330" height="46" rx="8" fill="#F4F6F9" stroke="#A7B0BE" stroke-width="1.4"/>
+<text x="189.0" y="111.0" dominant-baseline="central" text-anchor="middle" font-size="16" fill="#334155" font-weight="bold">API Server · AsyncLLM</text>
+<rect x="24" y="150" width="330" height="46" rx="8" fill="#F6EAFB" stroke="#9A5AD6" stroke-width="1.4"/>
+<text x="189.0" y="173.0" dominant-baseline="central" text-anchor="middle" font-size="16" fill="#593281" font-weight="bold">EngineCore（Scheduler、KV 块分配）</text>
+<rect x="24" y="212" width="330" height="46" rx="8" fill="#F4F6F9" stroke="#A7B0BE" stroke-width="1.4"/>
+<text x="189.0" y="235.0" dominant-baseline="central" text-anchor="middle" font-size="16" fill="#334155" font-weight="bold">Executor → Worker（每张 GPU 一个）</text>
+<rect x="24" y="274" width="330" height="58" rx="10" fill="#FFF2E3" stroke="#F28C38" stroke-width="2.4"/>
+<text x="189.0" y="294" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#86440E" font-weight="bold">Model Runner</text>
+<text x="189.0" y="316" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#334155" font-weight="normal">本文对比的就是这一层</text>
+<polyline points="189.0,134 189.0,150" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="189.0,196 189.0,212" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="189.0,258 189.0,274" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="384" y="88" width="264" height="244" rx="12" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="400" y="112" dominant-baseline="central" text-anchor="start" font-size="18" fill="#1E4A78" font-weight="bold">MRV1 · v0.18.1</text>
+<text x="400" y="136" dominant-baseline="central" text-anchor="start" font-size="12" fill="#475569" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">vllm/v1/worker/gpu_model_runner.py</text>
+<line x1="400" y1="152" x2="632" y2="152" stroke="#4A90E2" stroke-opacity="0.5"/>
+<circle cx="406" cy="180" r="3.5" fill="#4A90E2"/>
+<text x="418" y="180" dominant-baseline="central" text-anchor="start" font-size="15" fill="#334155" font-weight="normal">单文件 6,720 行</text>
+<circle cx="406" cy="218" r="3.5" fill="#4A90E2"/>
+<text x="418" y="218" dominant-baseline="central" text-anchor="start" font-size="15" fill="#334155" font-weight="normal">InputBatch：行号 = batch 顺序</text>
+<circle cx="406" cy="256" r="3.5" fill="#4A90E2"/>
+<text x="418" y="256" dominant-baseline="central" text-anchor="start" font-size="15" fill="#334155" font-weight="normal">CPU 用 NumPy 逐 token 备输入</text>
+<circle cx="406" cy="294" r="3.5" fill="#4A90E2"/>
+<text x="418" y="294" dominant-baseline="central" text-anchor="start" font-size="15" fill="#334155" font-weight="normal">异步调度靠 barrier 和修补</text>
+<rect x="676" y="88" width="264" height="244" rx="12" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="692" y="112" dominant-baseline="central" text-anchor="start" font-size="18" fill="#275E3A" font-weight="bold">MRV2 · main@3a104103</text>
+<text x="692" y="136" dominant-baseline="central" text-anchor="start" font-size="12" fill="#475569" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">vllm/v1/worker/gpu/</text>
+<line x1="692" y1="152" x2="924" y2="152" stroke="#57B26A" stroke-opacity="0.5"/>
+<circle cx="698" cy="180" r="3.5" fill="#57B26A"/>
+<text x="710" y="180" dominant-baseline="central" text-anchor="start" font-size="15" fill="#334155" font-weight="normal">117 个文件，按功能拆分</text>
+<circle cx="698" cy="218" r="3.5" fill="#57B26A"/>
+<text x="710" y="218" dominant-baseline="central" text-anchor="start" font-size="15" fill="#334155" font-weight="normal">RequestState：固定槽位</text>
+<circle cx="698" cy="256" r="3.5" fill="#57B26A"/>
+<text x="710" y="256" dominant-baseline="central" text-anchor="start" font-size="15" fill="#334155" font-weight="normal">Triton kernel 在 GPU 上 gather</text>
+<circle cx="698" cy="294" r="3.5" fill="#57B26A"/>
+<text x="710" y="294" dominant-baseline="central" text-anchor="start" font-size="15" fill="#334155" font-weight="normal">async-first：不等 GPU</text>
+<polyline points="354,303 369,303 369,210 384,210" fill="none" stroke="#9AA3B2" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<polyline points="650,210 674,210" fill="none" stroke="#57B26A" stroke-width="3" marker-end="url(#arrowG)"/>
+<text x="662" y="190" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#275E3A" font-weight="bold">重写</text>
+</svg>

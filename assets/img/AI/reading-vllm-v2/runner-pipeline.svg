@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640" font-family="PingFang SC, Hiragino Sans GB, Noto Sans CJK SC, Microsoft YaHei, Arial, sans-serif"><title>一步之内两代 Runner 的执行流程</title><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#9AA3B2"/></marker><marker id="arrowO" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#F28C38"/></marker><marker id="arrowG" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#57B26A"/></marker><marker id="arrowB" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#4A90E2"/></marker><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#F4F6F9"/><line x1="0" y1="0" x2="0" y2="8" stroke="#CBD5E1" stroke-width="3"/></pattern></defs><rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="24" y="30" dominant-baseline="central" text-anchor="start" font-size="26" fill="#2F4E9E" font-weight="bold">一步之内：两代 Runner 各做了什么</text>
+<text x="25" y="60" dominant-baseline="central" text-anchor="start" font-size="15" fill="#475569" font-weight="normal">蓝 = CPU 上的工作，绿 = GPU 上的工作，橙 = CPU 停下来等 GPU，虚线 = 在 MRV2 中消失的工作</text>
+<text x="314.0" y="94" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#1E4A78" font-weight="bold">MRV1 · gpu_model_runner.py</text>
+<text x="734.0" y="94" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#275E3A" font-weight="bold">MRV2 · gpu/model_runner.py</text>
+<rect x="20" y="112" width="82" height="52" rx="8" fill="#F4F6F9" stroke="#A7B0BE" stroke-width="1.4"/>
+<text x="61" y="138.0" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#334155" font-weight="bold">同步保护</text>
+<rect x="112" y="112" width="404" height="52" rx="8" fill="#FFF2E3" stroke="#F28C38" stroke-width="1.4"/>
+<text x="314.0" y="129" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#86440E" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">synchronize_input_prep()</text>
+<text x="314.0" y="149" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">等上一步输入拷贝完，才能改 pinned 缓冲</text>
+<rect x="532" y="112" width="404" height="52" rx="8" fill="#FFFFFF" stroke="#A7B0BE" stroke-width="1.4" stroke-dasharray="6 5"/>
+<text x="734.0" y="129" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#475569" font-weight="bold">无 barrier</text>
+<text x="734.0" y="149" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#475569" font-weight="normal">每步上传的是新快照或轮转缓冲</text>
+<rect x="20" y="170" width="82" height="52" rx="8" fill="#F4F6F9" stroke="#A7B0BE" stroke-width="1.4"/>
+<text x="61" y="196.0" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#334155" font-weight="bold">更新状态</text>
+<rect x="112" y="170" width="404" height="52" rx="8" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="314.0" y="187" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#1E4A78" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">_update_states()</text>
+<text x="314.0" y="207" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">CachedRequestState + InputBatch 增删、condense</text>
+<rect x="532" y="170" width="404" height="52" rx="8" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="734.0" y="187" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#1E4A78" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">finish / add / update_requests()</text>
+<text x="734.0" y="207" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">占槽、还槽；写入先 stage，不立即拷</text>
+<rect x="20" y="228" width="82" height="52" rx="8" fill="#F4F6F9" stroke="#A7B0BE" stroke-width="1.4"/>
+<text x="61" y="254.0" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#334155" font-weight="bold">投机解码</text>
+<rect x="112" y="228" width="404" height="52" rx="8" fill="#FFF2E3" stroke="#F28C38" stroke-width="1.4"/>
+<text x="314.0" y="245" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#86440E" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">_get_valid_sampled_token_count()</text>
+<text x="314.0" y="265" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">等上一步接受数拷回 CPU 才能修正进度</text>
+<rect x="532" y="228" width="404" height="52" rx="8" fill="#FFFFFF" stroke="#A7B0BE" stroke-width="1.4" stroke-dasharray="6 5"/>
+<text x="734.0" y="245" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#475569" font-weight="bold">不等</text>
+<text x="734.0" y="265" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#475569" font-weight="normal">接受数留在 GPU，由 kernel 修正进度</text>
+<rect x="20" y="286" width="82" height="52" rx="8" fill="#F4F6F9" stroke="#A7B0BE" stroke-width="1.4"/>
+<text x="61" y="312.0" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#334155" font-weight="bold">定顺序</text>
+<rect x="112" y="286" width="404" height="52" rx="8" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="314.0" y="303" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#1E4A78" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">_may_reorder_batch()</text>
+<text x="314.0" y="323" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">后端要求 decode 在前时 swap_states 整行</text>
+<rect x="532" y="286" width="404" height="52" rx="8" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="734.0" y="303" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#1E4A78" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">gather_batch_req_state()</text>
+<text x="734.0" y="323" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">排序 → idx_mapping，不搬数据</text>
+<rect x="20" y="344" width="82" height="52" rx="8" fill="#F4F6F9" stroke="#A7B0BE" stroke-width="1.4"/>
+<text x="61" y="370.0" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#334155" font-weight="bold">准备输入</text>
+<rect x="112" y="344" width="404" height="52" rx="8" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="314.0" y="361" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#1E4A78" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">_prepare_inputs()</text>
+<text x="314.0" y="381" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">NumPy 逐 token 算 positions、slot_mapping…</text>
+<rect x="532" y="344" width="404" height="52" rx="8" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="734.0" y="361" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#275E3A" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">apply_staged_writes() + 5 个 Triton kernel</text>
+<text x="734.0" y="381" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">按 idx_mapping 在 GPU 上 gather</text>
+<rect x="20" y="402" width="82" height="52" rx="8" fill="#F4F6F9" stroke="#A7B0BE" stroke-width="1.4"/>
+<text x="61" y="428.0" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#334155" font-weight="bold">补 token</text>
+<rect x="112" y="402" width="404" height="52" rx="8" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="314.0" y="419" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#275E3A" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">_prepare_input_ids()</text>
+<text x="314.0" y="439" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">把上一步采样 token scatter 进 input_ids</text>
+<rect x="532" y="402" width="404" height="52" rx="8" fill="#FFFFFF" stroke="#A7B0BE" stroke-width="1.4" stroke-dasharray="6 5"/>
+<text x="734.0" y="419" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#475569" font-weight="bold">合并进上一行</text>
+<text x="734.0" y="439" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#475569" font-weight="normal">kernel 直接读 last_sampled_tokens[槽]</text>
+<rect x="20" y="460" width="82" height="52" rx="8" fill="#F4F6F9" stroke="#A7B0BE" stroke-width="1.4"/>
+<text x="61" y="486.0" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#334155" font-weight="bold">Forward</text>
+<rect x="112" y="460" width="404" height="52" rx="8" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="314.0" y="477" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#275E3A" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">model.forward()</text>
+<text x="314.0" y="497" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">CUDA Graph / piecewise</text>
+<rect x="532" y="460" width="404" height="52" rx="8" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="734.0" y="477" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#275E3A" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">model.forward()</text>
+<text x="734.0" y="497" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">CudaGraphManager 显式 capture / replay</text>
+<rect x="20" y="518" width="82" height="52" rx="8" fill="#F4F6F9" stroke="#A7B0BE" stroke-width="1.4"/>
+<text x="61" y="544.0" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#334155" font-weight="bold">采样</text>
+<rect x="112" y="518" width="404" height="52" rx="8" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="314.0" y="535" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#275E3A" font-weight="bold">Sampler</text>
+<text x="314.0" y="555" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">softmax → 指数噪声 → argmax</text>
+<rect x="532" y="518" width="404" height="52" rx="8" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="734.0" y="535" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#275E3A" font-weight="bold">Triton Gumbel-Max</text>
+<text x="734.0" y="555" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">噪声在寄存器里生成，直接 argmax</text>
+<rect x="20" y="576" width="82" height="52" rx="8" fill="#F4F6F9" stroke="#A7B0BE" stroke-width="1.4"/>
+<text x="61" y="602.0" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#334155" font-weight="bold">收尾</text>
+<rect x="112" y="576" width="404" height="52" rx="8" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="314.0" y="593" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#1E4A78" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">_bookkeeping_sync()</text>
+<text x="314.0" y="613" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">CPU 写 -1 占位；另起 stream D2H</text>
+<rect x="532" y="576" width="404" height="52" rx="8" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="734.0" y="593" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#275E3A" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">post_update kernel + AsyncOutput</text>
+<text x="734.0" y="613" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal">token、进度写回槽位；另起 stream D2H</text>
+</svg>

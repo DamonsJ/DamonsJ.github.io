@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="650" viewBox="0 0 960 650" font-family="PingFang SC, Hiragino Sans GB, Noto Sans CJK SC, Microsoft YaHei, Arial, sans-serif"><title>镜头 C：R1 退出、R33 加入</title><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#9AA3B2"/></marker><marker id="arrowO" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#F28C38"/></marker><marker id="arrowG" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#57B26A"/></marker><marker id="arrowB" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#4A90E2"/></marker><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#F4F6F9"/><line x1="0" y1="0" x2="0" y2="8" stroke="#CBD5E1" stroke-width="3"/></pattern></defs><rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="24" y="30" dominant-baseline="central" text-anchor="start" font-size="26" fill="#2F4E9E" font-weight="bold">镜头 C · 第 201 步：R1 退出、R33 加入</text>
+<text x="25" y="60" dominant-baseline="central" text-anchor="start" font-size="15" fill="#475569" font-weight="normal">32 个活跃请求里只换了一个人。看两代 Runner 为此各要搬动多少已有状态</text>
+<rect x="20" y="80" width="920" height="262" rx="14" fill="#F7FBFF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="38" y="102" dominant-baseline="central" text-anchor="start" font-size="18" fill="#1E4A78" font-weight="bold">MRV1 · InputBatch：行号 = 本步顺序</text>
+<text x="40" y="130" dominant-baseline="central" text-anchor="start" font-size="15" fill="#1E4A78" font-weight="bold">① 第 200 步结束时</text>
+<rect x="40" y="146" width="260" height="26" rx="5" fill="#FFFFFF" stroke="#4A90E2" stroke-opacity="0.6"/>
+<text x="50" y="159" dominant-baseline="central" text-anchor="start" font-size="13" fill="#1E4A78" font-weight="bold">行 0</text>
+<text x="112" y="159" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">R1</text>
+<rect x="40" y="176" width="260" height="26" rx="5" fill="#FFFFFF" stroke="#4A90E2" stroke-opacity="0.6"/>
+<text x="50" y="189" dominant-baseline="central" text-anchor="start" font-size="13" fill="#1E4A78" font-weight="bold">行 1</text>
+<text x="112" y="189" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">R2</text>
+<text x="70" y="220" dominant-baseline="central" text-anchor="middle" font-size="16" fill="#475569" font-weight="bold">⋮</text>
+<rect x="40" y="236" width="260" height="26" rx="5" fill="#FFFFFF" stroke="#4A90E2" stroke-opacity="0.6"/>
+<text x="50" y="249" dominant-baseline="central" text-anchor="start" font-size="13" fill="#1E4A78" font-weight="bold">行 31</text>
+<text x="112" y="249" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">R32</text>
+<text x="345" y="130" dominant-baseline="central" text-anchor="start" font-size="15" fill="#1E4A78" font-weight="bold">② R1 删除，R33 填最小空行</text>
+<rect x="345" y="146" width="260" height="26" rx="5" fill="#FFE7CC" stroke="#4A90E2" stroke-opacity="0.6"/>
+<text x="355" y="159" dominant-baseline="central" text-anchor="start" font-size="13" fill="#1E4A78" font-weight="bold">行 0</text>
+<text x="417" y="159" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">R33（新，prefill）</text>
+<rect x="345" y="176" width="260" height="26" rx="5" fill="#FFFFFF" stroke="#4A90E2" stroke-opacity="0.6"/>
+<text x="355" y="189" dominant-baseline="central" text-anchor="start" font-size="13" fill="#1E4A78" font-weight="bold">行 1</text>
+<text x="417" y="189" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">R2</text>
+<text x="375" y="220" dominant-baseline="central" text-anchor="middle" font-size="16" fill="#475569" font-weight="bold">⋮</text>
+<rect x="345" y="236" width="260" height="26" rx="5" fill="#FFFFFF" stroke="#4A90E2" stroke-opacity="0.6"/>
+<text x="355" y="249" dominant-baseline="central" text-anchor="start" font-size="13" fill="#1E4A78" font-weight="bold">行 31</text>
+<text x="417" y="249" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">R32</text>
+<text x="650" y="130" dominant-baseline="central" text-anchor="start" font-size="15" fill="#1E4A78" font-weight="bold">③ decode 优先：swap_states(0, 31)</text>
+<rect x="650" y="146" width="260" height="26" rx="5" fill="#FFD3D3" stroke="#4A90E2" stroke-opacity="0.6"/>
+<text x="660" y="159" dominant-baseline="central" text-anchor="start" font-size="13" fill="#1E4A78" font-weight="bold">行 0</text>
+<text x="722" y="159" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">R32（被搬走）</text>
+<rect x="650" y="176" width="260" height="26" rx="5" fill="#FFFFFF" stroke="#4A90E2" stroke-opacity="0.6"/>
+<text x="660" y="189" dominant-baseline="central" text-anchor="start" font-size="13" fill="#1E4A78" font-weight="bold">行 1</text>
+<text x="722" y="189" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">R2</text>
+<text x="680" y="220" dominant-baseline="central" text-anchor="middle" font-size="16" fill="#475569" font-weight="bold">⋮</text>
+<rect x="650" y="236" width="260" height="26" rx="5" fill="#FFD3D3" stroke="#4A90E2" stroke-opacity="0.6"/>
+<text x="660" y="249" dominant-baseline="central" text-anchor="start" font-size="13" fill="#1E4A78" font-weight="bold">行 31</text>
+<text x="722" y="249" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">R33（被搬走）</text>
+<polyline points="308,205 337,205" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="613,205 642,205" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="345" y="278" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="normal">写入 R33：7,000 个 token、438 个块 ID</text>
+<text x="345" y="300" dominant-baseline="central" text-anchor="start" font-size="13" fill="#475569" font-weight="normal">（新请求的这份写入两代都要做）</text>
+<rect x="650" y="266" width="274" height="64" rx="8" fill="#FFF2E3" stroke="#F28C38" stroke-width="1.4"/>
+<text x="660" y="284" dominant-baseline="central" text-anchor="start" font-size="13" fill="#86440E" font-weight="bold">R32、R33 两整行互换，共拷贝约 544 KB：</text>
+<text x="660" y="306" dominant-baseline="central" text-anchor="start" font-size="12" fill="#334155" font-weight="normal">token 行 384 KB + 标记 128 KB + 块表 32 KB</text>
+<text x="660" y="322" dominant-baseline="central" text-anchor="start" font-size="12" fill="#334155" font-weight="normal">另有十余个标量数组、dict 逐项交换</text>
+<rect x="20" y="356" width="920" height="262" rx="14" fill="#F7FCF8" stroke="#57B26A" stroke-width="1.4"/>
+<text x="38" y="378" dominant-baseline="central" text-anchor="start" font-size="18" fill="#275E3A" font-weight="bold">MRV2 · RequestState：槽号固定，本步顺序另给</text>
+<text x="40" y="406" dominant-baseline="central" text-anchor="start" font-size="15" fill="#275E3A" font-weight="bold">① 第 200 步结束时</text>
+<rect x="40" y="422" width="260" height="26" rx="5" fill="#FFFFFF" stroke="#57B26A" stroke-opacity="0.6"/>
+<text x="50" y="435" dominant-baseline="central" text-anchor="start" font-size="13" fill="#275E3A" font-weight="bold">槽 31</text>
+<text x="112" y="435" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">R1</text>
+<rect x="40" y="452" width="260" height="26" rx="5" fill="#FFFFFF" stroke="#57B26A" stroke-opacity="0.6"/>
+<text x="50" y="465" dominant-baseline="central" text-anchor="start" font-size="13" fill="#275E3A" font-weight="bold">槽 30</text>
+<text x="112" y="465" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">R2</text>
+<text x="70" y="496" dominant-baseline="central" text-anchor="middle" font-size="16" fill="#475569" font-weight="bold">⋮</text>
+<rect x="40" y="512" width="260" height="26" rx="5" fill="#FFFFFF" stroke="#57B26A" stroke-opacity="0.6"/>
+<text x="50" y="525" dominant-baseline="central" text-anchor="start" font-size="13" fill="#275E3A" font-weight="bold">槽 0</text>
+<text x="112" y="525" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">R32</text>
+<text x="345" y="406" dominant-baseline="central" text-anchor="start" font-size="15" fill="#275E3A" font-weight="bold">② R1 还槽 31，R33 从空闲栈取回</text>
+<rect x="345" y="422" width="260" height="26" rx="5" fill="#FFE7CC" stroke="#57B26A" stroke-opacity="0.6"/>
+<text x="355" y="435" dominant-baseline="central" text-anchor="start" font-size="13" fill="#275E3A" font-weight="bold">槽 31</text>
+<text x="417" y="435" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">R33（新，prefill）</text>
+<rect x="345" y="452" width="260" height="26" rx="5" fill="#DFF3E4" stroke="#57B26A" stroke-opacity="0.6"/>
+<text x="355" y="465" dominant-baseline="central" text-anchor="start" font-size="13" fill="#275E3A" font-weight="bold">槽 30</text>
+<text x="417" y="465" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">R2</text>
+<text x="375" y="496" dominant-baseline="central" text-anchor="middle" font-size="16" fill="#475569" font-weight="bold">⋮</text>
+<rect x="345" y="512" width="260" height="26" rx="5" fill="#DFF3E4" stroke="#57B26A" stroke-opacity="0.6"/>
+<text x="355" y="525" dominant-baseline="central" text-anchor="start" font-size="13" fill="#275E3A" font-weight="bold">槽 0</text>
+<text x="417" y="525" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">R32</text>
+<text x="650" y="406" dominant-baseline="central" text-anchor="start" font-size="15" fill="#275E3A" font-weight="bold">③ 排序得到 idx_mapping</text>
+<rect x="650" y="422" width="260" height="26" rx="5" fill="#FFFFFF" stroke="#57B26A" stroke-opacity="0.6"/>
+<text x="660" y="435" dominant-baseline="central" text-anchor="start" font-size="13" fill="#275E3A" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">batch 0</text>
+<text x="726" y="435" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">← 槽 30（R2）</text>
+<rect x="650" y="452" width="260" height="26" rx="5" fill="#FFFFFF" stroke="#57B26A" stroke-opacity="0.6"/>
+<text x="660" y="465" dominant-baseline="central" text-anchor="start" font-size="13" fill="#275E3A" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">batch 1</text>
+<text x="726" y="465" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">← 槽 29（R3）</text>
+<text x="680" y="496" dominant-baseline="central" text-anchor="middle" font-size="16" fill="#475569" font-weight="bold">⋮</text>
+<rect x="650" y="512" width="260" height="26" rx="5" fill="#FFFFFF" stroke="#57B26A" stroke-opacity="0.6"/>
+<text x="660" y="525" dominant-baseline="central" text-anchor="start" font-size="13" fill="#275E3A" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">batch 31</text>
+<text x="726" y="525" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">← 槽 31（R33）</text>
+<polyline points="308,481 337,481" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="613,481 642,481" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="345" y="554" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="normal">写入 R33：同样的 7,000 token、438 个块 ID</text>
+<text x="345" y="576" dominant-baseline="central" text-anchor="start" font-size="13" fill="#475569" font-weight="normal">（先 stage，随后一个 kernel 落到槽 31）</text>
+<rect x="650" y="542" width="274" height="64" rx="8" fill="#DFF3E4" stroke="#57B26A" stroke-width="1.4"/>
+<text x="660" y="560" dominant-baseline="central" text-anchor="start" font-size="13" fill="#275E3A" font-weight="bold">已有请求的状态：一个字节都不动</text>
+<text x="660" y="584" dominant-baseline="central" text-anchor="start" font-size="12"><tspan fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">idx_mapping = [30, 29, …, 0, 31]</tspan></text>
+<text x="480" y="634" dominant-baseline="central" text-anchor="middle" font-size="12" fill="#475569" font-weight="normal">max_model_len = 32,768。FlashAttention 后端不要求 decode 在前，MRV1 会跳过 ③，本步顺序变成 [R33, R2, …, R32]；FlashInfer、MLA 等后端会走 ③</text>
+</svg>

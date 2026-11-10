@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640" font-family="PingFang SC, Hiragino Sans GB, Noto Sans CJK SC, Microsoft YaHei, Arial, sans-serif"><title>镜头 A：第 3 步的输入从哪里来</title><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#9AA3B2"/></marker><marker id="arrowO" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#F28C38"/></marker><marker id="arrowG" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#57B26A"/></marker><marker id="arrowB" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#4A90E2"/></marker><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#F4F6F9"/><line x1="0" y1="0" x2="0" y2="8" stroke="#CBD5E1" stroke-width="3"/></pattern></defs><rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="24" y="30" dominant-baseline="central" text-anchor="start" font-size="26" fill="#2F4E9E" font-weight="bold">镜头 A · 第 3 步：8,192 个输入 token 从哪里来（MRV2）</text>
+<text x="25" y="60" dominant-baseline="central" text-anchor="start" font-size="15" fill="#475569" font-weight="normal">排序规则：decode 在前，其余按本步 token 数升序 → [R1, R2, R4, R3]，各自从自己的槽位取数据</text>
+<text x="24" y="96" dominant-baseline="central" text-anchor="start" font-size="15" fill="#275E3A" font-weight="bold">RequestState 槽位（GPU 显存 / UVA 主机内存）</text>
+<text x="936" y="96" dominant-baseline="central" text-anchor="end" font-size="14"><tspan fill="#275E3A" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">idx_mapping = [31, 30, 28, 29]</tspan></text>
+<rect x="150" y="112" width="190" height="74" rx="8" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="245" y="130" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#275E3A" font-weight="bold">槽 31 · R1</text>
+<text x="245" y="152" dominant-baseline="central" text-anchor="middle" font-size="12" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">last_sampled = a2</text>
+<text x="245" y="172" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#475569" font-weight="normal">已算 7,001</text>
+<rect x="345" y="112" width="190" height="74" rx="8" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="440" y="130" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#275E3A" font-weight="bold">槽 30 · R2</text>
+<text x="440" y="152" dominant-baseline="central" text-anchor="middle" font-size="12" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">last_sampled = b1</text>
+<text x="440" y="172" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#475569" font-weight="normal">已算 7,000</text>
+<rect x="540" y="112" width="190" height="74" rx="8" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="635" y="130" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#275E3A" font-weight="bold">槽 28 · R4</text>
+<text x="635" y="152" dominant-baseline="central" text-anchor="middle" font-size="12" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">all_token_ids[28][0:7000]</text>
+<text x="635" y="172" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#475569" font-weight="normal">已算 0</text>
+<rect x="735" y="112" width="190" height="74" rx="8" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="830" y="130" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#275E3A" font-weight="bold">槽 29 · R3</text>
+<text x="830" y="152" dominant-baseline="central" text-anchor="middle" font-size="12" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">all_token_ids[29][0:7000]</text>
+<text x="830" y="172" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#475569" font-weight="normal">已算 2,383</text>
+<text x="24" y="280" dominant-baseline="central" text-anchor="start" font-size="14" fill="#334155" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">input_ids</text>
+<rect x="150.0" y="262" width="64.0" height="36" fill="#DCEBFF" stroke="#64748B"/>
+<text x="182.0" y="280" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#334155" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">a2</text>
+<rect x="214.0" y="262" width="64.0" height="36" fill="#DCEBFF" stroke="#64748B"/>
+<text x="246.0" y="280" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#334155" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">b1</text>
+<rect x="278.0" y="262" width="284.4" height="36" fill="#FFF3D6" stroke="#64748B"/>
+<text x="420.22197802197803" y="280" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#334155" font-weight="bold">R4：p0 … p3572（3,573）</text>
+<rect x="562.4" y="262" width="367.6" height="36" fill="#FFF3D6" stroke="#64748B"/>
+<text x="746.221978021978" y="280" dominant-baseline="central" text-anchor="middle" font-size="14" fill="#334155" font-weight="bold">R3：p2383 … p6999（4,617）</text>
+<polyline points="245,186 245,214 182.0,238 182.0,260" fill="none" stroke="#4A90E2" stroke-width="1.8" marker-end="url(#arrowB)"/>
+<polyline points="440,186 440,214 246.0,238 246.0,260" fill="none" stroke="#4A90E2" stroke-width="1.8" marker-end="url(#arrowB)"/>
+<polyline points="635,186 635,214 420.22197802197803,238 420.22197802197803,260" fill="none" stroke="#D4A72C" stroke-width="1.8" marker-end="url(#arrow)"/>
+<polyline points="830,186 830,214 746.221978021978,238 746.221978021978,260" fill="none" stroke="#D4A72C" stroke-width="1.8" marker-end="url(#arrow)"/>
+<rect x="150" y="206" width="300" height="24" rx="6" fill="#FFFFFF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="300" y="218" dominant-baseline="central" text-anchor="middle" font-size="12" fill="#1E4A78" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">combine_sampled_and_draft_tokens</text>
+<rect x="560" y="206" width="330" height="24" rx="6" fill="#FFFFFF" stroke="#D4A72C" stroke-width="1.4"/>
+<text x="725" y="218" dominant-baseline="central" text-anchor="middle" font-size="12" fill="#6B4E00" font-weight="bold">prepare_prefill_inputs（经 UVA 读 prompt）</text>
+<text x="24" y="312" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">query_start_loc</text>
+<line x1="150.0" y1="298" x2="150.0" y2="304" stroke="#64748B"/>
+<text x="150" y="312" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">0</text>
+<line x1="214.0" y1="298" x2="214.0" y2="304" stroke="#64748B"/>
+<text x="214" y="312" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">1</text>
+<line x1="278.0" y1="298" x2="278.0" y2="304" stroke="#64748B"/>
+<text x="278" y="312" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">2</text>
+<line x1="562.4" y1="298" x2="562.4" y2="304" stroke="#64748B"/>
+<text x="562.4439560439561" y="312" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">3575</text>
+<line x1="930.0" y1="298" x2="930.0" y2="304" stroke="#64748B"/>
+<text x="930.0" y="312" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">8192</text>
+<text x="24" y="353" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">positions</text>
+<rect x="152.0" y="338" width="60.0" height="30" rx="4" fill="#FFFFFF" stroke="#CBD5E1"/>
+<text x="182.0" y="353" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">7001</text>
+<rect x="216.0" y="338" width="60.0" height="30" rx="4" fill="#FFFFFF" stroke="#CBD5E1"/>
+<text x="246.0" y="353" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">7000</text>
+<rect x="280.0" y="338" width="280.4" height="30" rx="4" fill="#FFFFFF" stroke="#CBD5E1"/>
+<text x="420.22197802197803" y="353" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">0 … 3572</text>
+<rect x="564.4" y="338" width="363.6" height="30" rx="4" fill="#FFFFFF" stroke="#CBD5E1"/>
+<text x="746.221978021978" y="353" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">2383 … 6999</text>
+<text x="24" y="393" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">seq_lens</text>
+<rect x="152.0" y="378" width="60.0" height="30" rx="4" fill="#FFFFFF" stroke="#CBD5E1"/>
+<text x="182.0" y="393" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">7002</text>
+<rect x="216.0" y="378" width="60.0" height="30" rx="4" fill="#FFFFFF" stroke="#CBD5E1"/>
+<text x="246.0" y="393" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">7001</text>
+<rect x="280.0" y="378" width="280.4" height="30" rx="4" fill="#FFFFFF" stroke="#CBD5E1"/>
+<text x="420.22197802197803" y="393" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">3573</text>
+<rect x="564.4" y="378" width="363.6" height="30" rx="4" fill="#FFFFFF" stroke="#CBD5E1"/>
+<text x="746.221978021978" y="393" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">7000</text>
+<text x="24" y="433" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">logits 位置</text>
+<rect x="152.0" y="418" width="60.0" height="30" rx="4" fill="#FFFFFF" stroke="#CBD5E1"/>
+<text x="182.0" y="433" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">0</text>
+<rect x="216.0" y="418" width="60.0" height="30" rx="4" fill="#FFFFFF" stroke="#CBD5E1"/>
+<text x="246.0" y="433" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">1</text>
+<rect x="280.0" y="418" width="280.4" height="30" rx="4" fill="#FFFFFF" stroke="#CBD5E1"/>
+<text x="420.22197802197803" y="433" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">3574</text>
+<rect x="564.4" y="418" width="363.6" height="30" rx="4" fill="#FFFFFF" stroke="#CBD5E1"/>
+<text x="746.221978021978" y="433" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="normal" font-family="SFMono-Regular, Menlo, Consolas, monospace">8191</text>
+<text x="24" y="473" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="bold">采样结果</text>
+<rect x="152.0" y="458" width="60.0" height="30" rx="4" fill="#DFF3E4" stroke="#CBD5E1"/>
+<text x="182.0" y="473" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">a3</text>
+<rect x="216.0" y="458" width="60.0" height="30" rx="4" fill="#DFF3E4" stroke="#CBD5E1"/>
+<text x="246.0" y="473" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">b2</text>
+<rect x="280.0" y="458" width="280.4" height="30" rx="4" fill="#F4F6F9" stroke="#CBD5E1"/>
+<text x="420.22197802197803" y="473" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">丢弃</text>
+<rect x="564.4" y="458" width="363.6" height="30" rx="4" fill="#DFF3E4" stroke="#CBD5E1"/>
+<text x="746.221978021978" y="473" dominant-baseline="central" text-anchor="middle" font-size="13" fill="#334155" font-weight="bold" font-family="SFMono-Regular, Menlo, Consolas, monospace">c1</text>
+<text x="930" y="504" dominant-baseline="central" text-anchor="end" font-size="12" fill="#475569" font-weight="normal">M-RoPE 的 positions 实为 3 个通道，这里只画逻辑位置；slot_mapping 由块表 + positions 在 GPU 上算出</text>
+<rect x="24" y="534" width="912" height="92" rx="10" fill="#FFF8F0" stroke="#F28C38" stroke-width="1.4"/>
+<text x="40" y="554" dominant-baseline="central" text-anchor="start" font-size="15" fill="#86440E" font-weight="bold">同一步的 MRV1：</text>
+<text x="160" y="554" dominant-baseline="central" text-anchor="start" font-size="14" fill="#334155" font-weight="normal">行顺序 [R1, R2, R3, R4]，query_start_loc = [0, 1, 2, 4619, 8192]</text>
+<text x="40" y="580" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="normal">• CPU 用 NumPy 逐 token 生成 input_ids、3 通道 positions、slot_mapping，共约 4.1 万个数，再逐个拷到 GPU</text>
+<text x="40" y="604" dominant-baseline="central" text-anchor="start" font-size="13" fill="#334155" font-weight="normal">• R1、R2 的 a2、b1 还在 GPU 上，CPU 只能先填 -1；上 GPU 后再用 scatter 补成真实 token</text>
+</svg>

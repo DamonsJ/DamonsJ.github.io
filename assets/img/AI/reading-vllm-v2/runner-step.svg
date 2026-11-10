@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="483" viewBox="0 0 920 483" font-family="PingFang SC, Noto Sans CJK SC, Arial, sans-serif"><title>第 3 步的 MRV2 执行流程</title><defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 Z" fill="#9AA3B2"/></marker></defs>
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="26" y="28.5" dominant-baseline="central" text-anchor="start" font-size="28" fill="#2F4E9E" font-weight="bold">第 3 步的 MRV2 执行流程</text>
+<text x="27" y="59.5" dominant-baseline="central" text-anchor="start" font-size="16" fill="#475569" font-weight="normal">R1 已完成，R2 decode 1 token，R3 prefill 7,000 token</text>
+<rect x="26" y="82" width="868" height="59" rx="12" fill="#F6EAFB" stroke="#9A5AD6" stroke-width="1.4"/>
+<text x="42" y="110.5" dominant-baseline="central" text-anchor="start" font-size="17" fill="#593281" font-weight="bold">Scheduler</text>
+<rect x="187" y="86" width="689" height="51" rx="8" fill="#FFFFFF" stroke="#9A5AD6"/>
+<text x="531.5" y="103.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#593281" font-weight="bold">① 下发 SchedulerOutput</text>
+<text x="531.5" y="124.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">回收 R1，续跑 R2，接入 R3</text>
+<rect x="26" y="160" width="868" height="59" rx="12" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<text x="42" y="188.5" dominant-baseline="central" text-anchor="start" font-size="17" fill="#1E4A78" font-weight="bold">Worker CPU</text>
+<rect x="187" y="164" width="689" height="51" rx="8" fill="#FFFFFF" stroke="#4A90E2"/>
+<text x="531.5" y="181.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#1E4A78" font-weight="bold">② 更新持久槽位和批次映射</text>
+<text x="531.5" y="202.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">R3 接管槽 1，R2 留在槽 0，idx_mapping = [0, 1]</text>
+<polyline points="460,141 460,160" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="26" y="238" width="868" height="59" rx="12" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="42" y="266.5" dominant-baseline="central" text-anchor="start" font-size="17" fill="#275E3A" font-weight="bold">GPU 输入</text>
+<rect x="187" y="242" width="689" height="51" rx="8" fill="#FFFFFF" stroke="#57B26A"/>
+<text x="531.5" y="259.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#275E3A" font-weight="bold">③ 应用块表增量并组装本步输入</text>
+<text x="531.5" y="280.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">[ y1 | p0 … p6999 ]，边界 [0, 1, 7001]</text>
+<polyline points="460,219 460,238" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="26" y="316" width="868" height="59" rx="12" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<text x="42" y="344.5" dominant-baseline="central" text-anchor="start" font-size="17" fill="#275E3A" font-weight="bold">GPU 执行</text>
+<rect x="187" y="320" width="689" height="51" rx="8" fill="#FFFFFF" stroke="#57B26A"/>
+<text x="531.5" y="337.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#275E3A" font-weight="bold">④ Forward → logits → 采样</text>
+<text x="531.5" y="358.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">R2 得到 y2，R3 得到首个输出 z1</text>
+<polyline points="460,297 460,316" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="26" y="408" width="425" height="58" rx="12" fill="#EAF8ED" stroke="#57B26A" stroke-width="1.4"/>
+<rect x="469" y="408" width="425" height="58" rx="12" fill="#EAF4FF" stroke="#4A90E2" stroke-width="1.4"/>
+<rect x="38" y="412" width="401" height="50" rx="8" fill="#FFFFFF" stroke="#57B26A"/>
+<text x="238.5" y="429.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#275E3A" font-weight="bold">⑤a 写回 GPU 请求状态</text>
+<text x="238.5" y="450.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">下一步输入直接读取 y2 / z1</text>
+<rect x="481" y="412" width="401" height="50" rx="8" fill="#FFFFFF" stroke="#4A90E2"/>
+<text x="681.5" y="429.5" dominant-baseline="central" text-anchor="middle" font-size="18" fill="#1E4A78" font-weight="bold">⑤b 独立 copy stream 回传</text>
+<text x="681.5" y="450.5" dominant-baseline="central" text-anchor="middle" font-size="15" fill="#334155" font-weight="normal">CPU 收到结果后更新调度与输出</text>
+<polyline points="460,375 460,392 239,392 239,408" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="460,392 682,392 682,408" fill="none" stroke="#9AA3B2" stroke-width="2" marker-end="url(#arrow)"/>
+</svg>
